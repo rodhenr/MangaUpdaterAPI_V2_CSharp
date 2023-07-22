@@ -1,4 +1,6 @@
-﻿namespace MangaUpdaterAPI.Models;
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace MangaUpdaterAPI.Models;
 
 public class Source
 {
@@ -10,6 +12,10 @@ public class Source
     }
 
     public int Id { get; set; }
+
+    [MaxLength(50)]
     public string Name { get; set; }
+
+    [MaxLength(100)]
     public string BaseURL { get; set; }
 }

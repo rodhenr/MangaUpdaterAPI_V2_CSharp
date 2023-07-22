@@ -1,4 +1,6 @@
-﻿namespace MangaUpdaterAPI.Models;
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace MangaUpdaterAPI.Models;
 
 public class Genre
 {
@@ -9,5 +11,7 @@ public class Genre
     }
 
     public int Id { get; set; }
+
+    [MaxLength(20)]
     public string Name { get; set; }
 }

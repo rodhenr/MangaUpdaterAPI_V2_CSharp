@@ -1,8 +1,10 @@
-﻿namespace MangaUpdaterAPI.Models;
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace MangaUpdaterAPI.Models;
 
 public class Chapter
 {
-    public Chapter(int id, int mangaId, int sourceId, DateTime date, string number)
+    public Chapter(int id, int mangaId, int sourceId, DateTime date, float number)
     {
         Id = id;
         MangaId = mangaId;
@@ -12,8 +14,12 @@ public class Chapter
     }
 
     public int Id { get; set; }
+
     public int MangaId { get; set; }
+
     public int SourceId { get; set; }
+
     public DateTime Date { get; set; }
-    public string Number { get; set; }
+
+    public float Number { get; set; }
 }

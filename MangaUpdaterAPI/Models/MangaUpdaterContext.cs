@@ -22,4 +22,11 @@ public class MangaUpdaterContext : DbContext
     public DbSet<Source> Sources { get; set; }
     public DbSet<User> Users { get; set; }
     public DbSet<UserManga> UserMangas { get; set; }
+
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
+        modelBuilder.Entity<MangaGenre>().HasKey(p => new {p.MangaId, p.GenreId});
+        modelBuilder.Entity<MangaSource>().HasKey(p => new { p.MangaId, p.SourceId });
+        modelBuilder.Entity<UserManga>().HasKey(p => new { p.MangaId, p.UserId });
+    }
 }

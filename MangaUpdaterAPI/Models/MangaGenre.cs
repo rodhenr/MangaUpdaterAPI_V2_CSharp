@@ -9,5 +9,6 @@ public class MangaGenre
     }
 
     public int MangaId { get; set; }
+
     public int GenreId { get; set; }
 }

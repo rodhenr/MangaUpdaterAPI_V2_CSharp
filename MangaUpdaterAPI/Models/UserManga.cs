@@ -1,4 +1,6 @@
-﻿namespace MangaUpdaterAPI.Models;
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace MangaUpdaterAPI.Models;
 
 public class UserManga
 {
@@ -10,6 +12,9 @@ public class UserManga
     }
 
     public int UserId { get; set; }
+
     public int MangaId { get; set; }
+
+    [MaxLength(10)]
     public string LastChapter { get; set; }
 }
