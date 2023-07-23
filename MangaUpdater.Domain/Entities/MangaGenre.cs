@@ -1,4 +1,4 @@
-﻿namespace MangaUpdaterAPI.Models;
+﻿namespace MangaUpdater.Domain.Entities;
 
 public class MangaGenre
 {

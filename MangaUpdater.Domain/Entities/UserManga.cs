@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace MangaUpdaterAPI.Models;
+namespace MangaUpdater.Domain.Entities;
 
 public class UserManga
 {

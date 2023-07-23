@@ -3,7 +3,19 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.6.33815.320
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MangaUpdaterAPI", "MangaUpdaterAPI\MangaUpdaterAPI.csproj", "{C278208E-F7E3-4CFB-9048-616769CE5B04}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MangaUpdater.API", "MangaUpdaterAPI\MangaUpdater.API.csproj", "{C278208E-F7E3-4CFB-9048-616769CE5B04}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MangaUpdater.Domain", "MangaUpdater.Domain\MangaUpdater.Domain.csproj", "{CD7CC36F-31C8-4CF7-83F9-853666614FC9}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MangaUpdater.Application", "MangaUpdater.Application\MangaUpdater.Application.csproj", "{8527915D-6CC6-46E5-B501-C4D0E43CBB28}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MangaUpdater.Infra.Data", "MangaUpdater.Infra\MangaUpdater.Infra.Data.csproj", "{3B9B1F97-F2A3-4BA3-B500-FD9985088AAF}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MangaUpdater.Infra.IoC", "MangaUpdater.IoC\MangaUpdater.Infra.IoC.csproj", "{C954D3A3-E807-43FB-AC29-37787B3956B6}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Infra", "Infra", "{6E8806AA-333D-4AE8-9A01-2FF6B4AA55E8}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Core", "Core", "{D0890620-D97C-41B4-9B20-3D0C7B80997E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,9 +27,31 @@ Global
 		{C278208E-F7E3-4CFB-9048-616769CE5B04}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C278208E-F7E3-4CFB-9048-616769CE5B04}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C278208E-F7E3-4CFB-9048-616769CE5B04}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CD7CC36F-31C8-4CF7-83F9-853666614FC9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CD7CC36F-31C8-4CF7-83F9-853666614FC9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CD7CC36F-31C8-4CF7-83F9-853666614FC9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CD7CC36F-31C8-4CF7-83F9-853666614FC9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8527915D-6CC6-46E5-B501-C4D0E43CBB28}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8527915D-6CC6-46E5-B501-C4D0E43CBB28}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8527915D-6CC6-46E5-B501-C4D0E43CBB28}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8527915D-6CC6-46E5-B501-C4D0E43CBB28}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3B9B1F97-F2A3-4BA3-B500-FD9985088AAF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3B9B1F97-F2A3-4BA3-B500-FD9985088AAF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3B9B1F97-F2A3-4BA3-B500-FD9985088AAF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3B9B1F97-F2A3-4BA3-B500-FD9985088AAF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C954D3A3-E807-43FB-AC29-37787B3956B6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C954D3A3-E807-43FB-AC29-37787B3956B6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C954D3A3-E807-43FB-AC29-37787B3956B6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C954D3A3-E807-43FB-AC29-37787B3956B6}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{CD7CC36F-31C8-4CF7-83F9-853666614FC9} = {D0890620-D97C-41B4-9B20-3D0C7B80997E}
+		{8527915D-6CC6-46E5-B501-C4D0E43CBB28} = {D0890620-D97C-41B4-9B20-3D0C7B80997E}
+		{3B9B1F97-F2A3-4BA3-B500-FD9985088AAF} = {6E8806AA-333D-4AE8-9A01-2FF6B4AA55E8}
+		{C954D3A3-E807-43FB-AC29-37787B3956B6} = {6E8806AA-333D-4AE8-9A01-2FF6B4AA55E8}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {37825D02-898E-45CF-9C77-DBD9E36FC788}

@@ -1,0 +1,14 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net7.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\MangaUpdater.Application\MangaUpdater.Application.csproj" />
+    <ProjectReference Include="..\MangaUpdater.Infra\MangaUpdater.Infra.csproj" />
+  </ItemGroup>
+
+</Project>
