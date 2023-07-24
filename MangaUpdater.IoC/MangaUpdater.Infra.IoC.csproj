@@ -8,7 +8,8 @@
 
   <ItemGroup>
     <ProjectReference Include="..\MangaUpdater.Application\MangaUpdater.Application.csproj" />
-    <ProjectReference Include="..\MangaUpdater.Infra\MangaUpdater.Infra.csproj" />
+    <ProjectReference Include="..\MangaUpdater.Domain\MangaUpdater.Domain.csproj" />
+    <ProjectReference Include="..\MangaUpdater.Infra\MangaUpdater.Infra.Data.csproj" />
   </ItemGroup>
 
 </Project>

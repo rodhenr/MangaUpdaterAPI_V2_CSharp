@@ -1,21 +1,26 @@
-﻿using MangaUpdater.Infra.Context;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using MangaUpdater.Infra.Context;
+using MangaUpdater.Domain.Interfaces;
+using MangaUpdater.Infra.Data.Repositories;
+using MangaUpdater.Application.Services;
 using MangaUpdater.Application.Interfaces;
 
-namespace MangaUpdater.IoC;
+namespace MangaUpdater.Infra.IoC;
 
 public static class DependencyInjection
 {
-    public static IServiceCollection AddPersistence(this IServiceCollection services,
+    public static IServiceCollection AddInfrastructure(this IServiceCollection services,
         IConfiguration configuration)
     {
         services.AddDbContext<MangaUpdaterContext>(options =>
-            options.UseSqlServer(configuration.GetConnectionString("RijsatDatabase"),
-            b => b.MigrationsAssembly(typeof(MangaUpdaterContext).Assembly.FullName)), ServiceLifetime.Transient);
+             options.UseSqlServer(configuration.GetConnectionString("DefaultConnection"
+            ), b => b.MigrationsAssembly(typeof(MangaUpdaterContext).Assembly.FullName)));
 
-        services.AddScoped<IApplicationDBContext>(provider => provider.GetService<MangaUpdaterContext>());
+        services.AddScoped<IMangaRepository, MangaRepository>();
+        services.AddScoped<IMangaService, MangaService>();
+
         return services;
     }
 }

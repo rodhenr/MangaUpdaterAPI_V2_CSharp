@@ -1,7 +1,7 @@
-﻿using CleanArchMvc.Domain.Interfaces;
+﻿using Microsoft.EntityFrameworkCore;
 using MangaUpdater.Domain.Entities;
+using MangaUpdater.Domain.Interfaces;
 using MangaUpdater.Infra.Context;
-using Microsoft.EntityFrameworkCore;
 
 namespace MangaUpdater.Infra.Data.Repositories;
 public class MangaRepository : IMangaRepository
@@ -13,14 +13,14 @@ public class MangaRepository : IMangaRepository
         _context = context;
     }
 
-    public async Task<Manga> CreateAsync(Manga manga)
+    public async Task<Manga> CreateMangaAsync(Manga manga)
     {
         _context.Add(manga);
         await _context.SaveChangesAsync();
         return manga;
     }
 
-    public async Task<Manga> GetByIdAsync(int id)
+    public async Task<Manga> GetMangaByIdAsync(int id)
     {
         var mangas = await _context.Mangas.FindAsync(id);
         return mangas;
@@ -30,22 +30,5 @@ public class MangaRepository : IMangaRepository
     {
         var mangas = await _context.Mangas.ToListAsync();
         return mangas;
-    }
-
-    public async Task<IEnumerable<Manga>> GetListByIdAsync(IEnumerable<int> ids)
-    {
-        List<Manga> mangaList = new();
-
-        foreach (var id in ids)
-        {
-            var manga = await _context.Mangas.FindAsync(id);
-
-            if (manga is not null)
-            {
-                mangaList.Add(manga);
-            }
-        }
-
-        return mangaList;
     }
 }

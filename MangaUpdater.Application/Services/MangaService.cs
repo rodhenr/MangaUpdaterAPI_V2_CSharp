@@ -1,11 +1,11 @@
-﻿using CleanArchMvc.Domain.Interfaces;
-using MangaUpdater.Application.Interfaces;
+﻿using MangaUpdater.Application.Interfaces;
 using MangaUpdater.Domain.Entities;
+using MangaUpdater.Domain.Interfaces;
 
 namespace MangaUpdater.Application.Services;
 public class MangaService : IMangaService
 {
-    public readonly IMangaRepository _mangaRepository;
+    private readonly IMangaRepository _mangaRepository;
 
     public MangaService(IMangaRepository mangaRepository)
     {
@@ -14,27 +14,21 @@ public class MangaService : IMangaService
 
     public async Task AddManga(Manga manga)
     {
-        await _mangaRepository.CreateAsync(manga);
+        await _mangaRepository.CreateMangaAsync(manga);
     }
 
     public async Task<Manga> GetMangaById(int id)
     {
-        var manga = await _mangaRepository.GetByIdAsync(id);
-
-        return manga;
+        return await _mangaRepository.GetMangaByIdAsync(id);
     }
 
     public async Task<IEnumerable<Manga>> GetMangas()
     {
-        var mangas = await _mangaRepository.GetMangasAsync();
-
-        return mangas;
+        return await _mangaRepository.GetMangasAsync();
     }
 
-    public async Task<IEnumerable<Manga>> GetUserMangas(IEnumerable<int> ids)
+    public Task<IEnumerable<Manga>> GetUserMangas(int userId)
     {
-        var mangas = await _mangaRepository.GetListByIdAsync(ids);
-
-        return mangas;
+        throw new NotImplementedException();
     }
 }
