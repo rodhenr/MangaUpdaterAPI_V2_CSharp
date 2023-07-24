@@ -13,20 +13,20 @@ public class MangaRepository : IMangaRepository
         _context = context;
     }
 
-    public async Task<Manga> CreateMangaAsync(Manga manga)
+    public async Task<Manga> CreateAsync(Manga manga)
     {
         _context.Add(manga);
         await _context.SaveChangesAsync();
         return manga;
     }
 
-    public async Task<Manga> GetMangaByIdAsync(int id)
+    public async Task<Manga> GetByIdAsync(int id)
     {
         var mangas = await _context.Mangas.FindAsync(id);
         return mangas;
     }
 
-    public async Task<IEnumerable<Manga>> GetMangasAsync()
+    public async Task<IEnumerable<Manga>> GetAsync()
     {
         var mangas = await _context.Mangas.ToListAsync();
         return mangas;
