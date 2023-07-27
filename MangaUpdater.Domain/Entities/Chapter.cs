@@ -2,9 +2,8 @@
 
 public class Chapter
 {
-    public Chapter(int id, int mangaId, int sourceId, DateTime date, float number)
+    public Chapter(int mangaId, int sourceId, DateTime date, float number)
     {
-        Id = id;
         MangaId = mangaId;
         SourceId = sourceId;
         Date = date;

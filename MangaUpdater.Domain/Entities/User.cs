@@ -4,9 +4,8 @@ namespace MangaUpdater.Domain.Entities;
 
 public class User
 {
-    public User(int id, string name, string email, string avatar)
+    public User(string name, string email, string avatar)
     {
-        Id = id;
         Name = name;
         Email = email;
         Avatar = avatar;

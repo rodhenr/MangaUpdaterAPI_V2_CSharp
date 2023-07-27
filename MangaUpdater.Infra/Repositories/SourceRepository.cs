@@ -1,17 +1,25 @@
 ﻿using MangaUpdater.Domain.Entities;
 using MangaUpdater.Domain.Interfaces;
+using MangaUpdater.Infra.Context;
+using Microsoft.EntityFrameworkCore;
 
 namespace MangaUpdater.Infra.Data.Repositories;
 
 public class SourceRepository : ISourceRepository
 {
-    public Task<IEnumerable<Source>> GetAsync()
+    private readonly MangaUpdaterContext _context;
+
+    public SourceRepository(MangaUpdaterContext context)
     {
-        throw new NotImplementedException();
+        _context = context;
+    }
+    public async Task<IEnumerable<Source>> GetSourcesAsync()
+    {
+        return await _context.Sources.ToListAsync();
     }
 
-    public Task<Source> GetByIdAsync(int id)
+    public async Task<Source?> GetByIdAsync(int id)
     {
-        throw new NotImplementedException();
+        return await _context.Sources.SingleOrDefaultAsync(a => a.Id == id);
     }
 }

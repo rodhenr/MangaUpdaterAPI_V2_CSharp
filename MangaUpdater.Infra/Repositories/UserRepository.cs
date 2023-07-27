@@ -1,16 +1,28 @@
 ﻿using MangaUpdater.Domain.Entities;
 using MangaUpdater.Domain.Interfaces;
+using MangaUpdater.Infra.Context;
+using Microsoft.EntityFrameworkCore;
 
 namespace MangaUpdater.Infra.Data.Repositories;
+
 public class UserRepository : IUserRepository
 {
-    public Task CreateAsync(string name, string email, string avatar)
+    private readonly MangaUpdaterContext _context;
+
+    public UserRepository(MangaUpdaterContext context)
     {
-        throw new NotImplementedException();
+        _context = context;
     }
 
-    public Task<User> GetByIdAsync(int id)
+    public async Task CreateAsync(User user)
     {
-        throw new NotImplementedException();
+        _context.Add(user);
+        await _context.SaveChangesAsync();
+        return;
+    }
+
+    public async Task<User?> GetByIdAsync(int id)
+    {
+        return await _context.Users.SingleOrDefaultAsync(a => a.Id == id);
     }
 }

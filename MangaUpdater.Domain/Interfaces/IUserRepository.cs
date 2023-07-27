@@ -4,6 +4,6 @@ namespace MangaUpdater.Domain.Interfaces;
 
 public interface IUserRepository
 {
-    Task CreateAsync(string name, string email, string avatar);
-    Task<User> GetByIdAsync(int id);
+    Task CreateAsync(User user);
+    Task<User?> GetByIdAsync(int id);
 }
