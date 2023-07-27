@@ -17,14 +17,14 @@ public class MangaService : IMangaService
         await _mangaRepository.CreateAsync(manga);
     }
 
-    public async Task<Manga> GetMangaById(int id)
+    public async Task<Manga?> GetMangaById(int id)
     {
         return await _mangaRepository.GetByIdAsync(id);
     }
 
     public async Task<IEnumerable<Manga>> GetMangas()
     {
-        return await _mangaRepository.GetAsync();
+        return await _mangaRepository.GetMangasAsync();
     }
 
     public Task<IEnumerable<Manga>> GetUserMangas(int userId)
