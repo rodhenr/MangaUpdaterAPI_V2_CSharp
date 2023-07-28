@@ -1,10 +1,8 @@
-﻿using System.ComponentModel.DataAnnotations;
-
-namespace MangaUpdater.Domain.Entities;
+﻿namespace MangaUpdater.Domain.Entities;
 
 public class UserManga
 {
-    public UserManga(int userId, int mangaId, string lastChapter)
+    public UserManga(int userId, int mangaId, float lastChapter)
     {
         UserId = userId;
         MangaId = mangaId;
@@ -15,6 +13,7 @@ public class UserManga
 
     public int MangaId { get; set; }
 
-    [MaxLength(10)]
-    public string LastChapter { get; set; }
+    public float LastChapter { get; set; }
+
+    public Manga Manga { get; set; }
 }

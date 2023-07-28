@@ -19,4 +19,6 @@ public class Chapter
     public DateTime Date { get; set; }
 
     public float Number { get; set; }
+
+    public Manga Manga { get; set; }
 }

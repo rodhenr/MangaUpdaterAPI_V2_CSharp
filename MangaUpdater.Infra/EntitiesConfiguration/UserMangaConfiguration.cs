@@ -9,5 +9,6 @@ public class UserMangaConfiguration: IEntityTypeConfiguration<UserManga>
     public void Configure(EntityTypeBuilder<UserManga> builder)
     {
         builder.HasKey(p => new { p.MangaId, p.UserId });
+        builder.HasOne(a => a.Manga).WithMany(a => a.UserMangas).HasForeignKey(a => a.MangaId);
     }
 }

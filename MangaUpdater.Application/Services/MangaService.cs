@@ -26,9 +26,4 @@ public class MangaService : IMangaService
     {
         return await _mangaRepository.GetMangasAsync();
     }
-
-    public Task<IEnumerable<Manga>> GetUserMangas(int userId)
-    {
-        throw new NotImplementedException();
-    }
 }

@@ -39,4 +39,6 @@ public class Manga
     [MaxLength(200)]
     public string MyAnimeListURL { get; set; }
 
+    public ICollection<Chapter> Chapters { get; set; }
+    public ICollection<UserManga> UserMangas { get; set; }
 }

@@ -104,7 +104,7 @@ namespace MangaUpdaterAPI.Migrations
                 {
                     UserId = table.Column<int>(type: "int", nullable: false),
                     MangaId = table.Column<int>(type: "int", nullable: false),
-                    LastChapter = table.Column<string>(type: "nvarchar(10)", maxLength: 10, nullable: false)
+                    LastChapter = table.Column<float>(type: "real", nullable: false)
                 },
                 constraints: table =>
                 {
