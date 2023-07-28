@@ -17,4 +17,7 @@ public class MangaSource
 
     [MaxLength(100)]
     public string URL { get; set; }
+
+    public Manga Manga { get; set; }
+    public Source Source { get; set; }
 }

@@ -41,4 +41,6 @@ public class Manga
 
     public ICollection<Chapter> Chapters { get; set; }
     public ICollection<UserManga> UserMangas { get; set; }
+    public ICollection<MangaGenre> MangaGenres { get; set; }
+    public ICollection<MangaSource> MangaSources { get; set; }
 }

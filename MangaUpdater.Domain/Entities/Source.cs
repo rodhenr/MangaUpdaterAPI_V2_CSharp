@@ -18,4 +18,6 @@ public class Source
 
     [MaxLength(100)]
     public string BaseURL { get; set; }
+
+    public ICollection<MangaSource> MangaSources { get; set; }
 }

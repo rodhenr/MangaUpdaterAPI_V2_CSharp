@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace MangaUpdaterAPI.Controllers;
 
+[Route("api/[controller]")]
 [ApiController]
 public class HomeController : ControllerBase
 {
@@ -16,7 +17,7 @@ public class HomeController : ControllerBase
         _userMangaService = userMangaService;
     }
 
-    [HttpGet("/")]
+    [HttpGet]
     public async Task<ActionResult<IEnumerable<Manga>>> GetMangas(int userId)
     {
         var mangas = await _userMangaService.GetMangasByUserId(userId);

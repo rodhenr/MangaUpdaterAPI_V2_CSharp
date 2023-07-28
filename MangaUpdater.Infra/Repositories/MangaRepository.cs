@@ -22,11 +22,17 @@ public class MangaRepository : IMangaRepository
 
     public async Task<Manga?> GetByIdAsync(int id)
     {
-        return await _context.Mangas.SingleOrDefaultAsync(a => a.Id == id);
+        return await _context.Mangas
+            .Include(a => a.MangaGenres)
+                .ThenInclude(a => a.Genre)
+            .Include(a => a.MangaSources)
+                .ThenInclude(a => a.Source)
+            .SingleOrDefaultAsync(a => a.Id == id);
     }
 
     public async Task<IEnumerable<Manga>> GetMangasAsync()
     {
-        return await _context.Mangas.ToListAsync();
+        return await _context.Mangas            
+            .ToListAsync();
     }
 }

@@ -14,4 +14,6 @@ public class Genre
 
     [MaxLength(20)]
     public string Name { get; set; }
+    
+    public ICollection<MangaGenre> MangaGenres { get; set; }
 }
