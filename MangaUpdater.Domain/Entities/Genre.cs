@@ -4,9 +4,8 @@ namespace MangaUpdater.Domain.Entities;
 
 public class Genre
 {
-    public Genre(int id, string name)
+    public Genre(string name)
     {
-        Id = id;
         Name = name;
     }
 

@@ -8,6 +8,8 @@ public class MangaSourceConfiguration: IEntityTypeConfiguration<MangaSource>
 {
     public void Configure(EntityTypeBuilder<MangaSource> builder)
     {
-        builder.HasKey(p => new { p.MangaId, p.SourceId });
+        builder.HasKey(a => new { a.MangaId, a.SourceId });
+        builder.HasOne(a => a.Manga).WithMany(a => a.MangaSources).HasForeignKey(a => a.MangaId);
+        builder.HasOne(a => a.Source).WithMany(a => a.MangaSources).HasForeignKey(a => a.SourceId);
     }
 }

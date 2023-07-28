@@ -21,4 +21,6 @@ public class User
 
     [MaxLength(200)]
     public string Avatar { get; set; }
+
+    public ICollection<UserManga> UserMangas { get; set; }
 }

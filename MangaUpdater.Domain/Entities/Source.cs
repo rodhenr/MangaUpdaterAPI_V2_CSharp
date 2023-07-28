@@ -4,9 +4,8 @@ namespace MangaUpdater.Domain.Entities;
 
 public class Source
 {
-    public Source(int id, string name, string baseURL)
+    public Source(string name, string baseURL)
     {
-        Id = id;
         Name = name;
         BaseURL = baseURL;
     }
@@ -19,5 +18,7 @@ public class Source
     [MaxLength(100)]
     public string BaseURL { get; set; }
 
+    public ICollection<UserManga> UserMangas { get; set; }
     public ICollection<MangaSource> MangaSources { get; set; }
+    public ICollection<Chapter> Chapters { get; set; }
 }

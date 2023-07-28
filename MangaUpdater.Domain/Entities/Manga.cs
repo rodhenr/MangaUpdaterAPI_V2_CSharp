@@ -4,9 +4,8 @@ namespace MangaUpdater.Domain.Entities;
 
 public class Manga
 {
-    public Manga(int id, string coverURL, string name, string alternativeName, string author, string synopsis, string type, string myAnimeListURL)
+    public Manga(string coverURL, string name, string alternativeName, string author, string synopsis, string type, string myAnimeListURL)
     {
-        Id = id;
         CoverURL = coverURL;
         Name = name;
         AlternativeName = alternativeName;

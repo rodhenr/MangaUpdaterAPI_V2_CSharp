@@ -9,11 +9,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
 
-namespace MangaUpdaterAPI.Migrations
+namespace MangaUpdater.Infra.Data.Migrations
 {
-    [DbContext(typeof(DbContext))]
-    [Migration("20230722002957_InitialMigration")]
-    partial class InitialMigration
+    [DbContext(typeof(MangaUpdaterContext))]
+    [Migration("20230728121956_initial")]
+    partial class initial
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -25,32 +25,31 @@ namespace MangaUpdaterAPI.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("MangaUpdaterAPI.Models.Chapter", b =>
+            modelBuilder.Entity("MangaUpdater.Domain.Entities.Chapter", b =>
                 {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
+                    b.Property<int>("MangaId")
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<DateTime>("Date")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("MangaId")
+                    b.Property<int>("SourceId")
                         .HasColumnType("int");
 
                     b.Property<float>("Number")
                         .HasColumnType("real");
 
-                    b.Property<int>("SourceId")
+                    b.Property<DateTime>("Date")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("Id")
                         .HasColumnType("int");
 
-                    b.HasKey("Id");
+                    b.HasKey("MangaId", "SourceId", "Number");
+
+                    b.HasIndex("SourceId");
 
                     b.ToTable("Chapters");
                 });
 
-            modelBuilder.Entity("MangaUpdaterAPI.Models.Genre", b =>
+            modelBuilder.Entity("MangaUpdater.Domain.Entities.Genre", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -68,7 +67,7 @@ namespace MangaUpdaterAPI.Migrations
                     b.ToTable("Genres");
                 });
 
-            modelBuilder.Entity("MangaUpdaterAPI.Models.Manga", b =>
+            modelBuilder.Entity("MangaUpdater.Domain.Entities.Manga", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -116,7 +115,7 @@ namespace MangaUpdaterAPI.Migrations
                     b.ToTable("Mangas");
                 });
 
-            modelBuilder.Entity("MangaUpdaterAPI.Models.MangaGenre", b =>
+            modelBuilder.Entity("MangaUpdater.Domain.Entities.MangaGenre", b =>
                 {
                     b.Property<int>("MangaId")
                         .HasColumnType("int");
@@ -126,10 +125,12 @@ namespace MangaUpdaterAPI.Migrations
 
                     b.HasKey("MangaId", "GenreId");
 
+                    b.HasIndex("GenreId");
+
                     b.ToTable("MangaGenres");
                 });
 
-            modelBuilder.Entity("MangaUpdaterAPI.Models.MangaSource", b =>
+            modelBuilder.Entity("MangaUpdater.Domain.Entities.MangaSource", b =>
                 {
                     b.Property<int>("MangaId")
                         .HasColumnType("int");
@@ -144,10 +145,12 @@ namespace MangaUpdaterAPI.Migrations
 
                     b.HasKey("MangaId", "SourceId");
 
+                    b.HasIndex("SourceId");
+
                     b.ToTable("MangaSources");
                 });
 
-            modelBuilder.Entity("MangaUpdaterAPI.Models.Source", b =>
+            modelBuilder.Entity("MangaUpdater.Domain.Entities.Source", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -170,7 +173,7 @@ namespace MangaUpdaterAPI.Migrations
                     b.ToTable("Sources");
                 });
 
-            modelBuilder.Entity("MangaUpdaterAPI.Models.User", b =>
+            modelBuilder.Entity("MangaUpdater.Domain.Entities.User", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -198,7 +201,7 @@ namespace MangaUpdaterAPI.Migrations
                     b.ToTable("Users");
                 });
 
-            modelBuilder.Entity("MangaUpdaterAPI.Models.UserManga", b =>
+            modelBuilder.Entity("MangaUpdater.Domain.Entities.UserManga", b =>
                 {
                     b.Property<int>("MangaId")
                         .HasColumnType("int");
@@ -206,14 +209,118 @@ namespace MangaUpdaterAPI.Migrations
                     b.Property<int>("UserId")
                         .HasColumnType("int");
 
-                    b.Property<string>("LastChapter")
-                        .IsRequired()
-                        .HasMaxLength(10)
-                        .HasColumnType("nvarchar(10)");
+                    b.Property<float>("LastChapter")
+                        .HasColumnType("real");
 
                     b.HasKey("MangaId", "UserId");
 
+                    b.HasIndex("UserId");
+
                     b.ToTable("UserMangas");
+                });
+
+            modelBuilder.Entity("MangaUpdater.Domain.Entities.Chapter", b =>
+                {
+                    b.HasOne("MangaUpdater.Domain.Entities.Manga", "Manga")
+                        .WithMany("Chapters")
+                        .HasForeignKey("MangaId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("MangaUpdater.Domain.Entities.Source", "Source")
+                        .WithMany("Chapters")
+                        .HasForeignKey("SourceId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Manga");
+
+                    b.Navigation("Source");
+                });
+
+            modelBuilder.Entity("MangaUpdater.Domain.Entities.MangaGenre", b =>
+                {
+                    b.HasOne("MangaUpdater.Domain.Entities.Genre", "Genre")
+                        .WithMany("MangaGenres")
+                        .HasForeignKey("GenreId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("MangaUpdater.Domain.Entities.Manga", "Manga")
+                        .WithMany("MangaGenres")
+                        .HasForeignKey("MangaId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Genre");
+
+                    b.Navigation("Manga");
+                });
+
+            modelBuilder.Entity("MangaUpdater.Domain.Entities.MangaSource", b =>
+                {
+                    b.HasOne("MangaUpdater.Domain.Entities.Manga", "Manga")
+                        .WithMany("MangaSources")
+                        .HasForeignKey("MangaId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("MangaUpdater.Domain.Entities.Source", "Source")
+                        .WithMany("MangaSources")
+                        .HasForeignKey("SourceId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Manga");
+
+                    b.Navigation("Source");
+                });
+
+            modelBuilder.Entity("MangaUpdater.Domain.Entities.UserManga", b =>
+                {
+                    b.HasOne("MangaUpdater.Domain.Entities.Manga", "Manga")
+                        .WithMany("UserMangas")
+                        .HasForeignKey("MangaId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("MangaUpdater.Domain.Entities.User", "User")
+                        .WithMany("UserMangas")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Manga");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("MangaUpdater.Domain.Entities.Genre", b =>
+                {
+                    b.Navigation("MangaGenres");
+                });
+
+            modelBuilder.Entity("MangaUpdater.Domain.Entities.Manga", b =>
+                {
+                    b.Navigation("Chapters");
+
+                    b.Navigation("MangaGenres");
+
+                    b.Navigation("MangaSources");
+
+                    b.Navigation("UserMangas");
+                });
+
+            modelBuilder.Entity("MangaUpdater.Domain.Entities.Source", b =>
+                {
+                    b.Navigation("Chapters");
+
+                    b.Navigation("MangaSources");
+                });
+
+            modelBuilder.Entity("MangaUpdater.Domain.Entities.User", b =>
+                {
+                    b.Navigation("UserMangas");
                 });
 #pragma warning restore 612, 618
         }

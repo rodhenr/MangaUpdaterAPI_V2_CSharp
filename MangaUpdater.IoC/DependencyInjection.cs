@@ -6,6 +6,7 @@ using MangaUpdater.Domain.Interfaces;
 using MangaUpdater.Infra.Data.Repositories;
 using MangaUpdater.Application.Services;
 using MangaUpdater.Application.Interfaces;
+using MangaUpdater.Application.Mappings;
 
 namespace MangaUpdater.Infra.IoC;
 
@@ -24,6 +25,8 @@ public static class DependencyInjection
         services.AddScoped<IUserMangaService, UserMangaService>();
         services.AddScoped<IUserRepository, UserRepository>();
         services.AddScoped<IUserService, UserService>();
+
+        services.AddAutoMapper(typeof(MangaToDTOMappingProfile));
 
         return services;
     }

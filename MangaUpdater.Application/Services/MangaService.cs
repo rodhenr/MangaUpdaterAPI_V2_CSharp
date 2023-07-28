@@ -1,4 +1,6 @@
-﻿using MangaUpdater.Application.Interfaces;
+﻿using AutoMapper;
+using MangaUpdater.Application.DTOs;
+using MangaUpdater.Application.Interfaces;
 using MangaUpdater.Domain.Entities;
 using MangaUpdater.Domain.Interfaces;
 
@@ -6,10 +8,12 @@ namespace MangaUpdater.Application.Services;
 public class MangaService : IMangaService
 {
     private readonly IMangaRepository _mangaRepository;
+    private readonly IMapper _mapper;
 
-    public MangaService(IMangaRepository mangaRepository)
+    public MangaService(IMangaRepository mangaRepository, IMapper mapper)
     {
         _mangaRepository = mangaRepository;
+        _mapper = mapper;
     }
 
     public async Task AddManga(Manga manga)
@@ -17,9 +21,10 @@ public class MangaService : IMangaService
         await _mangaRepository.CreateAsync(manga);
     }
 
-    public async Task<Manga?> GetMangaById(int id)
+    public async Task<MangaDTO> GetMangaById(int id)
     {
-        return await _mangaRepository.GetByIdAsync(id);
+        var data = await _mangaRepository.GetByIdAsync(id);
+        return _mapper.Map<MangaDTO>(data);
     }
 
     public async Task<IEnumerable<Manga>> GetMangas()

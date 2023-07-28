@@ -23,7 +23,7 @@ public class MangaController : ControllerBase
 
         if(manga == null)
         {
-            return NotFound($"Manga not found for id {id}");
+            return BadRequest($"Manga not found for id {id}");
         }
 
         return Ok(manga);
