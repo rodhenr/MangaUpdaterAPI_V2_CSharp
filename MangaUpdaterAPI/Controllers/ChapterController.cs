@@ -5,7 +5,7 @@ namespace MangaUpdater.API.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
-public class MyListController : ControllerBase
+public class ChapterController : ControllerBase
 {
 
 }

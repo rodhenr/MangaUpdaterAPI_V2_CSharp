@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace MangaUpdater.Infra.Data.Migrations
 {
     [DbContext(typeof(MangaUpdaterContext))]
-    [Migration("20230728162500_SeedDatabase")]
+    [Migration("20230729010752_SeedDatabase")]
     partial class SeedDatabase
     {
         /// <inheritdoc />
@@ -218,7 +218,7 @@ namespace MangaUpdater.Infra.Data.Migrations
                     b.Property<float>("LastChapter")
                         .HasColumnType("real");
 
-                    b.HasKey("MangaId", "UserId", "SourceId", "ChapterId");
+                    b.HasKey("MangaId", "UserId", "SourceId");
 
                     b.HasIndex("SourceId");
 

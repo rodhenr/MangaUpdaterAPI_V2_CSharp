@@ -13,6 +13,16 @@ public class UserMangaService : IUserMangaService
         _userMangaRepository = userMangaRepository;
     }
 
+    public async Task<IEnumerable<UserManga>> GetByMangaIdAndUserId(int mangaId, int userId)
+    {
+        return await _userMangaRepository.GetByMangaIdAndUserIdAsync(mangaId, userId);
+    }
+
+    public async Task<IEnumerable<UserManga>> GetMangasByMangaId(int mangaId)
+    {
+        return await _userMangaRepository.GetByMangaIdAsync(mangaId);
+    }
+
     public async Task<IEnumerable<UserManga>> GetMangasByUserId(int userId)
     {
         return await _userMangaRepository.GetByUserIdAsync(userId);

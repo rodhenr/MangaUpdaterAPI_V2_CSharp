@@ -19,6 +19,12 @@ namespace MangaUpdater.Infra.Data.Migrations
             migrationBuilder.Sql("INSERT INTO Sources(Name,BaseUrl) " +
                 "VALUES('Source2','http://anothersite.com/')");
 
+            migrationBuilder.Sql("INSERT INTO Sources(Name,BaseUrl) " +
+                "VALUES('Source3','http://site.com/')");
+
+            migrationBuilder.Sql("INSERT INTO Sources(Name,BaseUrl) " +
+                "VALUES('Source3','http://anwebsite.com/')");
+
             migrationBuilder.Sql("INSERT INTO Genres(Name) " +
                 "VALUES('Action')");
 
@@ -37,11 +43,23 @@ namespace MangaUpdater.Infra.Data.Migrations
             migrationBuilder.Sql("INSERT INTO Mangas(CoverURL,Name,AlternativeName,Author,Synopsis,Type,MyAnimeListURL) " +
                 "VALUES('https://cdn.myanimelist.net/images/manga/3/80661.jpg','One Punch Man','ワンパンマン','Yuusuke MURATA','Some monsters...','Manga','https://myanimelist.net/manga/44347/One_Punch-Man')");
 
+            migrationBuilder.Sql("INSERT INTO Mangas(CoverURL,Name,AlternativeName,Author,Synopsis,Type,MyAnimeListURL) " +
+                "VALUES('https://cdn.myanimelist.net/images/manga/3/167639.jpg','Tensei Shitara Slime Datta Ken','That Time I Got Reincarnated as a Slime','FUSE','He had been reincarnated into a slime!','Manga','https://myanimelist.net/manga/87609/Tensei_shitara_Slime_Datta_Ken')");
+
             migrationBuilder.Sql("INSERT INTO MangaSources(MangaId,SourceId,URL) " +
                 "VALUES(1,1,'id/1234567')");
 
             migrationBuilder.Sql("INSERT INTO MangaSources(MangaId,SourceId,URL) " +
+                "VALUES(1,3,'id/1234567')");
+
+            migrationBuilder.Sql("INSERT INTO MangaSources(MangaId,SourceId,URL) " +
+                "VALUES(1,4,'id/1234567')");
+
+            migrationBuilder.Sql("INSERT INTO MangaSources(MangaId,SourceId,URL) " +
                 "VALUES(2,2,'id/123456')");
+
+            migrationBuilder.Sql("INSERT INTO MangaSources(MangaId,SourceId,URL) " +
+               "VALUES(2,3,'id/123456')");
 
             migrationBuilder.Sql("INSERT INTO MangaGenres(MangaId,GenreId) " +
                 "VALUES(1,1)");
@@ -81,9 +99,6 @@ namespace MangaUpdater.Infra.Data.Migrations
 
             migrationBuilder.Sql("INSERT INTO UserMangas(UserId,MangaId,SourceId,LastChapter,ChapterId) " +
                 "VALUES(1,1,1,998,1)");
-
-            migrationBuilder.Sql("INSERT INTO UserMangas(UserId,MangaId,SourceId,LastChapter,ChapterId) " +
-                "VALUES(1,1,1,999,2)");
 
             migrationBuilder.Sql("INSERT INTO UserMangas(UserId,MangaId,SourceId,LastChapter,ChapterId) " +
                 "VALUES(1,2,2,135,5)");

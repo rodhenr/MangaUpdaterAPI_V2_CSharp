@@ -27,6 +27,12 @@ public class MangaService : IMangaService
         return _mapper.Map<MangaDTO>(data);
     }
 
+    public async Task<MangaDTO> GetMangaByIdAndUserId(int id, int userId)
+    {
+        var data = await _mangaRepository.GetByIdAndUserIdAsync(id, userId);
+        return _mapper.Map<MangaDTO>(data);
+    }
+
     public async Task<IEnumerable<Manga>> GetMangas()
     {
         return await _mangaRepository.GetMangasAsync();

@@ -16,6 +16,7 @@ public class UserManga
     public int MangaId { get; set; }
 
     public int SourceId { get; set; }
+
     public float LastChapter { get; set; }
 
     public int ChapterId { get; set; }

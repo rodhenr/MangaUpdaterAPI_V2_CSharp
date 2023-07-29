@@ -14,9 +14,18 @@ public class UserMangaRepository : IUserMangaRepository
         _context = context;
     }
 
-    public Task<IEnumerable<UserManga>> GetByMangaIdAsync(int mangaId)
+    public async Task<IEnumerable<UserManga>> GetByMangaIdAndUserIdAsync(int mangaId, int userId)
     {
-        throw new NotImplementedException();
+        return await _context.UserMangas
+            .Where(a => a.MangaId == mangaId && a.UserId == userId)
+            .ToListAsync();
+    }
+
+    public async Task<IEnumerable<UserManga>> GetByMangaIdAsync(int mangaId)
+    {
+        return await _context.UserMangas
+            .Where(a => a.MangaId == mangaId)
+            .ToListAsync();
     }
 
     public async Task<IEnumerable<UserManga>> GetByUserIdAsync(int userId)

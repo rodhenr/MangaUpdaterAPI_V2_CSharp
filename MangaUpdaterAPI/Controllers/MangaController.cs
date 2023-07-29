@@ -17,15 +17,27 @@ public class MangaController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<Manga>>> GetMangaById(int id)
+    public async Task<ActionResult<IEnumerable<Manga>>> GetMangaById(int mangaId, int userId)
     {
-        var manga = await _mangaService.GetMangaById(id);
+        var manga = await _mangaService.GetMangaByIdAndUserId(mangaId, userId);
 
         if(manga == null)
         {
-            return BadRequest($"Manga not found for id {id}");
+            return BadRequest($"Manga not found for id {mangaId}");
         }
 
         return Ok(manga);
     }
+
+    /*[HttpPost]
+    public async Task<ActionResult> FollowManga()
+    {
+        return Ok();
+    }
+
+    [HttpPost]
+    public async Task<ActionResult> MarkChapterAsRead()
+    {
+        return Ok();
+    }*/
 }

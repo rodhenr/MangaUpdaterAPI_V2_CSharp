@@ -21,10 +21,15 @@ public static class DependencyInjection
 
         services.AddScoped<IMangaRepository, MangaRepository>();
         services.AddScoped<IMangaService, MangaService>();
-        services.AddScoped<IUserMangaRepository, UserMangaRepository>();
-        services.AddScoped<IUserMangaService, UserMangaService>();
+        services.AddScoped<ISourceRepository, SourceRepository>();
+        services.AddScoped<ISourceService, SourceService>();
         services.AddScoped<IUserRepository, UserRepository>();
         services.AddScoped<IUserService, UserService>();
+        services.AddScoped<IMangaSourceRepository, MangaSourceRepository>();
+        services.AddScoped<IMangaSourceService, MangaSourceService>();
+        services.AddScoped<IUserMangaRepository, UserMangaRepository>();
+        services.AddScoped<IUserMangaService, UserMangaService>();
+        services.AddScoped<IUserSourceService, UserSourceService>();
 
         services.AddAutoMapper(typeof(MangaToDTOMappingProfile));
 

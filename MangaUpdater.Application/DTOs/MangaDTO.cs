@@ -18,6 +18,7 @@ public class MangaDTO
     
     public string MyAnimeListURL { get; set; }
 
+    public bool IsUserFollowing { get; set; }
     public IEnumerable<string> Genres { get; set; }
 
     public IEnumerable<SourceDTO> Sources { get; set; }
