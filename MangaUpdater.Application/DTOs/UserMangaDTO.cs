@@ -1,8 +1,8 @@
-﻿namespace MangaUpdater.Domain.Entities;
+﻿namespace MangaUpdater.Application.DTOs;
 
-public class UserManga
+public class UserMangaDTO
 {
-    public UserManga(int userId, int mangaId, int sourceId, int currentChapterId)
+    public UserMangaDTO(int userId, int mangaId, int sourceId, int currentChapterId)
     {
         UserId = userId;
         MangaId = mangaId;
@@ -11,14 +11,7 @@ public class UserManga
     }
 
     public int UserId { get; set; }
-
     public int MangaId { get; set; }
-
     public int SourceId { get; set; }
-
     public int CurrentChapterId { get; set; }
-
-    public User? User { get; set; }
-    public Manga? Manga { get; set; }
-    public Source? Source { get; set; }
 }

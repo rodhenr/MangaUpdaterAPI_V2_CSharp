@@ -1,6 +1,5 @@
 ﻿using MangaUpdater.Application.DTOs;
 using MangaUpdater.Application.Interfaces;
-using MangaUpdater.Domain.Entities;
 using Microsoft.AspNetCore.Mvc;
 
 namespace MangaUpdater.API.Controllers;
@@ -23,4 +22,6 @@ public class SourceController : ControllerBase
 
         return Ok(userSources);
     }
+
+
 }

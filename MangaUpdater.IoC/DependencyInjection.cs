@@ -25,6 +25,8 @@ public static class DependencyInjection
         services.AddScoped<ISourceService, SourceService>();
         services.AddScoped<IUserRepository, UserRepository>();
         services.AddScoped<IUserService, UserService>();
+        services.AddScoped<IChapterRepository, ChapterRepository>();
+        services.AddScoped<IChapterService, ChapterService>();
         services.AddScoped<IMangaSourceRepository, MangaSourceRepository>();
         services.AddScoped<IMangaSourceService, MangaSourceService>();
         services.AddScoped<IUserMangaRepository, UserMangaRepository>();

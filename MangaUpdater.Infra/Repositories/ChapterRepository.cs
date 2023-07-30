@@ -21,6 +21,11 @@ public class ChapterRepository : IChapterRepository
         return;
     }
 
+    public async Task<Chapter?> GetById(int id)
+    {
+        return await _context.Chapters.SingleOrDefaultAsync(a => a.Id == id);
+    }
+
     public async Task<IEnumerable<Chapter>> GetChaptersByIdAsync(int mangaId, int max)
     {
         if (max == 0)

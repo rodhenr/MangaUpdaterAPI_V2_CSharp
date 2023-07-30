@@ -2,6 +2,7 @@
 using MangaUpdater.Domain.Entities;
 using MangaUpdater.Domain.Interfaces;
 using MangaUpdater.Infra.Context;
+using System.Linq;
 
 namespace MangaUpdater.Infra.Data.Repositories;
 public class MangaRepository : IMangaRepository
@@ -29,7 +30,6 @@ public class MangaRepository : IMangaRepository
             .Include(a => a.MangaSources)
                 .ThenInclude(a => a.Source)
             .Include(a => a.Chapters.OrderByDescending(b => b.Date))
-                .ThenInclude(a => a.UserMangas.Where(b => b.UserId == userId))
             .SingleOrDefaultAsync(a => a.Id == id);
     }
 

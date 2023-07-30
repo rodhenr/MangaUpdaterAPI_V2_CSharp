@@ -27,4 +27,11 @@ public class UserMangaService : IUserMangaService
     {
         return await _userMangaRepository.GetByUserIdAsync(userId);
     }
+
+    public async Task UpdateUserMangaAsync(int userId, int mangaId, int sourceId, int chapterId)
+    {
+        await _userMangaRepository.UpdateAsync(userId,mangaId,sourceId,chapterId);
+
+        return;
+    }
 }

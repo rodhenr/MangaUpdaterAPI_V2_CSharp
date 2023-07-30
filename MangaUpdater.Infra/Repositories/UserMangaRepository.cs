@@ -39,4 +39,21 @@ public class UserMangaRepository : IUserMangaRepository
             )
             .ToListAsync();
     }
+
+    public async Task UpdateAsync(int userId, int mangaId, int sourceId, int chapterId)
+    {
+        var userManga = await _context.UserMangas
+            //.Include(a => a.Chapter)
+            .SingleOrDefaultAsync(a => a.UserId == userId && a.MangaId == mangaId && a.SourceId == sourceId);
+
+        if(userManga == null)
+        {
+            throw new Exception("Not found");
+        }
+
+        userManga.CurrentChapterId = chapterId;
+        await _context.SaveChangesAsync();
+
+        return;
+    }
 }

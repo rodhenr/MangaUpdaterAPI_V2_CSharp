@@ -2,6 +2,9 @@
 
 public class ChapterDTO
 {
+    public int ChapterId { get; set; }
+
+    public int SourceId { get; set; }
     public string SourceName { get; set; }
 
     public DateTime Date { get; set; }
