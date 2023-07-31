@@ -32,6 +32,7 @@ public static class DependencyInjection
         services.AddScoped<IUserMangaRepository, UserMangaRepository>();
         services.AddScoped<IUserMangaService, UserMangaService>();
         services.AddScoped<IUserSourceService, UserSourceService>();
+        services.AddScoped<IUserMangaChapterService, UserMangaChapterService>();
 
         services.AddAutoMapper(typeof(MangaToDTOMappingProfile));
 

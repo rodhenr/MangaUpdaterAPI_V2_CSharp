@@ -2,9 +2,9 @@
 using MangaUpdater.Domain.Entities;
 using MangaUpdater.Domain.Interfaces;
 using MangaUpdater.Infra.Context;
-using System.Linq;
 
 namespace MangaUpdater.Infra.Data.Repositories;
+
 public class MangaRepository : IMangaRepository
 {
     private readonly MangaUpdaterContext _context;
@@ -16,7 +16,7 @@ public class MangaRepository : IMangaRepository
 
     public async Task CreateAsync(Manga manga)
     {
-        _context.Add(manga);
+        _context.AddAsync(manga);
         await _context.SaveChangesAsync();
         return;
     }

@@ -23,16 +23,13 @@ public class MangaToDTOMappingProfile : Profile
             {
                 var UserSourceChapterList = src.UserMangas.Select(a => new { a.SourceId, a.CurrentChapterId });
 
+                if(src.Chapters is null)
+                {
+                    return null;
+                }
+
                 return src.Chapters
-                        .Select(a => new ChapterDTO
-                        {
-                            ChapterId = a.Id,
-                            SourceId = a.Source.Id,
-                            SourceName = a.Source.Name,
-                            Date = a.Date,
-                            Number = a.Number,
-                            Read = UserSourceChapterList.Any(b => b.SourceId == a.SourceId) && a.Id <= UserSourceChapterList.First(c => c.SourceId == a.SourceId).CurrentChapterId
-                        });
+                        .Select(a => new ChapterDTO(a.Id, a.Source.Id, a.Source.Name, a.Date, a.Number, UserSourceChapterList.Any(b => b.SourceId == a.SourceId) && a.Id <= UserSourceChapterList.First(c => c.SourceId == a.SourceId).CurrentChapterId));
             }));
     }
 }

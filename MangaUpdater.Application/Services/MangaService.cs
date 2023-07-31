@@ -21,10 +21,9 @@ public class MangaService : IMangaService
         await _mangaRepository.CreateAsync(manga);
     }
 
-    public async Task<MangaDTO> GetMangaById(int id)
+    public async Task<Manga?> GetMangaById(int id)
     {
-        var data = await _mangaRepository.GetByIdAsync(id);
-        return _mapper.Map<MangaDTO>(data);
+        return await _mangaRepository.GetByIdAsync(id);
     }
 
     public async Task<MangaDTO> GetMangaByIdAndUserId(int id, int userId)

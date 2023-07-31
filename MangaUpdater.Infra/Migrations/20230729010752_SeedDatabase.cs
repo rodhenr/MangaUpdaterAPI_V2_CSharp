@@ -89,6 +89,15 @@ namespace MangaUpdater.Infra.Data.Migrations
                 "VALUES(1,1,'2023-04-01',1001)");
 
             migrationBuilder.Sql("INSERT INTO Chapters(MangaId,SourceId,Date,Number) " +
+                "VALUES(1,3,'2023-01-01',998)");
+
+            migrationBuilder.Sql("INSERT INTO Chapters(MangaId,SourceId,Date,Number) " +
+                "VALUES(1,3,'2023-01-10',999)");
+
+            migrationBuilder.Sql("INSERT INTO Chapters(MangaId,SourceId,Date,Number) " +
+                "VALUES(1,4,'2023-03-01',998)");
+
+            migrationBuilder.Sql("INSERT INTO Chapters(MangaId,SourceId,Date,Number) " +
                 "VALUES(2,2,'2023-05-10',135)");
 
             migrationBuilder.Sql("INSERT INTO Chapters(MangaId,SourceId,Date,Number) " +

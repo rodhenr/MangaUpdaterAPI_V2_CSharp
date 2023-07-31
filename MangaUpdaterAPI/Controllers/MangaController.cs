@@ -10,10 +10,12 @@ namespace MangaUpdater.API.Controllers;
 public class MangaController : ControllerBase
 {
     private readonly IMangaService _mangaService;
+    private readonly IUserMangaChapterService _userMangaChapterService;
 
-    public MangaController(IMangaService mangaService)
+    public MangaController(IMangaService mangaService, IUserMangaChapterService userMangaChapterService)
     {
         _mangaService = mangaService;
+        _userMangaChapterService = userMangaChapterService;
     }
 
     [HttpGet]
@@ -29,13 +31,22 @@ public class MangaController : ControllerBase
         return Ok(manga);
     }
 
-    /*[HttpPost]
-    public async Task<ActionResult> FollowManga()
+    [HttpPost("/follow")]
+    public async Task<ActionResult> FollowManga(int mangaId, int userId, IEnumerable<int> sourceIdList)
     {
+        var manga = await _mangaService.GetMangaById(mangaId);
+
+        if(manga == null)
+        {
+            return BadRequest("Manga not found");
+        }
+
+        await _userMangaChapterService.AddUserMangaBySourceIdList(mangaId, userId, sourceIdList);
+
         return Ok();
     }
 
-    [HttpPost]
+    /*[HttpPost]
     public async Task<ActionResult> MarkChapterAsRead()
     {
         return Ok();

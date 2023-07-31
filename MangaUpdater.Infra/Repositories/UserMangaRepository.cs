@@ -14,6 +14,14 @@ public class UserMangaRepository : IUserMangaRepository
         _context = context;
     }
 
+    public async Task CreateAsync(UserManga userManga)
+    {
+        await _context.UserMangas.AddAsync(userManga);
+        await _context.SaveChangesAsync();
+
+        return;
+    }
+
     public async Task<IEnumerable<UserManga>> GetByMangaIdAndUserIdAsync(int mangaId, int userId)
     {
         return await _context.UserMangas
@@ -43,7 +51,6 @@ public class UserMangaRepository : IUserMangaRepository
     public async Task UpdateAsync(int userId, int mangaId, int sourceId, int chapterId)
     {
         var userManga = await _context.UserMangas
-            //.Include(a => a.Chapter)
             .SingleOrDefaultAsync(a => a.UserId == userId && a.MangaId == mangaId && a.SourceId == sourceId);
 
         if(userManga == null)

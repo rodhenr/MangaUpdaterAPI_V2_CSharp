@@ -43,7 +43,7 @@ namespace MangaUpdater.Infra.Data.Migrations
 
                     b.HasIndex("SourceId");
 
-                    b.ToTable("Chapters");
+                    b.ToTable("Chapters", (string)null);
                 });
 
             modelBuilder.Entity("MangaUpdater.Domain.Entities.Genre", b =>
@@ -61,7 +61,7 @@ namespace MangaUpdater.Infra.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Genres");
+                    b.ToTable("Genres", (string)null);
                 });
 
             modelBuilder.Entity("MangaUpdater.Domain.Entities.Manga", b =>
@@ -109,7 +109,7 @@ namespace MangaUpdater.Infra.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Mangas");
+                    b.ToTable("Mangas", (string)null);
                 });
 
             modelBuilder.Entity("MangaUpdater.Domain.Entities.MangaGenre", b =>
@@ -124,7 +124,7 @@ namespace MangaUpdater.Infra.Data.Migrations
 
                     b.HasIndex("GenreId");
 
-                    b.ToTable("MangaGenres");
+                    b.ToTable("MangaGenres", (string)null);
                 });
 
             modelBuilder.Entity("MangaUpdater.Domain.Entities.MangaSource", b =>
@@ -144,7 +144,7 @@ namespace MangaUpdater.Infra.Data.Migrations
 
                     b.HasIndex("SourceId");
 
-                    b.ToTable("MangaSources");
+                    b.ToTable("MangaSources", (string)null);
                 });
 
             modelBuilder.Entity("MangaUpdater.Domain.Entities.Source", b =>
@@ -167,7 +167,7 @@ namespace MangaUpdater.Infra.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Sources");
+                    b.ToTable("Sources", (string)null);
                 });
 
             modelBuilder.Entity("MangaUpdater.Domain.Entities.User", b =>
@@ -195,7 +195,7 @@ namespace MangaUpdater.Infra.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Users");
+                    b.ToTable("Users", (string)null);
                 });
 
             modelBuilder.Entity("MangaUpdater.Domain.Entities.UserManga", b =>
@@ -218,7 +218,7 @@ namespace MangaUpdater.Infra.Data.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("UserMangas");
+                    b.ToTable("UserMangas", (string)null);
                 });
 
             modelBuilder.Entity("MangaUpdater.Domain.Entities.Chapter", b =>

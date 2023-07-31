@@ -20,6 +20,6 @@ public class Chapter
 
     public float Number { get; set; }
 
-    public Manga? Manga { get; set; }
-    public Source? Source { get; set; }
+    public Manga Manga { get; set; }
+    public Source Source { get; set; }
 }

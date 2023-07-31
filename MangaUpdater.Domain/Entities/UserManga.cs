@@ -18,7 +18,7 @@ public class UserManga
 
     public int CurrentChapterId { get; set; }
 
-    public User? User { get; set; }
-    public Manga? Manga { get; set; }
-    public Source? Source { get; set; }
+    public User User { get; set; }
+    public Manga Manga { get; set; }
+    public Source Source { get; set; }
 }
