@@ -1,4 +1,6 @@
-﻿namespace MangaUpdater.Domain.Entities;
+﻿using System.Text.Json.Serialization;
+
+namespace MangaUpdater.Domain.Entities;
 
 public class MangaGenre
 {
@@ -12,6 +14,9 @@ public class MangaGenre
 
     public int GenreId { get; set; }
 
+    [JsonIgnore]
     public Manga Manga { get; set; }
+
+    [JsonIgnore]
     public Genre Genre { get; set; }
 }

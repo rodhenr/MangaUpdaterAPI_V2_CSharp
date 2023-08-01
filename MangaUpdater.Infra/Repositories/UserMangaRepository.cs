@@ -22,6 +22,32 @@ public class UserMangaRepository : IUserMangaRepository
         return;
     }
 
+    public async Task DeleteAsync(int userId, int mangaId, int sourceId)
+    {
+        var userManga = await _context.UserMangas.SingleOrDefaultAsync(a => a.UserId == userId && a.MangaId == mangaId && a.SourceId == sourceId);
+
+        if (userManga != null)
+        {
+            _context.UserMangas.Remove(userManga);
+            await _context.SaveChangesAsync();
+        }
+
+        return;
+    }
+
+    public async Task DeleteByMangaIdAndUserIdAsync(int mangaId, int UserId)
+    {
+        var userMangas = await _context.UserMangas
+            .Where(a => a.MangaId == mangaId && a.UserId == UserId)
+            .ToListAsync();
+
+        _context.UserMangas.RemoveRange(userMangas);
+
+        await _context.SaveChangesAsync();
+
+        return;
+    }
+
     public async Task<IEnumerable<UserManga>> GetByMangaIdAndUserIdAsync(int mangaId, int userId)
     {
         return await _context.UserMangas
@@ -34,6 +60,11 @@ public class UserMangaRepository : IUserMangaRepository
         return await _context.UserMangas
             .Where(a => a.MangaId == mangaId)
             .ToListAsync();
+    }
+
+    public async Task<UserManga?> GetByMangaIdUserIdAndSourceIdAsync(int mangaId, int userId, int sourceId)
+    {
+        return await _context.UserMangas.SingleOrDefaultAsync(a => a.UserId == userId && a.MangaId == mangaId && a.SourceId == sourceId);
     }
 
     public async Task<IEnumerable<UserManga>> GetByUserIdAsync(int userId)
@@ -53,7 +84,7 @@ public class UserMangaRepository : IUserMangaRepository
         var userManga = await _context.UserMangas
             .SingleOrDefaultAsync(a => a.UserId == userId && a.MangaId == mangaId && a.SourceId == sourceId);
 
-        if(userManga == null)
+        if (userManga == null)
         {
             throw new Exception("Not found");
         }

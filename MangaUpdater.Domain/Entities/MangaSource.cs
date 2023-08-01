@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 
 namespace MangaUpdater.Domain.Entities;
 
@@ -18,6 +19,9 @@ public class MangaSource
     [MaxLength(100)]
     public string URL { get; set; }
 
+    [JsonIgnore]
     public Manga Manga { get; set; }
+
+    [JsonIgnore]
     public Source Source { get; set; }
 }

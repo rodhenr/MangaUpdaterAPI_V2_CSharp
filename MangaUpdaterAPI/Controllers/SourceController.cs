@@ -1,5 +1,7 @@
 ﻿using MangaUpdater.Application.DTOs;
 using MangaUpdater.Application.Interfaces;
+using MangaUpdater.Application.Services;
+using MangaUpdater.Domain.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
 namespace MangaUpdater.API.Controllers;
@@ -8,10 +10,14 @@ namespace MangaUpdater.API.Controllers;
 [ApiController]
 public class SourceController : ControllerBase
 {
+    private readonly IMangaService _mangaService;
+    private readonly IUserMangaChapterService _userMangaChapterService;
     private readonly IUserSourceService _userSourceService;
 
-    public SourceController(IUserSourceService userSourceService)
+    public SourceController(IMangaService mangaService, IUserMangaChapterService userMangaChapterService, IUserSourceService userSourceService)
     {
+        _mangaService = mangaService;
+        _userMangaChapterService = userMangaChapterService;
         _userSourceService = userSourceService;
     }
 
@@ -23,5 +29,33 @@ public class SourceController : ControllerBase
         return Ok(userSources);
     }
 
+    [HttpPost("source/follow")]
+    public async Task<ActionResult> FollowSource(int mangaId, int userId, int sourceId)
+    {
+        var manga = await _mangaService.GetMangaById(mangaId);
 
+        if (manga == null)
+        {
+            return BadRequest("Manga not found");
+        }
+
+        await _userMangaChapterService.AddUserSource(mangaId, userId, sourceId);
+
+        return Ok();
+    }
+
+    [HttpPost("source/unfollow")]
+    public async Task<ActionResult> UnfollowSource(int mangaId, int userId, int sourceId)
+    {
+        var manga = await _mangaService.GetMangaById(mangaId);
+
+        if (manga == null)
+        {
+            return BadRequest("Manga not found");
+        }
+
+        await _userMangaChapterService.DeleteUserSource(mangaId, userId, sourceId);
+
+        return Ok();
+    }
 }

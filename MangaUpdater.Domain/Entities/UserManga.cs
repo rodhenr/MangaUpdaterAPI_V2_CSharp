@@ -1,4 +1,6 @@
-﻿namespace MangaUpdater.Domain.Entities;
+﻿using System.Text.Json.Serialization;
+
+namespace MangaUpdater.Domain.Entities;
 
 public class UserManga
 {
@@ -18,7 +20,13 @@ public class UserManga
 
     public int CurrentChapterId { get; set; }
 
+
+    [JsonIgnore]
     public User User { get; set; }
+
+    [JsonIgnore]
     public Manga Manga { get; set; }
+
+    [JsonIgnore]
     public Source Source { get; set; }
 }

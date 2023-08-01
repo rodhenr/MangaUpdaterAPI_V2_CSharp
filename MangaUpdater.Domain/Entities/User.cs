@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 
 namespace MangaUpdater.Domain.Entities;
 
@@ -22,5 +23,6 @@ public class User
     [MaxLength(200)]
     public string Avatar { get; set; }
 
+    [JsonIgnore]
     public ICollection<UserManga> UserMangas { get; set; }
 }

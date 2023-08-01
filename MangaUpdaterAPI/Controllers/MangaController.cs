@@ -1,4 +1,5 @@
-﻿using MangaUpdater.Application.Interfaces;
+﻿using MangaUpdater.Application.DTOs;
+using MangaUpdater.Application.Interfaces;
 using MangaUpdater.Domain.Entities;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -11,19 +12,29 @@ public class MangaController : ControllerBase
 {
     private readonly IMangaService _mangaService;
     private readonly IUserMangaChapterService _userMangaChapterService;
+    private readonly IUserSourceService _userSourceService;
 
-    public MangaController(IMangaService mangaService, IUserMangaChapterService userMangaChapterService)
+    public MangaController(IMangaService mangaService, IUserMangaChapterService userMangaChapterService, IUserSourceService userSourceService)
     {
         _mangaService = mangaService;
         _userMangaChapterService = userMangaChapterService;
+        _userSourceService = userSourceService;
     }
 
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<Manga>>> GetMangaById(int mangaId, int userId)
+    public async Task<ActionResult<IEnumerable<Manga>>> GetMangas()
+    {
+        var mangas = await _mangaService.GetMangas();
+
+        return Ok(mangas);
+    }
+
+    [HttpGet("{mangaId}")]
+    public async Task<ActionResult<MangaDTO>> GetMangaById(int mangaId, int userId)
     {
         var manga = await _mangaService.GetMangaByIdAndUserId(mangaId, userId);
 
-        if(manga == null)
+        if (manga == null)
         {
             return BadRequest($"Manga not found for id {mangaId}");
         }
@@ -31,24 +42,35 @@ public class MangaController : ControllerBase
         return Ok(manga);
     }
 
-    [HttpPost("/follow")]
+    [HttpPost("follow/{mangaId}")]
     public async Task<ActionResult> FollowManga(int mangaId, int userId, IEnumerable<int> sourceIdList)
     {
         var manga = await _mangaService.GetMangaById(mangaId);
 
-        if(manga == null)
+        if (manga == null)
         {
-            return BadRequest("Manga not found");
+            return BadRequest($"Manga not found for id {mangaId}");
         }
 
-        await _userMangaChapterService.AddUserMangaBySourceIdList(mangaId, userId, sourceIdList);
+        var userSources = await _userSourceService.GetAllSourcesByMangaIdWithUserStatus(mangaId, userId);
+
+        await _userMangaChapterService.AddUserMangaBySourceIdList(mangaId, userId, sourceIdList, userSources);
 
         return Ok();
     }
 
-    /*[HttpPost]
-    public async Task<ActionResult> MarkChapterAsRead()
+    [HttpPost("unfollow/{mangaId}")]
+    public async Task<ActionResult> UnfollowManga(int mangaId, int userId)
     {
+        var manga = await _mangaService.GetMangaById(mangaId);
+
+        if (manga == null)
+        {
+            return BadRequest($"Manga not found for id {mangaId}");
+        }
+
+        await _userMangaChapterService.DeleteAllUserSources(mangaId, userId);
+
         return Ok();
-    }*/
+    }
 }

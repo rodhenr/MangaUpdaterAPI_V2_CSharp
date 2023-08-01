@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 
 namespace MangaUpdater.Domain.Entities;
 
@@ -38,8 +39,15 @@ public class Manga
     [MaxLength(200)]
     public string MyAnimeListURL { get; set; }
 
+    [JsonIgnore]
     public ICollection<Chapter> Chapters { get; set; }
+
+    [JsonIgnore]
     public ICollection<UserManga> UserMangas { get; set; }
+
+    [JsonIgnore]
     public ICollection<MangaGenre> MangaGenres { get; set; }
+
+    [JsonIgnore]
     public ICollection<MangaSource> MangaSources { get; set; }
 }
