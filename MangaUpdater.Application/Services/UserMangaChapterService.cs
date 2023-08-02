@@ -50,9 +50,9 @@ public class UserMangaChapterService : IUserMangaChapterService
 
     public async Task AddUserSource(int mangaId, int userId, int sourceId)
     {
-        var userManga = await _userMangaRepository.GetByMangaIdUserIdAndSourceIdAsync(mangaId, userId, sourceId);
+        var userManga = await _userMangaRepository.GetByMangaIdAndUserIdAsync(mangaId, userId);
 
-        if (userManga != null)
+        if (userManga.Any())
         {
             var chapter = await _chapterRepository.GetSmallestChapter(mangaId, sourceId);
 

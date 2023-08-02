@@ -1,5 +1,6 @@
 ﻿using MangaUpdater.Application.DTOs;
 using MangaUpdater.Application.Interfaces;
+using MangaUpdater.Domain.Entities;
 using MangaUpdater.Domain.Interfaces;
 
 namespace MangaUpdater.Application.Services;
@@ -15,7 +16,7 @@ public class UserSourceService : IUserSourceService
         _mangaSourceRepository = mangaSourceRepository;
     }
 
-    public async Task<IEnumerable<UserSourceDTO>> GetAllSourcesByMangaIdWithUserStatus(int mangaId, int userId)
+    public async Task<IEnumerable<UserSourceDTO>?> GetAllSourcesByMangaIdWithUserStatus(int mangaId, int userId)
     {
         var mangaSources = await _mangaSourceRepository.GetByMangaIdAsync(mangaId);
         var userMangas = await _userMangaRepository.GetByMangaIdAndUserIdAsync(mangaId, userId);

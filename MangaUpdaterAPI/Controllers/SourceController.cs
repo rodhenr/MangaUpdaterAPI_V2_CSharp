@@ -1,6 +1,7 @@
 ﻿using MangaUpdater.Application.DTOs;
 using MangaUpdater.Application.Interfaces;
 using MangaUpdater.Application.Services;
+using MangaUpdater.Domain.Entities;
 using MangaUpdater.Domain.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
@@ -13,49 +14,34 @@ public class SourceController : ControllerBase
     private readonly IMangaService _mangaService;
     private readonly IUserMangaChapterService _userMangaChapterService;
     private readonly IUserSourceService _userSourceService;
+    private readonly ISourceService _sourceService;
 
-    public SourceController(IMangaService mangaService, IUserMangaChapterService userMangaChapterService, IUserSourceService userSourceService)
+    public SourceController(IMangaService mangaService, IUserMangaChapterService userMangaChapterService, IUserSourceService userSourceService, ISourceService sourceService)
     {
         _mangaService = mangaService;
         _userMangaChapterService = userMangaChapterService;
         _userSourceService = userSourceService;
+        _sourceService = sourceService;
     }
 
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<UserSourceDTO>>> GetMangaSources(int userId, int mangaId)
+    public async Task<ActionResult<IEnumerable<Source>>> GetSources()
     {
-        var userSources = await _userSourceService.GetAllSourcesByMangaIdWithUserStatus(mangaId, userId);
+        var sources = await _sourceService.GetSources();
 
-        return Ok(userSources);
+        return Ok(sources);
     }
 
-    [HttpPost("source/follow")]
-    public async Task<ActionResult> FollowSource(int mangaId, int userId, int sourceId)
+    [HttpGet("{sourceId}")]
+    public async Task<ActionResult<Source>> GetSourceById(int sourceId)
     {
-        var manga = await _mangaService.GetMangaById(mangaId);
+        var source = await _sourceService.GetById(sourceId);
 
-        if (manga == null)
+        if (source == null)
         {
-            return BadRequest("Manga not found");
+            return BadRequest($"Source not found by id {sourceId}");
         }
 
-        await _userMangaChapterService.AddUserSource(mangaId, userId, sourceId);
-
-        return Ok();
-    }
-
-    [HttpPost("source/unfollow")]
-    public async Task<ActionResult> UnfollowSource(int mangaId, int userId, int sourceId)
-    {
-        var manga = await _mangaService.GetMangaById(mangaId);
-
-        if (manga == null)
-        {
-            return BadRequest("Manga not found");
-        }
-
-        await _userMangaChapterService.DeleteUserSource(mangaId, userId, sourceId);
-
-        return Ok();
+        return Ok(source);
     }
 }
