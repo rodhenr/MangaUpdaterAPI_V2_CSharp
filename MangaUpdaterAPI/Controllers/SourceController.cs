@@ -11,16 +11,10 @@ namespace MangaUpdater.API.Controllers;
 [ApiController]
 public class SourceController : ControllerBase
 {
-    private readonly IMangaService _mangaService;
-    private readonly IUserMangaChapterService _userMangaChapterService;
-    private readonly IUserSourceService _userSourceService;
     private readonly ISourceService _sourceService;
 
-    public SourceController(IMangaService mangaService, IUserMangaChapterService userMangaChapterService, IUserSourceService userSourceService, ISourceService sourceService)
+    public SourceController(ISourceService sourceService)
     {
-        _mangaService = mangaService;
-        _userMangaChapterService = userMangaChapterService;
-        _userSourceService = userSourceService;
         _sourceService = sourceService;
     }
 
@@ -35,7 +29,7 @@ public class SourceController : ControllerBase
     [HttpGet("{sourceId}")]
     public async Task<ActionResult<Source>> GetSourceById(int sourceId)
     {
-        var source = await _sourceService.GetById(sourceId);
+        var source = await _sourceService.GetSourcesById(sourceId);
 
         if (source == null)
         {

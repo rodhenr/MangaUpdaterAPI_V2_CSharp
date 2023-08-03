@@ -14,7 +14,7 @@ public class GenreRepository : IGenreRepository
         _context = context;
     }
 
-    public async Task<IEnumerable<Genre>> GetGenresAsync()
+    public async Task<IEnumerable<Genre>> GetAsync()
     {
         return await _context.Genres.ToListAsync();
     }

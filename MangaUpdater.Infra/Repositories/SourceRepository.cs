@@ -13,7 +13,7 @@ public class SourceRepository : ISourceRepository
     {
         _context = context;
     }
-    public async Task<IEnumerable<Source>> GetSourcesAsync()
+    public async Task<IEnumerable<Source>> GetAsync()
     {
         return await _context.Sources.ToListAsync();
     }

@@ -3,6 +3,7 @@ using MangaUpdater.Application.Interfaces;
 using MangaUpdater.Domain.Entities;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System;
 
 namespace MangaUpdater.API.Controllers;
 
@@ -52,14 +53,14 @@ public class MangaController : ControllerBase
             return BadRequest($"Manga not found for id {mangaId}");
         }
 
-        var userSources = await _userSourceService.GetAllSourcesByMangaIdWithUserStatus(mangaId, userId);
+        var userSources = await _userSourceService.GetUserSourcesByMangaId(mangaId, userId);
 
         await _userMangaChapterService.AddUserMangaBySourceIdList(mangaId, userId, sourceIdList, userSources);
 
         return Ok();
     }
 
-    [HttpPost("{mangaId}/unfollow")]
+    [HttpDelete("{mangaId}/unfollow")]
     public async Task<ActionResult> UnfollowManga(int mangaId, int userId)
     {
         var manga = await _mangaService.GetMangaById(mangaId);
@@ -69,7 +70,7 @@ public class MangaController : ControllerBase
             return BadRequest($"Manga not found for id {mangaId}");
         }
 
-        await _userMangaChapterService.DeleteAllUserSources(mangaId, userId);
+        await _userMangaChapterService.DeleteUserMangasByMangaId(mangaId, userId);
 
         return Ok();
     }
@@ -77,7 +78,12 @@ public class MangaController : ControllerBase
     [HttpGet("{mangaId}/sources")]
     public async Task<ActionResult<IEnumerable<UserSourceDTO>>> GetSourcesByMandaId(int mangaId, int userId)
     {
-        var userSources = await _userSourceService.GetAllSourcesByMangaIdWithUserStatus(mangaId, userId);
+        var userSources = await _userSourceService.GetUserSourcesByMangaId(mangaId, userId);
+
+        if (userSources == null)
+        {
+            return BadRequest($"No sources found for mangaId {mangaId}");
+        }
 
         return Ok(userSources);
     }
@@ -92,7 +98,7 @@ public class MangaController : ControllerBase
             return BadRequest("Manga not found");
         }
 
-        await _userMangaChapterService.AddUserSource(mangaId, userId, sourceId);
+        await _userMangaChapterService.AddUserManga(mangaId, userId, sourceId);
 
         return Ok();
     }
@@ -107,7 +113,7 @@ public class MangaController : ControllerBase
             return BadRequest("Manga not found");
         }
 
-        await _userMangaChapterService.DeleteUserSource(mangaId, userId, sourceId);
+        await _userMangaChapterService.DeleteUserManga(mangaId, userId, sourceId);
 
         return Ok();
     }

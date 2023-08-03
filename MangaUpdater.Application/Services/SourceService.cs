@@ -12,13 +12,13 @@ public class SourceService: ISourceService
         _sourceRepository = sourceRepository;
     }
 
-    public async Task<Source?> GetById(int id)
+    public async Task<Source?> GetSourcesById(int id)
     {
         return await _sourceRepository.GetByIdAsync(id);
     }
 
     public async Task<IEnumerable<Source>> GetSources()
     {
-        return await _sourceRepository.GetSourcesAsync();
+        return await _sourceRepository.GetAsync();
     }
 }

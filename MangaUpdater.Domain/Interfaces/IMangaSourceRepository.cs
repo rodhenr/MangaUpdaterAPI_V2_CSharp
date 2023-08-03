@@ -4,6 +4,6 @@ namespace MangaUpdater.Domain.Interfaces;
 
 public interface IMangaSourceRepository
 {
-    Task<IEnumerable<MangaSource>> GetByMangaIdAsync(int mangaId);
-    Task<IEnumerable<MangaSource>> GetBySourceIdAsync(int sourceId);
+    Task<IEnumerable<MangaSource>> GetAllByMangaIdAsync(int mangaId);
+    Task<IEnumerable<MangaSource>> GetAllBySourceIdAsync(int sourceId);
 }

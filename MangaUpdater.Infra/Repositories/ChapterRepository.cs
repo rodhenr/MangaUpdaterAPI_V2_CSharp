@@ -16,18 +16,19 @@ public class ChapterRepository : IChapterRepository
 
     public async Task CreateAsync(Chapter chapter)
     {
-        _context.Add(chapter);
+        await _context.AddAsync(chapter);
         await _context.SaveChangesAsync();
+
         return;
     }
 
-    public async Task<Chapter?> GetById(int id)
+    public async Task<Chapter?> GetByIdAsync(int id)
     {
         return await _context.Chapters
             .SingleOrDefaultAsync(a => a.Id == id);
     }
 
-    public async Task<IEnumerable<Chapter>> GetChaptersByIdAsync(int mangaId, int max)
+    public async Task<IEnumerable<Chapter>> GetAllByMangaIdAsync(int mangaId, int max)
     {
         if (max == 0)
         {
@@ -41,7 +42,7 @@ public class ChapterRepository : IChapterRepository
             .ToListAsync();
     }
 
-    public async Task<Chapter?> GetSmallestChapter(int mangaId, int sourceId)
+    public async Task<Chapter?> GetSmallestChapterByMangaIdAsync(int mangaId, int sourceId)
     {
         return await _context.Chapters
             .Where(a => a.MangaId == mangaId && a.SourceId == sourceId)

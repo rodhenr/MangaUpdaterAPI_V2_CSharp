@@ -4,5 +4,5 @@ namespace MangaUpdater.Domain.Interfaces;
 
 public interface IGenreRepository
 {
-    Task<IEnumerable<Genre>> GetGenresAsync();
+    Task<IEnumerable<Genre>> GetAsync();
 }

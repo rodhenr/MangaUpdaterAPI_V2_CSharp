@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace MangaUpdater.Infra.Data.Repositories;
 
-public class MangaSourceRepository: IMangaSourceRepository
+public class MangaSourceRepository : IMangaSourceRepository
 {
     private readonly MangaUpdaterContext _context;
 
@@ -14,7 +14,7 @@ public class MangaSourceRepository: IMangaSourceRepository
         _context = context;
     }
 
-    public async Task<IEnumerable<MangaSource>> GetByMangaIdAsync(int mangaId)
+    public async Task<IEnumerable<MangaSource>> GetAllByMangaIdAsync(int mangaId)
     {
         return await _context.MangaSources
             .Where(a => a.MangaId == mangaId)
@@ -22,8 +22,11 @@ public class MangaSourceRepository: IMangaSourceRepository
             .ToListAsync();
     }
 
-    public Task<IEnumerable<MangaSource>> GetBySourceIdAsync(int sourceId)
+    public async Task<IEnumerable<MangaSource>> GetAllBySourceIdAsync(int sourceId)
     {
-        throw new NotImplementedException();
+        return await _context.MangaSources
+             .Where(a => a.SourceId == sourceId)
+             .Include(a => a.Source)
+             .ToListAsync();
     }
 }

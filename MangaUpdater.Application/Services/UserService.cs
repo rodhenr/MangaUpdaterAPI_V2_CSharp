@@ -16,10 +16,11 @@ public class UserService : IUserService
     public async Task AddUser(User user)
     {
         await _userRepository.CreateAsync(user);
+
         return;
     }
 
-    public async Task<User?> GetById(int id)
+    public async Task<User?> GetUserById(int id)
     {
         return await _userRepository.GetByIdAsync(id);
     }

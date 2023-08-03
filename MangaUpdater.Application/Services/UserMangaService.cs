@@ -15,17 +15,17 @@ public class UserMangaService : IUserMangaService
 
     public async Task<IEnumerable<UserManga>> GetByMangaIdAndUserId(int mangaId, int userId)
     {
-        return await _userMangaRepository.GetByMangaIdAndUserIdAsync(mangaId, userId);
+        return await _userMangaRepository.GetAllByMangaIdAndUserIdAsync(mangaId, userId);
     }
 
     public async Task<IEnumerable<UserManga>> GetMangasByMangaId(int mangaId)
     {
-        return await _userMangaRepository.GetByMangaIdAsync(mangaId);
+        return await _userMangaRepository.GetAllByMangaIdAsync(mangaId);
     }
 
     public async Task<IEnumerable<UserManga>> GetMangasByUserId(int userId)
     {
-        return await _userMangaRepository.GetByUserIdAsync(userId);
+        return await _userMangaRepository.GetAllByUserIdAsync(userId);
     }
 
     public async Task UpdateUserMangaAsync(int userId, int mangaId, int sourceId, int chapterId)

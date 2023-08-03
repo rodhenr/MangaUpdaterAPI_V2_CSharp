@@ -23,17 +23,23 @@ public class MangaService : IMangaService
 
     public async Task<Manga?> GetMangaById(int id)
     {
-        return await _mangaRepository.GetByIdAsync(id);
+        return await _mangaRepository.GetByIdOrderedDescAsync(id);
     }
 
-    public async Task<MangaDTO> GetMangaByIdAndUserId(int id, int userId)
+    public async Task<MangaDTO?> GetMangaByIdAndUserId(int id, int userId)
     {
-        var data = await _mangaRepository.GetByIdAndUserIdAsync(id, userId);
+        var data = await _mangaRepository.GetByIdAndUserIdOrderedDescAsync(id, userId);
+
+        if (data == null)
+        {
+            return null;
+        }
+
         return _mapper.Map<MangaDTO>(data);
     }
 
     public async Task<IEnumerable<Manga>> GetMangas()
     {
-        return await _mangaRepository.GetMangasAsync();
+        return await _mangaRepository.GetAsync();
     }
 }

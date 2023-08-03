@@ -16,12 +16,30 @@ public class MangaRepository : IMangaRepository
 
     public async Task CreateAsync(Manga manga)
     {
-        _context.AddAsync(manga);
+        await _context.AddAsync(manga);
         await _context.SaveChangesAsync();
+
         return;
     }
 
-    public async Task<Manga?> GetByIdAndUserIdAsync(int id, int userId)
+    public async Task<IEnumerable<Manga>> GetAsync()
+    {
+        return await _context.Mangas
+            .ToListAsync();
+    }
+
+    public async Task<Manga?> GetByIdOrderedDescAsync(int id)
+    {
+        return await _context.Mangas
+            .Include(a => a.MangaGenres)
+                .ThenInclude(a => a.Genre)
+            .Include(a => a.MangaSources)
+                .ThenInclude(a => a.Source)
+            .Include(a => a.Chapters.OrderByDescending(b => b.Date))
+            .SingleOrDefaultAsync(a => a.Id == id);
+    }
+
+    public async Task<Manga?> GetByIdAndUserIdOrderedDescAsync(int id, int userId)
     {
         return await _context.Mangas
             .Include(a => a.UserMangas.Where(b => b.UserId == userId))
@@ -31,22 +49,5 @@ public class MangaRepository : IMangaRepository
                 .ThenInclude(a => a.Source)
             .Include(a => a.Chapters.OrderByDescending(b => b.Date))
             .SingleOrDefaultAsync(a => a.Id == id);
-    }
-
-    public async Task<Manga?> GetByIdAsync(int id)
-    {
-        return await _context.Mangas
-            .Include(a => a.MangaGenres)
-                .ThenInclude(a => a.Genre)
-            .Include(a => a.MangaSources)
-                .ThenInclude(a => a.Source)
-            .Include(a => a.Chapters.OrderByDescending(b => b.Date))            
-            .SingleOrDefaultAsync(a => a.Id == id);
-    }
-
-    public async Task<IEnumerable<Manga>> GetMangasAsync()
-    {
-        return await _context.Mangas            
-            .ToListAsync();
     }
 }

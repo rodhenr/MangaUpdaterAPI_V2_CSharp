@@ -20,11 +20,11 @@ public class ChapterService : IChapterService
 
     public async Task<Chapter?> GetChapterById(int id)
     {
-        return await _chapterRepository.GetById(id);
+        return await _chapterRepository.GetByIdAsync(id);
     }
 
     public async Task<IEnumerable<Chapter>> GetChaptersByMangaId(int mangaId, int? max)
     {
-        return await _chapterRepository.GetChaptersByIdAsync(mangaId, max ?? 0);
+        return await _chapterRepository.GetAllByMangaIdAsync(mangaId, max ?? 0);
     }
 }
