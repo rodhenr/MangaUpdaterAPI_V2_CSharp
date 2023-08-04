@@ -21,6 +21,20 @@ public class MangaService : IMangaService
         await _mangaRepository.CreateAsync(manga);
     }
 
+    public async Task<IEnumerable<MangaUserDTO>> GetMangasByUserId(int userId)
+    {
+        IEnumerable<Manga> mangas = await _mangaRepository.GetAllByUserId(userId);
+
+        return _mapper.Map<IEnumerable<MangaUserDTO>>(mangas);
+    }
+
+    public async Task<IEnumerable<MangaUserLoggedDTO>> GetMangasByUserIdLogged(int userId)
+    {
+        IEnumerable<Manga> mangas = await _mangaRepository.GetAllByUserLoggedIdWithLastThreeChapters(userId);
+
+        return _mapper.Map<IEnumerable<MangaUserLoggedDTO>>(mangas);
+    }
+
     public async Task<Manga?> GetMangaById(int id)
     {
         return await _mangaRepository.GetByIdOrderedDescAsync(id);
@@ -41,5 +55,5 @@ public class MangaService : IMangaService
     public async Task<IEnumerable<Manga>> GetMangas()
     {
         return await _mangaRepository.GetAsync();
-    }
+    }    
 }

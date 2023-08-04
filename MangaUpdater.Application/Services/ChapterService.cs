@@ -1,13 +1,14 @@
 ﻿using MangaUpdater.Application.Interfaces;
 using MangaUpdater.Domain.Entities;
 using MangaUpdater.Domain.Interfaces;
+using Microsoft.Extensions.Logging;
 
 namespace MangaUpdater.Application.Services;
 
 public class ChapterService : IChapterService
 {
     private readonly IChapterRepository _chapterRepository;
-
+    
     public ChapterService(IChapterRepository chapterRepository)
     {
         _chapterRepository = chapterRepository;        

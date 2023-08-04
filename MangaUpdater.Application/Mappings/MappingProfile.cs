@@ -4,9 +4,9 @@ using MangaUpdater.Domain.Entities;
 
 namespace MangaUpdater.Application.Mappings;
 
-public class MangaToDTOMappingProfile : Profile
+public class MappingProfile : Profile
 {
-    public MangaToDTOMappingProfile()
+    public MappingProfile()
     {
         CreateMap<Manga, MangaDTO>()
             .ForMember(dest => dest.CoverURL, opt => opt.MapFrom(src => src.CoverURL))
@@ -30,6 +30,27 @@ public class MangaToDTOMappingProfile : Profile
 
                 return src.Chapters
                         .Select(a => new ChapterDTO(a.Id, a.Source.Id, a.Source.Name, a.Date, a.Number, UserSourceChapterList.Any(b => b.SourceId == a.SourceId) && a.Id <= UserSourceChapterList.First(c => c.SourceId == a.SourceId).CurrentChapterId));
+            }));
+
+        CreateMap<Manga, MangaUserDTO>()
+            .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
+            .ForMember(dest => dest.CoverURL, opt => opt.MapFrom(src => src.CoverURL))
+            .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.Name));
+
+        CreateMap<Manga, MangaUserLoggedDTO>()
+            .ForMember(dest => dest.CoverURL, opt => opt.MapFrom(src => src.CoverURL))
+            .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.Name))
+            .ForMember(dest => dest.Chapters, opt => opt.MapFrom((src, _, _, context) =>
+            {
+                var UserSourceChapterList = src.UserMangas.Select(a => new { a.SourceId, a.CurrentChapterId });
+
+                if (src.Chapters is null)
+                {
+                    return null;
+                }
+
+                return src.Chapters
+                        .Select(a => new ChapterDTO(a.Id, a.SourceId, a.Source.Name, a.Date, a.Number, UserSourceChapterList.Any(b => b.SourceId == a.SourceId) && a.Id <= UserSourceChapterList.First(c => c.SourceId == a.SourceId).CurrentChapterId));
             }));
     }
 }

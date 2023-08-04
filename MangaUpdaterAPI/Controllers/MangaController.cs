@@ -79,6 +79,24 @@ public class MangaController : ControllerBase
         return Ok();
     }
 
+    [HttpGet("user/me")]
+    public async Task<ActionResult<IEnumerable<MangaUserLoggedDTO>>> GetLoggedUserMangas(int userId)
+    {
+        //
+        IEnumerable<MangaUserLoggedDTO> mangas = await _mangaService.GetMangasByUserIdLogged(userId);
+
+        return Ok(mangas);
+    }
+
+    [HttpGet("user/{userId}")]
+    public async Task<ActionResult<IEnumerable<MangaUserDTO>>> GetUserMangas(int userId)
+    {
+        //
+        IEnumerable<MangaUserDTO> userMangas = await _mangaService.GetMangasByUserId(userId);
+
+        return Ok(userMangas);
+    }
+
     [HttpGet("{mangaId}/sources")]
     public async Task<ActionResult<IEnumerable<UserSourceDTO>>> GetUserSources(int mangaId, int userId)
     {
