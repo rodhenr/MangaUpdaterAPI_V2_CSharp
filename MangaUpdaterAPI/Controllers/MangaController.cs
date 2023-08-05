@@ -82,7 +82,6 @@ public class MangaController : ControllerBase
     [HttpGet("user/me")]
     public async Task<ActionResult<IEnumerable<MangaUserLoggedDTO>>> GetLoggedUserMangas(int userId)
     {
-        //
         IEnumerable<MangaUserLoggedDTO> mangas = await _mangaService.GetMangasByUserIdLogged(userId);
 
         return Ok(mangas);
@@ -91,7 +90,15 @@ public class MangaController : ControllerBase
     [HttpGet("user/{userId}")]
     public async Task<ActionResult<IEnumerable<MangaUserDTO>>> GetUserMangas(int userId)
     {
-        //
+        IEnumerable<MangaUserDTO> userMangas = await _mangaService.GetMangasByUserId(userId);
+
+        return Ok(userMangas);
+    }
+
+    [HttpGet("user/me/list")]
+    public async Task<ActionResult<IEnumerable<MangaUserDTO>>> GetUserMangasList(int userId)
+    {
+        //Needs to implement JWT token to check the userId
         IEnumerable<MangaUserDTO> userMangas = await _mangaService.GetMangasByUserId(userId);
 
         return Ok(userMangas);
@@ -152,7 +159,7 @@ public class MangaController : ControllerBase
 
         var chapter = await _chapterService.GetChapterById(chapterId);
 
-        if (manga == null)
+        if (chapter == null)
         {
             return BadRequest("Chapter not found");
         }
