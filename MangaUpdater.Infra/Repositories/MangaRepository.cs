@@ -28,6 +28,41 @@ public class MangaRepository : IMangaRepository
             .ToListAsync();
     }
 
+    public async Task<IEnumerable<Manga>> GetWithFiltersAsync(string? orderBy, List<int>? sourceIdList, List<int>? genreIdList)
+    {
+        var query = _context.Mangas.AsQueryable();
+
+        if (!string.IsNullOrEmpty(orderBy))
+        {
+            switch (orderBy.ToLower())
+            {
+                case "alphabet":
+                    query = query.OrderBy(a => a.Name);
+                    break;
+                case "latest":
+                    query = query.OrderByDescending(a => a.Id);
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        if (sourceIdList != null && sourceIdList.Any())
+        {
+            query = query.Where(a => a.MangaSources.Any(b => sourceIdList.Contains(b.SourceId)));
+        }
+
+        if (genreIdList != null && genreIdList.Any())
+        {
+            query = query.Where(a => a.MangaGenres.Any(b => genreIdList.Contains(b.GenreId)));
+        }
+
+        return await query
+            .Include(a => a.MangaSources)
+            .Include(a => a.MangaGenres)
+            .ToListAsync();
+    }
+
     public async Task<Manga?> GetByIdOrderedDescAsync(int id)
     {
         return await _context.Mangas

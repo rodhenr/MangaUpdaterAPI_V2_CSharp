@@ -6,6 +6,7 @@ public interface IMangaRepository
 {
     Task CreateAsync(Manga manga);
     Task<IEnumerable<Manga>> GetAsync();
+    Task<IEnumerable<Manga>> GetWithFiltersAsync(string? orderBy, List<int>? sourceIdList, List<int>? genreIdList);
     Task<IEnumerable<Manga>> GetAllByUserLoggedIdWithLastThreeChapters(int userId);
     Task<IEnumerable<Manga>> GetAllByUserId(int userId);
     Task<Manga?> GetByIdOrderedDescAsync(int id);

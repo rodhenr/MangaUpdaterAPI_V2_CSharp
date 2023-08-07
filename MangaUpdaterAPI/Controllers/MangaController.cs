@@ -27,9 +27,10 @@ public class MangaController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<Manga>>> GetMangas()
+    public async Task<ActionResult<IEnumerable<MangaUserDTO>>> GetMangas([FromQuery] string? orderBy = null, [FromQuery] List<int>? sourceId = null, [FromQuery] List<int>? genreId = null)
     {
-        var mangas = await _mangaService.GetMangas();
+
+        var mangas = await _mangaService.GetMangasWithFilter(orderBy, sourceId, genreId);
 
         return Ok(mangas);
     }
