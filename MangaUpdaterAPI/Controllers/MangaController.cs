@@ -48,6 +48,18 @@ public class MangaController : ControllerBase
         return Ok(manga);
     }
 
+    [HttpPost("new")]
+    public async Task<ActionResult> RegisterManga(int mangaRegisterId)
+    {
+        return Ok();
+    }
+
+    [HttpGet("new/search")]
+    public async Task<ActionResult> GetNewMangaInfo(int sourceId, string url)
+    {
+        return Ok();
+    }
+
     [HttpPost("{mangaId}/follow")]
     public async Task<ActionResult> FollowManga(int mangaId, int userId, IEnumerable<int> sourceIdList)
     {
