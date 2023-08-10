@@ -16,7 +16,7 @@ public class MangaDTO
 
     public string Type { get; set; }
     
-    public string MyAnimeListURL { get; set; }
+    public int MyAnimeListId { get; set; }
 
     public bool IsUserFollowing { get; set; }
 

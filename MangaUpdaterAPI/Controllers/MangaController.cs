@@ -1,10 +1,8 @@
 ﻿using MangaUpdater.Application.DTOs;
 using MangaUpdater.Application.Interfaces;
-using MangaUpdater.Application.Services;
 using MangaUpdater.Domain.Entities;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using System;
+using Swashbuckle.AspNetCore.Annotations;
 
 namespace MangaUpdater.API.Controllers;
 
@@ -17,18 +15,19 @@ public class MangaController : ControllerBase
     private readonly IUserSourceService _userSourceService;
     private readonly IChapterService _chapterService;
     private readonly IUserMangaService _userMangaService;
-    private readonly IMangaRegisterService _mangaRegisterService;
+    private readonly IRegisterMangaService _registerMangaService;
 
-    public MangaController(IMangaService mangaService, IUserMangaChapterService userMangaChapterService, IUserSourceService userSourceService, IChapterService chapterService, IUserMangaService userMangaService, IMangaRegisterService mangaRegisterService)
+    public MangaController(IMangaService mangaService, IUserMangaChapterService userMangaChapterService, IUserSourceService userSourceService, IChapterService chapterService, IUserMangaService userMangaService, IRegisterMangaService registerMangaService)
     {
         _mangaService = mangaService;
         _userMangaChapterService = userMangaChapterService;
         _userSourceService = userSourceService;
         _chapterService = chapterService;
         _userMangaService = userMangaService;
-        _mangaRegisterService = mangaRegisterService;
+        _registerMangaService = registerMangaService;
     }
 
+    [SwaggerOperation("Get all mangas")]
     [HttpGet]
     public async Task<ActionResult<IEnumerable<MangaUserDTO>>> GetMangas([FromQuery] string? orderBy = null, [FromQuery] List<int>? sourceId = null, [FromQuery] List<int>? genreId = null)
     {
@@ -38,6 +37,28 @@ public class MangaController : ControllerBase
         return Ok(mangas);
     }
 
+    [SwaggerOperation("Register a new manga")]
+    [HttpPost]
+    public async Task<ActionResult<Manga>> RegisterManga(int malId)
+    {
+        Manga? mangaSearch = await _mangaService.GetMangaByMalId(malId);
+
+        if (mangaSearch != null)
+        {
+            return Ok(mangaSearch);
+        }
+
+        Manga? mangaData = await _registerMangaService.RegisterMangaFromMyAnimeListById(malId);
+
+        if (mangaData == null)
+        {
+            return BadRequest($"Manga not found for id {malId}");
+        }
+
+        return Ok(mangaData);
+    }
+
+    [SwaggerOperation("Get a manga")]
     [HttpGet("{mangaId}")]
     public async Task<ActionResult<MangaDTO>> GetManga(int mangaId, int userId)
     {
@@ -51,82 +72,7 @@ public class MangaController : ControllerBase
         return Ok(manga);
     }
 
-    [HttpPost("new")]
-    public async Task<ActionResult> RegisterManga(int mangaRegisterId)
-    {
-        return Ok();
-    }
-
-    [HttpGet("new/search")]
-    public async Task<ActionResult<MangaRegister>> GetNewMangaInfo(int? sourceId, int malMangaId)
-    {
-        var mangaData = await _mangaRegisterService.CreateMangaRegister(malMangaId);
-
-        if (mangaData == null)
-        {
-            return BadRequest("Manga not found");
-        }
-
-        return Ok(mangaData);
-    }
-
-    [HttpPost("{mangaId}/follow")]
-    public async Task<ActionResult> FollowManga(int mangaId, int userId, IEnumerable<int> sourceIdList)
-    {
-        var manga = await _mangaService.GetMangaById(mangaId);
-
-        if (manga == null)
-        {
-            return BadRequest($"Manga not found for id {mangaId}");
-        }
-
-        var userSources = await _userSourceService.GetUserSourcesByMangaId(mangaId, userId);
-
-        await _userMangaChapterService.AddUserMangaBySourceIdList(mangaId, userId, sourceIdList, userSources);
-
-        return Ok();
-    }
-
-    [HttpDelete("{mangaId}/unfollow")]
-    public async Task<ActionResult> UnfollowManga(int mangaId, int userId)
-    {
-        var manga = await _mangaService.GetMangaById(mangaId);
-
-        if (manga == null)
-        {
-            return BadRequest($"Manga not found for id {mangaId}");
-        }
-
-        await _userMangaChapterService.DeleteUserMangasByMangaId(mangaId, userId);
-
-        return Ok();
-    }
-
-    [HttpGet("user/me")]
-    public async Task<ActionResult<IEnumerable<MangaUserLoggedDTO>>> GetLoggedUserMangas(int userId)
-    {
-        IEnumerable<MangaUserLoggedDTO> mangas = await _mangaService.GetMangasByUserIdLogged(userId);
-
-        return Ok(mangas);
-    }
-
-    [HttpGet("user/{userId}")]
-    public async Task<ActionResult<IEnumerable<MangaUserDTO>>> GetUserMangas(int userId)
-    {
-        IEnumerable<MangaUserDTO> userMangas = await _mangaService.GetMangasByUserId(userId);
-
-        return Ok(userMangas);
-    }
-
-    [HttpGet("user/me/list")]
-    public async Task<ActionResult<IEnumerable<MangaUserDTO>>> GetUserMangasList(int userId)
-    {
-        //Needs to implement JWT token to check the userId
-        IEnumerable<MangaUserDTO> userMangas = await _mangaService.GetMangasByUserId(userId);
-
-        return Ok(userMangas);
-    }
-
+    [SwaggerOperation("Get all sources from a manga")]
     [HttpGet("{mangaId}/sources")]
     public async Task<ActionResult<IEnumerable<UserSourceDTO>>> GetUserSources(int mangaId, int userId)
     {
@@ -138,57 +84,5 @@ public class MangaController : ControllerBase
         }
 
         return Ok(userSources);
-    }
-
-    [HttpPost("{mangaId}/source/follow")]
-    public async Task<ActionResult> AddUserManga(int mangaId, int userId, int sourceId)
-    {
-        var manga = await _mangaService.GetMangaById(mangaId);
-
-        if (manga == null)
-        {
-            return BadRequest("Manga not found");
-        }
-
-        await _userMangaChapterService.AddUserManga(mangaId, userId, sourceId);
-
-        return Ok();
-    }
-
-    [HttpDelete("{mangaId}/source/unfollow")]
-    public async Task<ActionResult> DeleteUserManga(int mangaId, int userId, int sourceId)
-    {
-        var manga = await _mangaService.GetMangaById(mangaId);
-
-        if (manga == null)
-        {
-            return BadRequest("Manga not found");
-        }
-
-        await _userMangaChapterService.DeleteUserManga(mangaId, userId, sourceId);
-
-        return Ok();
-    }
-
-    [HttpPatch("{mangaId}/source/{sourceId}/chapter")]
-    public async Task<ActionResult> UpdateManga(int mangaId, int sourceId, int userId, int chapterId)
-    {
-        var manga = await _mangaService.GetMangaById(mangaId);
-
-        if (manga == null)
-        {
-            return BadRequest("Manga not found");
-        }
-
-        var chapter = await _chapterService.GetChapterById(chapterId);
-
-        if (chapter == null)
-        {
-            return BadRequest("Chapter not found");
-        }
-
-        await _userMangaService.UpdateUserMangaAsync(userId, mangaId, sourceId, chapterId);
-
-        return Ok();
-    }
+    }    
 }

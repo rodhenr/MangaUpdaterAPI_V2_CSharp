@@ -104,4 +104,9 @@ public class MangaRepository : IMangaRepository
                 .Where(b => b.UserId == userId))
             .ToListAsync();
     }
+
+    public async Task<Manga?> GetByMalIdAsync(int malId)
+    {
+        return await _context.Mangas.SingleOrDefaultAsync(a => a.MyAnimeListId == malId);
+    }
 }

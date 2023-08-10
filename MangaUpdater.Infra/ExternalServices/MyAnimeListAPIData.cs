@@ -6,5 +6,5 @@ namespace MangaUpdater.Infra.Data.ExternalServices;
 public class MyAnimeListAPIData
 {
     [JsonPropertyName("data")]
-    public MyAnimeListAPIResponse Data { get; set; }
+    public MyAnimeListAPIResponse? Data { get; set; }
 }

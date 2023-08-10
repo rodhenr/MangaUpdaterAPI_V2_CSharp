@@ -1,4 +1,4 @@
-﻿using MangaUpdater.Domain.Entities;
+﻿using MangaUpdater.Application.Models;
 
 namespace MangaUpdater.Application.Interfaces;
 

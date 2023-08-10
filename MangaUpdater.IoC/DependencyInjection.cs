@@ -34,9 +34,8 @@ public static class DependencyInjection
         services.AddScoped<IUserMangaService, UserMangaService>();
         services.AddScoped<IUserSourceService, UserSourceService>();
         services.AddScoped<IUserMangaChapterService, UserMangaChapterService>();
-        services.AddScoped<IMangasRegisterRepository, MangasRegisterRepository>();
-        services.AddScoped<IMangaRegisterService, MangaRegisterService>();
         services.AddScoped<IMyAnimeListAPIService, MyAnimeListAPIService>();
+        services.AddScoped<IRegisterMangaService, RegisterMangaService>();
 
         services.AddAutoMapper(typeof(MappingProfile));
 

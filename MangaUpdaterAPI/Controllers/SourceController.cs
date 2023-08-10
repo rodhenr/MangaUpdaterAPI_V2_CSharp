@@ -4,6 +4,7 @@ using MangaUpdater.Application.Services;
 using MangaUpdater.Domain.Entities;
 using MangaUpdater.Domain.Interfaces;
 using Microsoft.AspNetCore.Mvc;
+using Swashbuckle.AspNetCore.Annotations;
 
 namespace MangaUpdater.API.Controllers;
 
@@ -18,6 +19,7 @@ public class SourceController : ControllerBase
         _sourceService = sourceService;
     }
 
+    [SwaggerOperation("Get all sources")]
     [HttpGet]
     public async Task<ActionResult<IEnumerable<Source>>> GetSources()
     {
@@ -26,6 +28,7 @@ public class SourceController : ControllerBase
         return Ok(sources);
     }
 
+    [SwaggerOperation("Get a source")]
     [HttpGet("{sourceId}")]
     public async Task<ActionResult<Source>> GetSourceById(int sourceId)
     {

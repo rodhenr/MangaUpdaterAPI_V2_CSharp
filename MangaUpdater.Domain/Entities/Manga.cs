@@ -5,7 +5,8 @@ namespace MangaUpdater.Domain.Entities;
 
 public class Manga
 {
-    public Manga(string coverURL, string name, string alternativeName, string author, string synopsis, string type, string myAnimeListURL)
+    public Manga() { }
+    public Manga(string coverURL, string name, string alternativeName, string author, string synopsis, string type, int myAnimeListId)
     {
         CoverURL = coverURL;
         Name = name;
@@ -13,7 +14,7 @@ public class Manga
         Author = author;
         Synopsis = synopsis;
         Type = type;
-        MyAnimeListURL = myAnimeListURL;
+        MyAnimeListId = myAnimeListId;
     }
 
     public int Id { get; set; }
@@ -36,8 +37,7 @@ public class Manga
     [MaxLength(20)]
     public string Type { get; set; }
 
-    [MaxLength(200)]
-    public string MyAnimeListURL { get; set; }
+    public int MyAnimeListId { get; set; }
 
     [JsonIgnore]
     public ICollection<Chapter> Chapters { get; set; }

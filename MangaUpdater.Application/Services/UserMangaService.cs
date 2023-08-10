@@ -1,4 +1,6 @@
-﻿using MangaUpdater.Application.Interfaces;
+﻿using AutoMapper;
+using MangaUpdater.Application.DTOs;
+using MangaUpdater.Application.Interfaces;
 using MangaUpdater.Domain.Entities;
 using MangaUpdater.Domain.Interfaces;
 
@@ -7,10 +9,12 @@ namespace MangaUpdater.Application.Services;
 public class UserMangaService : IUserMangaService
 {
     private readonly IUserMangaRepository _userMangaRepository;
+    private readonly IMapper _mapper;
 
-    public UserMangaService(IUserMangaRepository userMangaRepository)
+    public UserMangaService(IMapper mapper, IUserMangaRepository userMangaRepository)
     {
         _userMangaRepository = userMangaRepository;
+        _mapper = mapper;
     }
 
     public async Task<IEnumerable<UserManga>> GetUserMangasByMangaIdAndUserId(int mangaId, int userId)
