@@ -1,12 +1,14 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace MangaUpdater.Domain.Entities;
 
+[Table("MangasRegister")]
 public class MangaRegister
 {
-    public MangaRegister(int id, string coverURL, string name, string alternativeName, string author, string synopsis, string type, string myAnimeListURL, int sourceId, string genres)
+    public MangaRegister() { }
+    public MangaRegister(string coverURL, string name, string alternativeName, string author, string synopsis, string type, string myAnimeListURL, int sourceId, string genres)
     {
-        Id = id;
         CoverURL = coverURL;
         Name = name;
         AlternativeName = alternativeName;

@@ -7,6 +7,7 @@ using MangaUpdater.Infra.Data.Repositories;
 using MangaUpdater.Application.Services;
 using MangaUpdater.Application.Interfaces;
 using MangaUpdater.Application.Mappings;
+using MangaUpdater.Infra.Data.ExternalServices;
 
 namespace MangaUpdater.Infra.IoC;
 
@@ -33,6 +34,9 @@ public static class DependencyInjection
         services.AddScoped<IUserMangaService, UserMangaService>();
         services.AddScoped<IUserSourceService, UserSourceService>();
         services.AddScoped<IUserMangaChapterService, UserMangaChapterService>();
+        services.AddScoped<IMangasRegisterRepository, MangasRegisterRepository>();
+        services.AddScoped<IMangaRegisterService, MangaRegisterService>();
+        services.AddScoped<IMyAnimeListAPIService, MyAnimeListAPIService>();
 
         services.AddAutoMapper(typeof(MappingProfile));
 

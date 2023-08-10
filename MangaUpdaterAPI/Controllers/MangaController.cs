@@ -1,5 +1,6 @@
 ﻿using MangaUpdater.Application.DTOs;
 using MangaUpdater.Application.Interfaces;
+using MangaUpdater.Application.Services;
 using MangaUpdater.Domain.Entities;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -16,14 +17,16 @@ public class MangaController : ControllerBase
     private readonly IUserSourceService _userSourceService;
     private readonly IChapterService _chapterService;
     private readonly IUserMangaService _userMangaService;
+    private readonly IMangaRegisterService _mangaRegisterService;
 
-    public MangaController(IMangaService mangaService, IUserMangaChapterService userMangaChapterService, IUserSourceService userSourceService, IChapterService chapterService, IUserMangaService userMangaService)
+    public MangaController(IMangaService mangaService, IUserMangaChapterService userMangaChapterService, IUserSourceService userSourceService, IChapterService chapterService, IUserMangaService userMangaService, IMangaRegisterService mangaRegisterService)
     {
         _mangaService = mangaService;
         _userMangaChapterService = userMangaChapterService;
         _userSourceService = userSourceService;
         _chapterService = chapterService;
         _userMangaService = userMangaService;
+        _mangaRegisterService = mangaRegisterService;
     }
 
     [HttpGet]
@@ -55,9 +58,16 @@ public class MangaController : ControllerBase
     }
 
     [HttpGet("new/search")]
-    public async Task<ActionResult> GetNewMangaInfo(int sourceId, string url)
+    public async Task<ActionResult<MangaRegister>> GetNewMangaInfo(int? sourceId, int malMangaId)
     {
-        return Ok();
+        var mangaData = await _mangaRegisterService.CreateMangaRegister(malMangaId);
+
+        if (mangaData == null)
+        {
+            return BadRequest("Manga not found");
+        }
+
+        return Ok(mangaData);
     }
 
     [HttpPost("{mangaId}/follow")]

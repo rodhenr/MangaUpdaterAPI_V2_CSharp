@@ -1,6 +1,8 @@
 ﻿using AutoMapper;
 using MangaUpdater.Application.DTOs;
+using MangaUpdater.Application.Models;
 using MangaUpdater.Domain.Entities;
+using System.Xml.Linq;
 
 namespace MangaUpdater.Application.Mappings;
 
@@ -52,5 +54,16 @@ public class MappingProfile : Profile
                 return src.Chapters
                         .Select(a => new ChapterDTO(a.Id, a.SourceId, a.Source.Name, a.Date, a.Number, UserSourceChapterList.Any(b => b.SourceId == a.SourceId) && a.Id <= UserSourceChapterList.First(c => c.SourceId == a.SourceId).CurrentChapterId));
             }));
+
+        CreateMap<MyAnimeListAPIResponse, MangaRegister>()
+           .ForMember(dest => dest.CoverURL, opt => opt.MapFrom(src => src.Images.JPG.ImageUrl))
+            .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.Titles.First().Title))
+            .ForMember(dest => dest.AlternativeName, opt => opt.MapFrom(src => src.Titles.First().Title)) //TODO: Change this implementation
+            .ForMember(dest => dest.Author, opt => opt.MapFrom(src => src.Authors.First().Name))
+            .ForMember(dest => dest.Synopsis, opt => opt.MapFrom(src => src.Synopsis))
+            .ForMember(dest => dest.Type, opt => opt.MapFrom(src => src.Type))
+            .ForMember(dest => dest.MyAnimeListURL, opt => opt.MapFrom(src => src.MalId))
+            .ForMember(dest => dest.SourceId, opt => opt.MapFrom(src => 1)) //TODO: Change this implementation
+            .ForMember(dest => dest.Genres, opt => opt.MapFrom(src => src.Genres.First().Name)); //TODO: Change this implementation
     }
 }
