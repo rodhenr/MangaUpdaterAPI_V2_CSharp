@@ -1,5 +1,7 @@
-﻿using MangaUpdater.Application.DTOs;
+﻿using AutoMapper;
+using MangaUpdater.Application.DTOs;
 using MangaUpdater.Application.Interfaces;
+using MangaUpdater.Application.Models;
 using MangaUpdater.Domain.Entities;
 using MangaUpdater.Domain.Interfaces;
 
@@ -9,11 +11,13 @@ public class UserMangaChapterService : IUserMangaChapterService
 {
     private readonly IUserMangaRepository _userMangaRepository;
     private readonly IChapterRepository _chapterRepository;
+    private readonly IMapper _mapper;
 
-    public UserMangaChapterService(IUserMangaRepository userMangaRepository, IChapterRepository chapterRepository)
+    public UserMangaChapterService(IUserMangaRepository userMangaRepository, IChapterRepository chapterRepository, IMapper mapper)
     {
         _userMangaRepository = userMangaRepository;
         _chapterRepository = chapterRepository;
+        _mapper = mapper;
     }
 
     public async Task AddUserManga(int mangaId, int userId, int sourceId)
@@ -51,6 +55,25 @@ public class UserMangaChapterService : IUserMangaChapterService
         }
 
         return;
+    }
+
+    public async Task<IEnumerable<MangaUserLoggedDTO>> GetUserMangasWithThreeLastChapterByUserId(int userId)
+    {
+        var userMangas = await _userMangaRepository.GetAllByUserIdAsync(userId);
+
+        List<UserMangaGroupByManga>? userMangasByMangaId = userMangas
+             .GroupBy(a => a.MangaId)
+             .Select(group => new UserMangaGroupByManga { Manga = group.Select(c => c.Manga).First(), SourcesWithLastChapterRead = group.Select(a => new SourceWithLastChapterRead(a.SourceId, a.Source.Name, a.CurrentChapterId)).ToList() })
+             .ToList();
+
+        foreach (UserMangaGroupByManga userManga in userMangasByMangaId)
+        {
+            var chapters = await _chapterRepository.GetThreeLastByMangaIdAndSourceListAsync(userManga.Manga.Id, userManga.SourcesWithLastChapterRead.Select(a => a.SourceId).ToList());
+
+            userManga.Manga.Chapters = chapters;
+        }
+
+        return _mapper.Map<IEnumerable<MangaUserLoggedDTO>>(userMangasByMangaId);
     }
 
     public async Task DeleteUserMangasByMangaId(int mangaId, int userId)

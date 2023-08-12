@@ -27,7 +27,7 @@ public class UserController : ControllerBase
     [HttpGet("mangas")]
     public async Task<ActionResult<IEnumerable<MangaUserLoggedDTO>>> GetLoggedUserMangas(int userId)
     {
-        IEnumerable<MangaUserLoggedDTO> mangas = await _mangaService.GetMangasByUserIdLogged(userId);
+        IEnumerable<MangaUserLoggedDTO> mangas = await _userMangaChapterService.GetUserMangasWithThreeLastChapterByUserId(userId);
 
         return Ok(mangas);
     }

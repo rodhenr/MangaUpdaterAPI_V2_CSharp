@@ -8,4 +8,5 @@ public interface IChapterRepository
     Task<IEnumerable<Chapter>> GetAllByMangaIdAsync(int mangaId, int max);
     Task<Chapter?> GetByIdAsync(int id);
     Task<Chapter?> GetSmallestChapterByMangaIdAsync(int mangaId, int sourceId);
+    Task<ICollection<Chapter>> GetThreeLastByMangaIdAndSourceListAsync(int mangaId, List<int> sourceList);
 }

@@ -86,7 +86,7 @@ public class MangaRepository : IMangaRepository
             .SingleOrDefaultAsync(a => a.Id == id);
     }
 
-    public async Task<IEnumerable<Manga>> GetAllByUserLoggedIdWithLastThreeChapters(int userId)
+/*    public async Task<IEnumerable<Manga>> GetAllByUserLoggedIdWithLastThreeChapters(int userId)
     {
         return await _context.Mangas
             .Include(a => a.UserMangas
@@ -95,7 +95,7 @@ public class MangaRepository : IMangaRepository
                 .OrderByDescending(b => b.Date).Take(3))
                     .ThenInclude(a => a.Source)
             .ToListAsync();
-    }
+    }*/
 
     public async Task<IEnumerable<Manga>> GetAllByUserId(int userId)
     {

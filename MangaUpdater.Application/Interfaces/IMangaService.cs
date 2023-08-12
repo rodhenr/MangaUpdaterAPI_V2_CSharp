@@ -12,5 +12,5 @@ public interface IMangaService
     Task<Manga?> GetMangaById(int id);
     Task<Manga?> GetMangaByMalId(int malId);
     Task<MangaDTO?> GetMangaByIdAndUserId(int id, int userId);
-    Task<IEnumerable<MangaUserLoggedDTO>> GetMangasByUserIdLogged(int userId);
+    //Task<IEnumerable<MangaUserLoggedDTO>> GetMangasByUserIdLogged(int userId);
 }

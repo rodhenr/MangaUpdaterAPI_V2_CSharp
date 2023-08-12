@@ -29,6 +29,15 @@ public class UserMangaRepository : IUserMangaRepository
             .ToListAsync();
     }
 
+    public async Task<IEnumerable<UserManga>> GetAllByUserIdAsync(int userId)
+    {
+        return await _context.UserMangas
+            .Where(a => a.UserId == userId)
+            .Include(a => a.Manga)
+            .Include(a => a.Source)
+            .ToListAsync();
+    }
+
     public async Task<IEnumerable<UserManga>> GetAllByMangaIdAndUserIdAsync(int mangaId, int userId)
     {
         return await _context.UserMangas
