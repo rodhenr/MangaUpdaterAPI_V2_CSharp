@@ -7,8 +7,7 @@ public interface IMangaService
 {
     Task AddManga(Manga manga);
     Task<IEnumerable<Manga>> GetMangas();
-    Task<IEnumerable<MangaUserDTO>> GetMangasWithFilter(string? orderBy, List<int>? sourceIdList, List<int>? genreIdList);
-    Task<IEnumerable<MangaUserDTO>> GetMangasByUserId(int userId);    
+    Task<IEnumerable<MangaUserDTO>> GetMangasWithFilter(string? orderBy, List<int>? sourceIdList, List<int>? genreIdList); 
     Task<Manga?> GetMangaById(int id);
     Task<Manga?> GetMangaByMalId(int malId);
     Task<MangaDTO?> GetMangaByIdAndUserId(int id, int userId);

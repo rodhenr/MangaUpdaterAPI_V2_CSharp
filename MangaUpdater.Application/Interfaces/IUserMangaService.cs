@@ -7,5 +7,6 @@ public interface IUserMangaService
 {
     Task<IEnumerable<UserManga>> GetUserMangasByMangaId(int mangaId);
     Task<IEnumerable<UserManga>> GetUserMangasByMangaIdAndUserId(int mangaId, int userId);
+    Task<IEnumerable<MangaUserDTO>> GetUserMangasByUserId(int userId);
     Task UpdateUserMangaAsync(int userId, int mangaId, int sourceId, int chapterId);
 }

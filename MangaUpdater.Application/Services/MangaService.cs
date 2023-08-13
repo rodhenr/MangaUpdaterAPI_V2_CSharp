@@ -33,13 +33,6 @@ public class MangaService : IMangaService
         return _mapper.Map<IEnumerable<MangaUserDTO>>(mangas);
     }
 
-    public async Task<IEnumerable<MangaUserDTO>> GetMangasByUserId(int userId)
-    {
-        IEnumerable<Manga> mangas = await _mangaRepository.GetAllByUserId(userId);
-
-        return _mapper.Map<IEnumerable<MangaUserDTO>>(mangas);
-    }
-
     public async Task<Manga?> GetMangaById(int id)
     {
         return await _mangaRepository.GetByIdOrderedDescAsync(id);

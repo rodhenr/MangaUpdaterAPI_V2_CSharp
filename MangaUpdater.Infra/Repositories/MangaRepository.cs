@@ -86,25 +86,6 @@ public class MangaRepository : IMangaRepository
             .SingleOrDefaultAsync(a => a.Id == id);
     }
 
-/*    public async Task<IEnumerable<Manga>> GetAllByUserLoggedIdWithLastThreeChapters(int userId)
-    {
-        return await _context.Mangas
-            .Include(a => a.UserMangas
-                .Where(b => b.UserId == userId))
-            .Include(a => a.Chapters
-                .OrderByDescending(b => b.Date).Take(3))
-                    .ThenInclude(a => a.Source)
-            .ToListAsync();
-    }*/
-
-    public async Task<IEnumerable<Manga>> GetAllByUserId(int userId)
-    {
-        return await _context.Mangas
-            .Include(a => a.UserMangas
-                .Where(b => b.UserId == userId))
-            .ToListAsync();
-    }
-
     public async Task<Manga?> GetByMalIdAsync(int malId)
     {
         return await _context.Mangas.SingleOrDefaultAsync(a => a.MyAnimeListId == malId);
