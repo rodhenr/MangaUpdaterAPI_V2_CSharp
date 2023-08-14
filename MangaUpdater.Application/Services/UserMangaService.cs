@@ -27,7 +27,7 @@ public class UserMangaService : IUserMangaService
         return await _userMangaRepository.GetAllByMangaIdAsync(mangaId);
     }
 
-    public async Task<IEnumerable<MangaUserDTO>> GetUserMangasByUserId(int userId)
+    public async Task<IEnumerable<MangaUserDTO>> GetMangasByUserId(int userId)
     {
         var mangas = await _userMangaRepository.GetAllByUserIdAsync(userId);
 

@@ -6,6 +6,10 @@ namespace MangaUpdater.Domain.Entities;
 
 public class Manga
 {
+    public Manga()
+    {
+    }
+
     public Manga(string coverURL, string name, string alternativeName, string author, string synopsis, string type, int myAnimeListId)
     {
         CoverURL = coverURL;

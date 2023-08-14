@@ -71,7 +71,7 @@ public class UserController : ControllerBase
     public async Task<ActionResult<IEnumerable<MangaUserDTO>>> GetUserMangasList(int userId)
     {
         //TODO: Implement JWT token to check the userId
-        IEnumerable<MangaUserDTO> userMangas = await _userMangaService.GetUserMangasByUserId(userId);
+        IEnumerable<MangaUserDTO> userMangas = await _userMangaService.GetMangasByUserId(userId);
 
         return Ok(userMangas);
     }
@@ -80,7 +80,7 @@ public class UserController : ControllerBase
     [HttpGet("{userId}/mangas")]
     public async Task<ActionResult<IEnumerable<MangaUserDTO>>> GetUserMangas(int userId)
     {
-        IEnumerable<MangaUserDTO> userMangas = await _userMangaService.GetUserMangasByUserId(userId);
+        IEnumerable<MangaUserDTO> userMangas = await _userMangaService.GetMangasByUserId(userId);
 
         return Ok(userMangas);
     }
