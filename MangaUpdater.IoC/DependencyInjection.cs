@@ -9,7 +9,6 @@ using MangaUpdater.Application.Interfaces;
 using MangaUpdater.Application.Mappings;
 using MangaUpdater.Infra.Data.ExternalServices;
 using MangaUpdater.Application.Services.Scraping;
-using OpenQA.Selenium;
 using OpenQA.Selenium.Chrome;
 using MangaUpdater.Application.Interfaces.Scraping;
 

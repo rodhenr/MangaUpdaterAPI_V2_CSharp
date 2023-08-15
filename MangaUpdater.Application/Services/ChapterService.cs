@@ -1,22 +1,30 @@
 ﻿using MangaUpdater.Application.Interfaces;
 using MangaUpdater.Domain.Entities;
 using MangaUpdater.Domain.Interfaces;
-using Microsoft.Extensions.Logging;
 
 namespace MangaUpdater.Application.Services;
 
 public class ChapterService : IChapterService
 {
     private readonly IChapterRepository _chapterRepository;
-    
+
     public ChapterService(IChapterRepository chapterRepository)
     {
-        _chapterRepository = chapterRepository;        
+        _chapterRepository = chapterRepository;
     }
 
     public async Task AddChapter(Chapter chapter)
     {
         await _chapterRepository.CreateAsync(chapter);
+    }
+
+    public async Task BulkCreate(int mangaId, int sourceId, Dictionary<string, string> chapters)
+    {
+        foreach (var chapter in chapters)
+        {
+            var newChapter = new Chapter(mangaId, sourceId, DateTime.Parse(chapter.Value), float.Parse(chapter.Key));
+            await AddChapter(newChapter);
+        }
     }
 
     public async Task<Chapter?> GetChapterById(int id)

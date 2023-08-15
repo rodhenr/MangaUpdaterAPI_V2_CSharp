@@ -12,7 +12,7 @@ public class Chapter
         Number = number;
     }
 
-    public int Id { get; set; }
+    public int Id { get; private set; }
 
     public int MangaId { get; set; }
 

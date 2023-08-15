@@ -13,12 +13,14 @@ public class MangaController : ControllerBase
 {
     private readonly IMangaService _mangaService;
     private readonly ISourceService _sourceService;
+    private readonly IMangaSourceService _mangaSourceService;
     private readonly IUserSourceService _userSourceService;
+    private readonly IChapterService _chapterService;
     private readonly IRegisterMangaService _registerMangaService;
     private readonly IUpdateChaptersService _updateChaptersService;
     private readonly IRegisterSourceService _registerSourceService;
 
-    public MangaController(IMangaService mangaService, IUserSourceService userSourceService, IRegisterMangaService registerMangaService, IUpdateChaptersService updateChaptersService, IRegisterSourceService registerSourceService, ISourceService sourceService)
+    public MangaController(IMangaService mangaService, IUserSourceService userSourceService, IRegisterMangaService registerMangaService, IUpdateChaptersService updateChaptersService, IRegisterSourceService registerSourceService, ISourceService sourceService, IMangaSourceService mangaSourceService, IChapterService chapterService)
     {
         _mangaService = mangaService;
         _userSourceService = userSourceService;
@@ -26,6 +28,8 @@ public class MangaController : ControllerBase
         _updateChaptersService = updateChaptersService;
         _registerSourceService = registerSourceService;
         _sourceService = sourceService;
+        _mangaSourceService = mangaSourceService;
+        _chapterService = chapterService;
     }
 
     [SwaggerOperation("Get all mangas")]
@@ -91,11 +95,15 @@ public class MangaController : ControllerBase
     [HttpPost("/{mangaId}/source/{sourceId}/scraping")]
     public async Task<ActionResult> RegisterFromScraping(int mangaId, int sourceId, string mangaUrl)
     {
-        var manga = await _mangaService.GetMangaById(mangaId);
+        var mangaSources = await _mangaSourceService.GetAllByMangaId(mangaId);
 
-        if (manga == null)
+        if (mangaSources == null)
         {
             return BadRequest($"Manga not found for id {mangaId}");
+        }
+        else if (mangaSources.Any(ms => ms.SourceId == sourceId))
+        {
+            return BadRequest($"Source already registered for source id ${sourceId}");
         }
 
         var source = await _sourceService.GetSourcesById(sourceId);
@@ -105,16 +113,25 @@ public class MangaController : ControllerBase
             return BadRequest($"Source not found for id {sourceId}");
         }
 
-        var chapters = _registerSourceService.RegisterFromMangaLivreSource(source.BaseURL, mangaUrl, manga.Name);
+        var chapters = _registerSourceService.RegisterFromMangaLivreSource(source.BaseURL, mangaUrl, mangaSources.Select(ms => ms.Manga.Name).First());
 
-        if(chapters.Count == 0)
+        if (chapters.Count == 0)
         {
             return BadRequest($"No chapters found");
         }
 
-        //register in MangaSource Table
-        //register in Chapters
+        try
+        {
+            await _mangaSourceService.AddMangaSource(new MangaSource(mangaId, sourceId, mangaUrl));
 
-        return Ok();
+            await _chapterService.BulkCreate(mangaId, sourceId, chapters);
+
+            return Ok();
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(ex.Message);
+        }
+
     }
 }

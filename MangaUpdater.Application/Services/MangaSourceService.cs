@@ -4,7 +4,7 @@ using MangaUpdater.Domain.Interfaces;
 
 namespace MangaUpdater.Application.Services;
 
-public class MangaSourceService: IMangaSourceService
+public class MangaSourceService : IMangaSourceService
 {
     private readonly IMangaSourceRepository _mangaSourceRepository;
 
@@ -13,8 +13,19 @@ public class MangaSourceService: IMangaSourceService
         _mangaSourceRepository = mangaSourceRepository;
     }
 
+    public async Task AddMangaSource(MangaSource mangaSource)
+    {
+        await _mangaSourceRepository.CreateAsync(mangaSource);
+        return;
+    }
+
     public async Task<IEnumerable<MangaSource>> GetAllByMangaId(int mangaId)
     {
         return await _mangaSourceRepository.GetAllByMangaIdAsync(mangaId);
+    }
+
+    public async Task<MangaSource?> GetByMangaIdAndSourceId(int mangaId, int sourceId)
+    {
+        return await _mangaSourceRepository.GetByMangaIdAndSourceIdAsync(mangaId, sourceId);
     }
 }
