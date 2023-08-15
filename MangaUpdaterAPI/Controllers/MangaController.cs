@@ -1,5 +1,6 @@
 ﻿using MangaUpdater.Application.DTOs;
 using MangaUpdater.Application.Interfaces;
+using MangaUpdater.Application.Interfaces.Scraping;
 using MangaUpdater.Domain.Entities;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
@@ -11,20 +12,20 @@ namespace MangaUpdater.API.Controllers;
 public class MangaController : ControllerBase
 {
     private readonly IMangaService _mangaService;
-    private readonly IUserMangaChapterService _userMangaChapterService;
+    private readonly ISourceService _sourceService;
     private readonly IUserSourceService _userSourceService;
-    private readonly IChapterService _chapterService;
-    private readonly IUserMangaService _userMangaService;
     private readonly IRegisterMangaService _registerMangaService;
+    private readonly IUpdateChaptersService _updateChaptersService;
+    private readonly IRegisterSourceService _registerSourceService;
 
-    public MangaController(IMangaService mangaService, IUserMangaChapterService userMangaChapterService, IUserSourceService userSourceService, IChapterService chapterService, IUserMangaService userMangaService, IRegisterMangaService registerMangaService)
+    public MangaController(IMangaService mangaService, IUserSourceService userSourceService, IRegisterMangaService registerMangaService, IUpdateChaptersService updateChaptersService, IRegisterSourceService registerSourceService, ISourceService sourceService)
     {
         _mangaService = mangaService;
-        _userMangaChapterService = userMangaChapterService;
         _userSourceService = userSourceService;
-        _chapterService = chapterService;
-        _userMangaService = userMangaService;
         _registerMangaService = registerMangaService;
+        _updateChaptersService = updateChaptersService;
+        _registerSourceService = registerSourceService;
+        _sourceService = sourceService;
     }
 
     [SwaggerOperation("Get all mangas")]
@@ -84,5 +85,36 @@ public class MangaController : ControllerBase
         }
 
         return Ok(userSources);
-    }    
+    }
+
+    [SwaggerOperation("Register and update source from a registered manga")]
+    [HttpPost("/{mangaId}/source/{sourceId}/scraping")]
+    public async Task<ActionResult> RegisterFromScraping(int mangaId, int sourceId, string mangaUrl)
+    {
+        var manga = await _mangaService.GetMangaById(mangaId);
+
+        if (manga == null)
+        {
+            return BadRequest($"Manga not found for id {mangaId}");
+        }
+
+        var source = await _sourceService.GetSourcesById(sourceId);
+
+        if (source == null)
+        {
+            return BadRequest($"Source not found for id {sourceId}");
+        }
+
+        var chapters = _registerSourceService.RegisterFromMangaLivreSource(source.BaseURL, mangaUrl, manga.Name);
+
+        if(chapters.Count == 0)
+        {
+            return BadRequest($"No chapters found");
+        }
+
+        //register in MangaSource Table
+        //register in Chapters
+
+        return Ok();
+    }
 }

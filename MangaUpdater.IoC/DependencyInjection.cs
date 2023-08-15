@@ -8,6 +8,10 @@ using MangaUpdater.Application.Services;
 using MangaUpdater.Application.Interfaces;
 using MangaUpdater.Application.Mappings;
 using MangaUpdater.Infra.Data.ExternalServices;
+using MangaUpdater.Application.Services.Scraping;
+using OpenQA.Selenium;
+using OpenQA.Selenium.Chrome;
+using MangaUpdater.Application.Interfaces.Scraping;
 
 namespace MangaUpdater.Infra.IoC;
 
@@ -36,6 +40,19 @@ public static class DependencyInjection
         services.AddScoped<IUserMangaChapterService, UserMangaChapterService>();
         services.AddScoped<IMyAnimeListAPIService, MyAnimeListAPIService>();
         services.AddScoped<IRegisterMangaService, RegisterMangaService>();
+        services.AddScoped<IUpdateChaptersService, UpdateChaptersService>();
+        services.AddScoped<IRegisterSourceService, RegisterSourceService>();
+        services.AddScoped<ChromeDriver>(provider =>
+        {
+            var driverOptions = new ChromeOptions()
+            {
+                BinaryLocation = "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe"
+            };
+
+            driverOptions.AddArguments(new List<string>() { "headless", "disable-gpu" });
+
+            return new ChromeDriver(driverOptions);
+        });
 
         services.AddAutoMapper(typeof(MappingProfile));
 
