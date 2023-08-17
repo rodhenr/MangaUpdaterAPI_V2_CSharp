@@ -37,6 +37,8 @@ public class UserMangaRepository : IUserMangaRepository
             .Include(a => a.Manga)
             .Include(a => a.Source)
             .AsNoTracking()
+            .GroupBy(a => a.MangaId)
+            .Select(group => group.First())
             .ToListAsync();
     }
 

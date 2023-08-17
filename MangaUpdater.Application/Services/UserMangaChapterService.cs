@@ -61,9 +61,9 @@ public class UserMangaChapterService : IUserMangaChapterService
     {
         var userMangas = await _userMangaRepository.GetAllByUserIdAsync(userId);
 
-        List<UserMangaGroupByManga>? userMangasByMangaId = userMangas
+        var userMangasByMangaId = userMangas
              .GroupBy(a => a.MangaId)
-             .Select(group => new UserMangaGroupByManga { Manga = group.Select(c => c.Manga).First(), SourcesWithLastChapterRead = group.Select(a => new SourceWithLastChapterRead(a.SourceId, a.Source.Name, a.CurrentChapterId)).ToList() })
+             .Select(group => new UserMangaGroupByManga(group.Select(c => c.Manga).FirstOrDefault()!, group.Select(a => new SourceWithLastChapterRead(a.SourceId, a.Source!.Name, a.CurrentChapterId)).ToList()))
              .ToList();
 
         foreach (UserMangaGroupByManga userManga in userMangasByMangaId)

@@ -2,13 +2,19 @@
 
 namespace MangaUpdater.Application.Models;
 
-public class UserMangaGroupByManga
+public sealed class UserMangaGroupByManga
 {
+    public UserMangaGroupByManga(Manga manga, List<SourceWithLastChapterRead> sourcesWithLastChapterRead)
+    {
+        Manga = manga;
+        SourcesWithLastChapterRead = sourcesWithLastChapterRead;
+    }
+
     public Manga Manga { get; set; }
     public List<SourceWithLastChapterRead> SourcesWithLastChapterRead { get; set; }
 }
 
-public class SourceWithLastChapterRead
+public sealed class SourceWithLastChapterRead
 {
     public SourceWithLastChapterRead(int sourceId, string sourceName, int lastChapterRead)
     {

@@ -2,6 +2,10 @@
 
 public record MangaUserLoggedDTO
 {
+    public MangaUserLoggedDTO()
+    {
+    }
+
     public MangaUserLoggedDTO(int id, string coverURL, string name, IEnumerable<ChapterDTO>? chapters)
     {
         Id = id;

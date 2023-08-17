@@ -50,6 +50,7 @@ public class ChapterRepository : IChapterRepository
     {
         return await _context.Chapters
             .Where(a => a.MangaId == mangaId && sourceList.Contains(a.SourceId))
+            .Include(ch => ch.Source)
             .OrderByDescending(a => a.Date)
             .Take(3)
             .AsNoTracking()
