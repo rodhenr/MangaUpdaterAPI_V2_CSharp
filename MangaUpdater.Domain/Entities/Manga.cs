@@ -1,15 +1,10 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json.Serialization;
 
 namespace MangaUpdater.Domain.Entities;
 
-public class Manga
+public sealed class Manga
 {
-    public Manga()
-    {
-    }
-
     public Manga(string coverURL, string name, string alternativeName, string author, string synopsis, string type, int myAnimeListId)
     {
         CoverURL = coverURL;
@@ -44,14 +39,14 @@ public class Manga
     public int MyAnimeListId { get; set; }
 
     [JsonIgnore]
-    public ICollection<Chapter> Chapters { get; set; }
+    public ICollection<Chapter>? Chapters { get; set; }
 
     [JsonIgnore]
-    public ICollection<UserManga> UserMangas { get; set; }
+    public ICollection<UserManga>? UserMangas { get; set; }
 
     [JsonIgnore]
-    public ICollection<MangaGenre> MangaGenres { get; set; }
+    public ICollection<MangaGenre>? MangaGenres { get; set; }
 
     [JsonIgnore]
-    public ICollection<MangaSource> MangaSources { get; set; }
+    public ICollection<MangaSource>? MangaSources { get; set; }
 }

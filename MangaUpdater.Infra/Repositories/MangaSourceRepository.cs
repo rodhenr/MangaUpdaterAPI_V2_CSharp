@@ -28,6 +28,7 @@ public class MangaSourceRepository : IMangaSourceRepository
             .Where(a => a.MangaId == mangaId)
             .Include(a => a.Source)
             .Include(ms => ms.Manga)
+            .AsNoTracking()
             .ToListAsync();
     }
 
@@ -36,6 +37,7 @@ public class MangaSourceRepository : IMangaSourceRepository
         return await _context.MangaSources
              .Where(a => a.SourceId == sourceId)
              .Include(a => a.Source)
+             .AsNoTracking()
              .ToListAsync();
     }
 
@@ -44,6 +46,7 @@ public class MangaSourceRepository : IMangaSourceRepository
         return await _context.MangaSources
             .Where(ms => ms.MangaId == mangaId && ms.SourceId == sourceId)
             .Include(ms => ms.Source)
+            .AsNoTracking()
             .SingleOrDefaultAsync();
     }
 }

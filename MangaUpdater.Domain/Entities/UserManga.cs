@@ -2,7 +2,7 @@
 
 namespace MangaUpdater.Domain.Entities;
 
-public class UserManga
+public sealed class UserManga
 {
     public UserManga(int userId, int mangaId, int sourceId, int currentChapterId)
     {
@@ -22,11 +22,11 @@ public class UserManga
 
 
     [JsonIgnore]
-    public User User { get; set; }
+    public User? User { get; set; }
 
     [JsonIgnore]
-    public Manga Manga { get; set; }
+    public Manga? Manga { get; set; }
 
     [JsonIgnore]
-    public Source Source { get; set; }
+    public Source? Source { get; set; }
 }

@@ -1,7 +1,15 @@
 ﻿namespace MangaUpdater.Application.DTOs;
 
-public class MangaUserLoggedDTO
+public record MangaUserLoggedDTO
 {
+    public MangaUserLoggedDTO(int id, string coverURL, string name, IEnumerable<ChapterDTO>? chapters)
+    {
+        Id = id;
+        CoverURL = coverURL;
+        Name = name;
+        Chapters = chapters;
+    }
+
     public int Id { get; set; }
 
     public string CoverURL { get; set; }

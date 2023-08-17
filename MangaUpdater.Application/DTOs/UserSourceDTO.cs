@@ -1,5 +1,5 @@
 ﻿namespace MangaUpdater.Application.DTOs;
-public class UserSourceDTO
+public record UserSourceDTO
 {
     public UserSourceDTO(int sourceId, string sourceName, bool isFollowing)
     {

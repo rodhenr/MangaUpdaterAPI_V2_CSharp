@@ -1,6 +1,6 @@
 ﻿namespace MangaUpdater.Application.DTOs;
 
-public class SourceDTO
+public record SourceDTO
 {
     public SourceDTO(int id, string name, string baseURL)
     {

@@ -15,11 +15,15 @@ public class SourceRepository : ISourceRepository
     }
     public async Task<IEnumerable<Source>> GetAsync()
     {
-        return await _context.Sources.ToListAsync();
+        return await _context.Sources
+            .AsNoTracking()
+            .ToListAsync();
     }
 
     public async Task<Source?> GetByIdAsync(int id)
     {
-        return await _context.Sources.SingleOrDefaultAsync(a => a.Id == id);
+        return await _context.Sources
+            .AsNoTracking()
+            .SingleOrDefaultAsync(a => a.Id == id);
     }
 }

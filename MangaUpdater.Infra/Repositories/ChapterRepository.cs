@@ -25,6 +25,7 @@ public class ChapterRepository : IChapterRepository
     public async Task<Chapter?> GetByIdAsync(int id)
     {
         return await _context.Chapters
+            .AsNoTracking()
             .SingleOrDefaultAsync(a => a.Id == id);
     }
 
@@ -32,13 +33,16 @@ public class ChapterRepository : IChapterRepository
     {
         if (max == 0)
         {
-            return await _context.Chapters.Where(a => a.Id == mangaId)
+            return await _context.Chapters
+                .Where(a => a.Id == mangaId)
+                .AsNoTracking()
                 .ToListAsync();
         }
 
         return await _context.Chapters
             .Where(a => a.Id == mangaId)
             .TakeLast(max)
+            .AsNoTracking()
             .ToListAsync();
     }
 
@@ -48,6 +52,7 @@ public class ChapterRepository : IChapterRepository
             .Where(a => a.MangaId == mangaId && sourceList.Contains(a.SourceId))
             .OrderByDescending(a => a.Date)
             .Take(3)
+            .AsNoTracking()
             .ToListAsync();
     }
 
@@ -56,6 +61,7 @@ public class ChapterRepository : IChapterRepository
         return await _context.Chapters
             .Where(a => a.MangaId == mangaId && a.SourceId == sourceId)
             .OrderBy(a => a.Number)
+            .AsNoTracking()
             .FirstOrDefaultAsync();
     }
 }

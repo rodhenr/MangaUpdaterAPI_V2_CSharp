@@ -3,7 +3,7 @@ using System.Text.Json.Serialization;
 
 namespace MangaUpdater.Domain.Entities;
 
-public class Source
+public sealed class Source
 {
     public Source(string name, string baseURL)
     {
@@ -20,11 +20,11 @@ public class Source
     public string BaseURL { get; set; }
 
     [JsonIgnore]
-    public ICollection<UserManga> UserMangas { get; set; }
+    public ICollection<UserManga>? UserMangas { get; set; }
 
     [JsonIgnore]
-    public ICollection<MangaSource> MangaSources { get; set; }
+    public ICollection<MangaSource>? MangaSources { get; set; }
 
     [JsonIgnore]
-    public ICollection<Chapter> Chapters { get; set; }
+    public ICollection<Chapter>? Chapters { get; set; }
 }

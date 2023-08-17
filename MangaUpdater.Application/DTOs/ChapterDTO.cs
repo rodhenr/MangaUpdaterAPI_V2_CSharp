@@ -1,6 +1,6 @@
 ﻿namespace MangaUpdater.Application.DTOs;
 
-public class ChapterDTO
+public record ChapterDTO
 {
     public ChapterDTO(int chapterId, int sourceId, string sourceName, DateTime date, float number, bool read)
     {
@@ -15,6 +15,7 @@ public class ChapterDTO
     public int ChapterId { get; set; }
 
     public int SourceId { get; set; }
+
     public string SourceName { get; set; }
 
     public DateTime Date { get; set; }

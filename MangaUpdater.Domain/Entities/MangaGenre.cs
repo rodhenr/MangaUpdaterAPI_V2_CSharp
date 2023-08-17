@@ -2,7 +2,7 @@
 
 namespace MangaUpdater.Domain.Entities;
 
-public class MangaGenre
+public sealed class MangaGenre
 {
     public MangaGenre(int mangaId, int genreId)
     {
@@ -15,8 +15,8 @@ public class MangaGenre
     public int GenreId { get; set; }
 
     [JsonIgnore]
-    public Manga Manga { get; set; }
+    public Manga? Manga { get; set; }
 
     [JsonIgnore]
-    public Genre Genre { get; set; }
+    public Genre? Genre { get; set; }
 }

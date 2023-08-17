@@ -1,6 +1,6 @@
 ﻿namespace MangaUpdater.Application.DTOs;
 
-public class UserMangaDTO
+public record UserMangaDTO
 {
     public UserMangaDTO(int userId, int mangaId, int sourceId, int currentChapterId)
     {

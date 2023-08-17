@@ -25,22 +25,26 @@ public class MangaRepository : IMangaRepository
     public async Task<IEnumerable<Manga>> GetAsync()
     {
         return await _context.Mangas
+            .AsNoTracking()
             .ToListAsync();
     }
 
     public async Task<IEnumerable<Manga>> GetWithFiltersAsync(string? orderBy, List<int>? sourceIdList, List<int>? genreIdList)
     {
-        var query = _context.Mangas.AsQueryable();
+        var query = _context.Mangas
+            .AsQueryable();
 
         if (!string.IsNullOrEmpty(orderBy))
         {
             switch (orderBy.ToLower())
             {
                 case "alphabet":
-                    query = query.OrderBy(a => a.Name);
+                    query = query
+                        .OrderBy(a => a.Name);
                     break;
                 case "latest":
-                    query = query.OrderByDescending(a => a.Id);
+                    query = query
+                        .OrderByDescending(a => a.Id);
                     break;
                 default:
                     break;
@@ -60,6 +64,7 @@ public class MangaRepository : IMangaRepository
         return await query
             .Include(a => a.MangaSources)
             .Include(a => a.MangaGenres)
+            .AsNoTracking()
             .ToListAsync();
     }
 
@@ -71,6 +76,7 @@ public class MangaRepository : IMangaRepository
             .Include(a => a.MangaSources)
                 .ThenInclude(a => a.Source)
             .Include(a => a.Chapters.OrderByDescending(b => b.Date))
+            .AsNoTracking()
             .SingleOrDefaultAsync(a => a.Id == id);
     }
 
@@ -83,11 +89,14 @@ public class MangaRepository : IMangaRepository
             .Include(a => a.MangaSources)
                 .ThenInclude(a => a.Source)
             .Include(a => a.Chapters.OrderByDescending(b => b.Date))
+            .AsNoTracking()
             .SingleOrDefaultAsync(a => a.Id == id);
     }
 
     public async Task<Manga?> GetByMalIdAsync(int malId)
     {
-        return await _context.Mangas.SingleOrDefaultAsync(a => a.MyAnimeListId == malId);
+        return await _context.Mangas
+            .AsNoTracking()
+            .SingleOrDefaultAsync(a => a.MyAnimeListId == malId);
     }
 }

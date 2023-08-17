@@ -3,7 +3,7 @@ using System.Text.Json.Serialization;
 
 namespace MangaUpdater.Domain.Entities;
 
-public class Genre
+public sealed class Genre
 {
     public Genre(string name)
     {
@@ -16,5 +16,5 @@ public class Genre
     public string Name { get; set; }
 
     [JsonIgnore]
-    public ICollection<MangaGenre> MangaGenres { get; set; }
+    public ICollection<MangaGenre>? MangaGenres { get; set; }
 }

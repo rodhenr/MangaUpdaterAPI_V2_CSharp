@@ -16,6 +16,8 @@ public class GenreRepository : IGenreRepository
 
     public async Task<IEnumerable<Genre>> GetAsync()
     {
-        return await _context.Genres.ToListAsync();
+        return await _context.Genres
+            .AsNoTracking()
+            .ToListAsync();
     }
 }

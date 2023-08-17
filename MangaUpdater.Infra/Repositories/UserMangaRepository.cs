@@ -26,6 +26,7 @@ public class UserMangaRepository : IUserMangaRepository
     {
         return await _context.UserMangas
             .Where(a => a.MangaId == mangaId)
+            .AsNoTracking()
             .ToListAsync();
     }
 
@@ -35,6 +36,7 @@ public class UserMangaRepository : IUserMangaRepository
             .Where(a => a.UserId == userId)
             .Include(a => a.Manga)
             .Include(a => a.Source)
+            .AsNoTracking()
             .ToListAsync();
     }
 
@@ -42,12 +44,15 @@ public class UserMangaRepository : IUserMangaRepository
     {
         return await _context.UserMangas
             .Where(a => a.MangaId == mangaId && a.UserId == userId)
+            .AsNoTracking()
             .ToListAsync();
     }
 
     public async Task<UserManga?> GetByMangaIdUserIdAndSourceIdAsync(int mangaId, int userId, int sourceId)
     {
-        return await _context.UserMangas.SingleOrDefaultAsync(a => a.UserId == userId && a.MangaId == mangaId && a.SourceId == sourceId);
+        return await _context.UserMangas
+            .AsNoTracking()
+            .SingleOrDefaultAsync(a => a.UserId == userId && a.MangaId == mangaId && a.SourceId == sourceId);
     }
 
     public async Task UpdateAsync(int userId, int mangaId, int sourceId, int chapterId)

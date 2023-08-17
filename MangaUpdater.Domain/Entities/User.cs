@@ -3,7 +3,7 @@ using System.Text.Json.Serialization;
 
 namespace MangaUpdater.Domain.Entities;
 
-public class User
+public sealed class User
 {
     public User(string name, string email, string avatar)
     {
@@ -24,5 +24,5 @@ public class User
     public string Avatar { get; set; }
 
     [JsonIgnore]
-    public ICollection<UserManga> UserMangas { get; set; }
+    public ICollection<UserManga>? UserMangas { get; set; }
 }
