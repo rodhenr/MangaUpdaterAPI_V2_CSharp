@@ -19,8 +19,9 @@ public class MangaController : ControllerBase
     private readonly IRegisterMangaService _registerMangaService;
     private readonly IUpdateChaptersService _updateChaptersService;
     private readonly IRegisterSourceService _registerSourceService;
+    private readonly IUserService _userService;
 
-    public MangaController(IMangaService mangaService, IUserSourceService userSourceService, IRegisterMangaService registerMangaService, IUpdateChaptersService updateChaptersService, IRegisterSourceService registerSourceService, ISourceService sourceService, IMangaSourceService mangaSourceService, IChapterService chapterService)
+    public MangaController(IMangaService mangaService, IUserSourceService userSourceService, IRegisterMangaService registerMangaService, IUpdateChaptersService updateChaptersService, IRegisterSourceService registerSourceService, ISourceService sourceService, IMangaSourceService mangaSourceService, IChapterService chapterService, IUserService userService)
     {
         _mangaService = mangaService;
         _userSourceService = userSourceService;
@@ -30,13 +31,13 @@ public class MangaController : ControllerBase
         _sourceService = sourceService;
         _mangaSourceService = mangaSourceService;
         _chapterService = chapterService;
+        _userService = userService;
     }
 
     [SwaggerOperation("Get all mangas")]
     [HttpGet]
     public async Task<ActionResult<IEnumerable<MangaUserDTO>>> GetMangas([FromQuery] string? orderBy = null, [FromQuery] List<int>? sourceId = null, [FromQuery] List<int>? genreId = null)
     {
-
         var mangas = await _mangaService.GetMangasWithFilter(orderBy, sourceId, genreId);
 
         return Ok(mangas);
@@ -65,8 +66,9 @@ public class MangaController : ControllerBase
 
     [SwaggerOperation("Get a manga")]
     [HttpGet("{mangaId}")]
-    public async Task<ActionResult<MangaDTO>> GetManga(int mangaId, int userId)
+    public async Task<ActionResult<MangaDTO>> GetManga(int mangaId, int userId = 0)
     {
+        //NEEDS TO SEPARATE IN 2 METHODS
         var manga = await _mangaService.GetMangaByIdAndUserId(mangaId, userId);
 
         if (manga == null)
@@ -79,7 +81,7 @@ public class MangaController : ControllerBase
 
     [SwaggerOperation("Get all sources from a manga")]
     [HttpGet("{mangaId}/sources")]
-    public async Task<ActionResult<IEnumerable<UserSourceDTO>>> GetUserSources(int mangaId, int userId)
+    public async Task<ActionResult<IEnumerable<UserSourceDTO>>> GetUserSources(int mangaId, int userId = 0)
     {
         var userSources = await _userSourceService.GetUserSourcesByMangaId(mangaId, userId);
 

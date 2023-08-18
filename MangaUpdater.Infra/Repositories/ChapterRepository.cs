@@ -25,6 +25,7 @@ public class ChapterRepository : IChapterRepository
     public async Task<Chapter?> GetByIdAsync(int id)
     {
         return await _context.Chapters
+            .Include(ch => ch.Source)
             .AsNoTracking()
             .SingleOrDefaultAsync(a => a.Id == id);
     }

@@ -13,14 +13,16 @@ public class UserController : ControllerBase
     private readonly IUserSourceService _userSourceService;
     private readonly IChapterService _chapterService;
     private readonly IUserMangaService _userMangaService;
+    private readonly IUserService _userService;
 
-    public UserController(IMangaService mangaService, IUserMangaChapterService userMangaChapterService, IUserSourceService userSourceService, IChapterService chapterService, IUserMangaService userMangaService)
+    public UserController(IMangaService mangaService, IUserMangaChapterService userMangaChapterService, IUserSourceService userSourceService, IChapterService chapterService, IUserMangaService userMangaService, IUserService userService)
     {
         _mangaService = mangaService;
         _userMangaChapterService = userMangaChapterService;
         _userSourceService = userSourceService;
         _chapterService = chapterService;
         _userMangaService = userMangaService;
+        _userService = userService;
     }
 
     [SwaggerOperation("Get all mangas that the user follows with the last 3 released chapters")]
@@ -36,6 +38,13 @@ public class UserController : ControllerBase
     [HttpPost("mangas/{mangaId}")]
     public async Task<ActionResult> FollowManga(int mangaId, int userId, IEnumerable<int> sourceIdList)
     {
+        var user = await _userService.GetUserById(userId);
+
+        if (user == null)
+        {
+            return NotFound($"User not found for id {userId}");
+        }
+
         var manga = await _mangaService.GetMangaById(mangaId);
 
         if (manga == null)
@@ -54,6 +63,13 @@ public class UserController : ControllerBase
     [HttpDelete("mangas/{mangaId}")]
     public async Task<ActionResult> UnfollowManga(int mangaId, int userId)
     {
+        var user = await _userService.GetUserById(userId);
+
+        if (user == null)
+        {
+            return NotFound($"User not found for id {userId}");
+        }
+
         var manga = await _mangaService.GetMangaById(mangaId);
 
         if (manga == null)
@@ -80,6 +96,13 @@ public class UserController : ControllerBase
     [HttpGet("{userId}/mangas")]
     public async Task<ActionResult<IEnumerable<MangaUserDTO>>> GetUserMangas(int userId)
     {
+        var user = await _userService.GetUserById(userId);
+
+        if (user == null)
+        {
+            return NotFound($"User not found for id {userId}");
+        }
+
         IEnumerable<MangaUserDTO> userMangas = await _userMangaService.GetMangasByUserId(userId);
 
         return Ok(userMangas);
@@ -121,22 +144,36 @@ public class UserController : ControllerBase
     [HttpPatch("mangas/{mangaId}/sources/{sourceId}")]
     public async Task<ActionResult> UpdateManga(int mangaId, int sourceId, int userId, int chapterId)
     {
-        var manga = await _mangaService.GetMangaById(mangaId);
-
-        if (manga == null)
+        try
         {
-            return BadRequest("Manga not found");
+            var user = await _userService.GetUserById(userId);
+
+            if (user == null)
+            {
+                return NotFound($"User not found for id {userId}");
+            }
+
+            var manga = await _mangaService.GetMangaById(mangaId);
+
+            if (manga == null)
+            {
+                return BadRequest("Manga not found");
+            }
+
+            var chapter = await _chapterService.GetChapterById(chapterId);
+
+            if (chapter == null || chapter.Source!.Id != sourceId)
+            {
+                return BadRequest("Invalid chapter/source");
+            }
+
+            await _userMangaService.UpdateUserMangaAsync(userId, mangaId, sourceId, chapterId);
+
+            return Ok();
         }
-
-        var chapter = await _chapterService.GetChapterById(chapterId);
-
-        if (chapter == null)
+        catch (Exception ex)
         {
-            return BadRequest("Chapter not found");
+            return BadRequest(ex.Message);
         }
-
-        await _userMangaService.UpdateUserMangaAsync(userId, mangaId, sourceId, chapterId);
-
-        return Ok();
     }
 }

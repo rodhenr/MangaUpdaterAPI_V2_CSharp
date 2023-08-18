@@ -64,7 +64,7 @@ public class UserMangaRepository : IUserMangaRepository
 
         if (userManga == null)
         {
-            throw new Exception("Register Not found");
+            throw new Exception("User doesn't follow this manga/source");
         }
 
         userManga.CurrentChapterId = chapterId;
