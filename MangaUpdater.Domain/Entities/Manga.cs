@@ -1,10 +1,16 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json.Serialization;
 
 namespace MangaUpdater.Domain.Entities;
 
 public sealed class Manga
 {
+    public Manga()
+    {
+
+    } //TODO: Remove this
+
     public Manga(string coverURL, string name, string alternativeName, string author, string synopsis, string type, int myAnimeListId)
     {
         CoverURL = coverURL;

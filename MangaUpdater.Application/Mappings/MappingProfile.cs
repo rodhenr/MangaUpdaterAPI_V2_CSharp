@@ -2,7 +2,6 @@
 using MangaUpdater.Application.DTOs;
 using MangaUpdater.Application.Models;
 using MangaUpdater.Domain.Entities;
-using MangaUpdater.Domain.Interfaces;
 
 namespace MangaUpdater.Application.Mappings;
 

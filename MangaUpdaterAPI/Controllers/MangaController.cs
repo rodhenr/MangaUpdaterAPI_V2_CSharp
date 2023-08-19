@@ -97,36 +97,45 @@ public class MangaController : ControllerBase
     [HttpPost("/{mangaId}/source/{sourceId}/scraping")]
     public async Task<ActionResult> RegisterFromScraping(int mangaId, int sourceId, string mangaUrl)
     {
-        var mangaSources = await _mangaSourceService.GetAllByMangaId(mangaId);
-
-        if (mangaSources == null)
-        {
-            return BadRequest($"Manga not found for id {mangaId}");
-        }
-        else if (mangaSources.Any(ms => ms.SourceId == sourceId))
-        {
-            return BadRequest($"Source already registered for source id ${sourceId}");
-        }
-
-        var source = await _sourceService.GetSourcesById(sourceId);
-
-        if (source == null)
-        {
-            return BadRequest($"Source not found for id {sourceId}");
-        }
-
-        var chapters = _registerSourceService.RegisterFromMangaLivreSource(source.BaseURL, mangaUrl, mangaSources.Select(ms => ms.Manga.Name).First());
-
-        if (chapters.Count == 0)
-        {
-            return BadRequest($"No chapters found");
-        }
-
         try
         {
+            var manga = await _mangaService.GetMangaById(mangaId);
+
+            if (manga == null)
+            {
+                return BadRequest("Manga not found");
+            }
+
+            if (manga.MangaSources!.Any(ms => ms.SourceId == sourceId))
+            {
+                return BadRequest($"Source already registered for source id {sourceId}");
+            }
+
+            var source = await _sourceService.GetSourcesById(sourceId);
+
+            if (source == null)
+            {
+                return BadRequest($"Source not found for id {sourceId}");
+            }
+
+            var chapters = _registerSourceService.RegisterFromMangaLivreSource(source!.BaseURL, mangaUrl, manga.Name);
+
+            if (chapters.Count == 0)
+            {
+                return BadRequest($"No chapters found");
+            }
+
+            //TODO: Implement transaction
             await _mangaSourceService.AddMangaSource(new MangaSource(mangaId, sourceId, mangaUrl));
 
-            await _chapterService.BulkCreate(mangaId, sourceId, chapters);
+            List<Chapter> chapterList = new();
+
+            foreach (var chapter in chapters)
+            {
+                chapterList.Add(new Chapter(mangaId, sourceId, DateTime.Parse(chapter.Value), float.Parse(chapter.Key)));
+            }
+
+            await _chapterService.BulkCreate(chapterList);
 
             return Ok();
         }

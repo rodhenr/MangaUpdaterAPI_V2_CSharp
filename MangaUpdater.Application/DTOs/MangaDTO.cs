@@ -1,6 +1,4 @@
-﻿using MangaUpdater.Domain.Entities;
-
-namespace MangaUpdater.Application.DTOs;
+﻿namespace MangaUpdater.Application.DTOs;
 
 public record MangaDTO
 {

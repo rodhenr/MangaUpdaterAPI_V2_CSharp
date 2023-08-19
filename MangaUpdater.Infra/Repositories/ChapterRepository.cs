@@ -22,6 +22,14 @@ public class ChapterRepository : IChapterRepository
         return;
     }
 
+    public async Task BulkCreateAsync(List<Chapter> chapters)
+    {
+        await _context.Chapters.AddRangeAsync(chapters);
+        await _context.SaveChangesAsync();
+
+        return;
+    }
+
     public async Task<Chapter?> GetByIdAsync(int id)
     {
         return await _context.Chapters

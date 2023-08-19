@@ -22,7 +22,7 @@ public class MangaSourceRepository : IMangaSourceRepository
         return;
     }
 
-    public async Task<IEnumerable<MangaSource>> GetAllByMangaIdAsync(int mangaId)
+    public async Task<ICollection<MangaSource>> GetAllByMangaIdAsync(int mangaId)
     {
         return await _context.MangaSources
             .Where(a => a.MangaId == mangaId)
@@ -32,7 +32,7 @@ public class MangaSourceRepository : IMangaSourceRepository
             .ToListAsync();
     }
 
-    public async Task<IEnumerable<MangaSource>> GetAllBySourceIdAsync(int sourceId)
+    public async Task<ICollection<MangaSource>> GetAllBySourceIdAsync(int sourceId)
     {
         return await _context.MangaSources
              .Where(a => a.SourceId == sourceId)

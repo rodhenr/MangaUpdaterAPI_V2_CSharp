@@ -25,6 +25,7 @@ public class MangaRepository : IMangaRepository
     public async Task<IEnumerable<Manga>> GetAsync()
     {
         return await _context.Mangas
+            .Include(m => m.MangaSources)
             .AsNoTracking()
             .ToListAsync();
     }

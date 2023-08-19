@@ -19,7 +19,7 @@ public class MangaSourceService : IMangaSourceService
         return;
     }
 
-    public async Task<IEnumerable<MangaSource>> GetAllByMangaId(int mangaId)
+    public async Task<ICollection<MangaSource>> GetAllByMangaId(int mangaId)
     {
         return await _mangaSourceRepository.GetAllByMangaIdAsync(mangaId);
     }

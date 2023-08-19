@@ -4,7 +4,7 @@ using OpenQA.Selenium.Chrome;
 
 namespace MangaUpdater.Application.Services.Scraping;
 
-public class RegisterSourceService: IRegisterSourceService
+public class RegisterSourceService : IRegisterSourceService
 {
     private readonly ChromeDriver _driver;
 
@@ -26,12 +26,11 @@ public class RegisterSourceService: IRegisterSourceService
 
         foreach (var alternativeName in altList)
         {
-            possibleNames.Add(alternativeName.Text);
+            possibleNames.Add(alternativeName.Text.Replace(" ", ""));
         }
 
-        if (possibleNames.Any(name => name.ToLower() == mangaName.ToLower()))
+        if (possibleNames.Any(name => name.ToLower() == mangaName.Replace(" ", "").ToLower()))
         {
-
             IJavaScriptExecutor js = _driver;
             js.ExecuteScript("window.scrollTo(0, document.body.scrollHeight);");
             Thread.Sleep(2000);

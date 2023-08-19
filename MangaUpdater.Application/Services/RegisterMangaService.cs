@@ -24,7 +24,7 @@ public class RegisterMangaService: IRegisterMangaService
 
         Manga? mangaInfo = _mapper.Map<Manga>(data);
 
-        //Add Gneres
+        //Add Genres
 
         if (mangaInfo == null)
         {

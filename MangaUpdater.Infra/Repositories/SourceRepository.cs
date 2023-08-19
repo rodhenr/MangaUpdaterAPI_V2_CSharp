@@ -13,7 +13,7 @@ public class SourceRepository : ISourceRepository
     {
         _context = context;
     }
-    public async Task<IEnumerable<Source>> GetAsync()
+    public async Task<ICollection<Source>> GetAsync()
     {
         return await _context.Sources
             .AsNoTracking()

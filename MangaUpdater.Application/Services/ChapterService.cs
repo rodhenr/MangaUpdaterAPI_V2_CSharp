@@ -18,13 +18,9 @@ public class ChapterService : IChapterService
         await _chapterRepository.CreateAsync(chapter);
     }
 
-    public async Task BulkCreate(int mangaId, int sourceId, Dictionary<string, string> chapters)
-    {
-        foreach (var chapter in chapters)
-        {
-            var newChapter = new Chapter(mangaId, sourceId, DateTime.Parse(chapter.Value), float.Parse(chapter.Key));
-            await AddChapter(newChapter);
-        }
+    public async Task BulkCreate(List<Chapter> chapters)
+    {     
+        await _chapterRepository.BulkCreateAsync(chapters);
     }
 
     public async Task<Chapter?> GetChapterById(int id)
