@@ -13,11 +13,13 @@ public class UpdateChaptersService : IUpdateChaptersService
         _driver = driver;
     }
 
-    public async Task UpdateChaptersFromMangaLivreSource(string sourceUrl, string linkUrl)
+    public Dictionary<string, string> UpdateChaptersFromMangaLivreSource(string sourceUrl, string linkUrl)
     {
         string fullUrl = sourceUrl + linkUrl;
 
         _driver.Navigate().GoToUrl(fullUrl);
+
+        Thread.Sleep(100);
 
         Dictionary<string, string> chapters = new();
 
@@ -31,7 +33,7 @@ public class UpdateChaptersService : IUpdateChaptersService
             chapters.Add(chapterNumber, chapterDate);
         }
 
-        return;
+        return chapters;
     }
 
     /*  public async Task<MangaRegister> GetAsuraAsync()

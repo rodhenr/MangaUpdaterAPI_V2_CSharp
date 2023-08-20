@@ -113,11 +113,6 @@ public class MangaController : ControllerBase
 
             var source = await _sourceService.GetSourcesById(sourceId);
 
-            if (source == null)
-            {
-                return BadRequest($"Source not found for id {sourceId}");
-            }
-
             var chapters = _registerSourceService.RegisterFromMangaLivreSource(source!.BaseURL, mangaUrl, manga.Name);
 
             if (chapters.Count == 0)
@@ -136,6 +131,39 @@ public class MangaController : ControllerBase
             }
 
             await _chapterService.BulkCreate(chapterList);
+
+            return Ok();
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(ex.Message);
+        }
+
+    }
+
+    [SwaggerOperation("Update chapters for a manga/source")]
+    [HttpPost("/{mangaId}/source/{sourceId}/chapters")]
+    public async Task<ActionResult> UpdateChapterForMangaSource(int mangaId, int sourceId)
+    {
+        try
+        {
+            var manga = await _mangaService.GetMangaById(mangaId);
+
+            if (manga == null)
+            {
+                return BadRequest("Manga not found");
+            }
+
+            if (!manga.MangaSources!.Any(ms => ms.SourceId == sourceId))
+            {
+                return BadRequest($"Source not found");
+            }
+
+            var source = await _sourceService.GetSourcesById(sourceId);
+
+            var chapters = _updateChaptersService.UpdateChaptersFromMangaLivreSource(source!.BaseURL, manga.MangaSources!.Where(ms => ms.SourceId == sourceId).First().URL);
+
+            await _chapterService.CreateOrUpdateChaptersByMangaSource(mangaId, sourceId, chapters);
 
             return Ok();
         }

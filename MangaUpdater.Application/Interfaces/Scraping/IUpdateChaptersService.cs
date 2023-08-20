@@ -5,5 +5,5 @@ namespace MangaUpdater.Application.Interfaces.Scraping;
 public interface IUpdateChaptersService
 {
     //Task<MangaRegister> GetAsuraAsync();
-    Task UpdateChaptersFromMangaLivreSource(string sourceUrl, string linkUrl);
+    Dictionary<string, string> UpdateChaptersFromMangaLivreSource(string sourceUrl, string linkUrl);
 }

@@ -74,4 +74,12 @@ public class ChapterRepository : IChapterRepository
             .AsNoTracking()
             .FirstOrDefaultAsync();
     }
+
+    public async Task<IEnumerable<float>> GetChaptersNumberByMangaIdAndSourceIdAsync(int mangaId, int sourceId)
+    {
+        return await _context.Chapters
+            .Where(ch => ch.MangaId == mangaId && ch.SourceId == sourceId)
+            .Select(ch => ch.Number)
+            .ToListAsync();
+    }
 }
