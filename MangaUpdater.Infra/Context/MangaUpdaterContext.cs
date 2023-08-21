@@ -1,9 +1,10 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using MangaUpdater.Domain.Entities;
 
 namespace MangaUpdater.Infra.Context;
 
-public class MangaUpdaterContext : DbContext
+public class MangaUpdaterContext : IdentityDbContext
 {
     public MangaUpdaterContext(DbContextOptions<MangaUpdaterContext> options) : base(options)
     {
