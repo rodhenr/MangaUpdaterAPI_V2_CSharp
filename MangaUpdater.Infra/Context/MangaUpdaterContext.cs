@@ -16,7 +16,6 @@ public class MangaUpdaterContext : IdentityDbContext
     public DbSet<MangaGenre> MangaGenres { get; set; }
     public DbSet<MangaSource> MangaSources { get; set; }
     public DbSet<Source> Sources { get; set; }
-    public DbSet<User> Users { get; set; }
     public DbSet<UserManga> UserMangas { get; set; }
 
     protected override void OnModelCreating(ModelBuilder builder)

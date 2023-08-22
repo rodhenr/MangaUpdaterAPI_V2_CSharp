@@ -20,10 +20,6 @@ public sealed class UserManga
 
     public int CurrentChapterId { get; set; }
 
-
-    [JsonIgnore]
-    public User? User { get; set; }
-
     [JsonIgnore]
     public Manga? Manga { get; set; }
 
