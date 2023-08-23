@@ -6,7 +6,7 @@ public class UserRegister
 {
     [Required(ErrorMessage = "Required field")]
     [StringLength(30, ErrorMessage = "The {0} field must have between 4 and 30 characters", MinimumLength = 4)]
-    public string Username { get; set; }
+    public string UserName { get; set; }
 
     [Required(ErrorMessage = "Required field")]
     [EmailAddress(ErrorMessage = "Invalid field")]
