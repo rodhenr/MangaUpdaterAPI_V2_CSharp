@@ -13,11 +13,9 @@ using OpenQA.Selenium.Chrome;
 using MangaUpdater.Application.Interfaces.Scraping;
 
 namespace MangaUpdater.Infra.IoC;
-
 public static class DependencyInjection
 {
-    public static IServiceCollection AddInfrastructure(this IServiceCollection services,
-        IConfiguration configuration)
+    public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration)
     {
         services.AddDbContext<MangaUpdaterContext>(options =>
              options.UseSqlServer(configuration.GetConnectionString("DefaultConnection"
