@@ -4,9 +4,9 @@ using MangaUpdater.Domain.Entities;
 
 namespace MangaUpdater.Infra.Context;
 
-public class MangaUpdaterContext : IdentityDbContext
+public class IdentityMangaUpdaterContext : IdentityDbContext
 {
-    public MangaUpdaterContext(DbContextOptions<MangaUpdaterContext> options) : base(options)
+    public IdentityMangaUpdaterContext(DbContextOptions<IdentityMangaUpdaterContext> options) : base(options)
     {
     }
 
@@ -21,6 +21,6 @@ public class MangaUpdaterContext : IdentityDbContext
     protected override void OnModelCreating(ModelBuilder builder)
     {
         base.OnModelCreating(builder);
-        builder.ApplyConfigurationsFromAssembly(typeof(MangaUpdaterContext).Assembly);
+        builder.ApplyConfigurationsFromAssembly(typeof(IdentityMangaUpdaterContext).Assembly);
     }
 }

@@ -16,12 +16,14 @@ builder.Services.AddSwaggerGen(c =>
     {
         Title = "MangaUpdater API",
         Description = "An API to follow your favorite mangas and track their released chapters",
-        Contact = new OpenApiContact() { Name = "Rodrigo", Email = "https://github.com/rodhenr" },
-        License = new OpenApiLicense() { Name = "MIT License", Url = new Uri("https://opensource.org/licenses/MIT") }
+        Contact = new OpenApiContact() { Name = "Rodrigo", Email = "https://github.com/rodhenr" }
     });
 });
-builder.Services.AddAuthentication(builder.Configuration);
+
+builder.Services.AddJwtAuthentication(builder.Configuration);
 builder.Services.AddInfrastructure(builder.Configuration);
+builder.Services.AddIdentity(builder.Configuration);
+
 builder.Services.AddControllers().AddJsonOptions(x => x.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles);
 
 var app = builder.Build();

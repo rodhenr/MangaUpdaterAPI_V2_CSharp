@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace MangaUpdater.Infra.Data.Migrations
 {
-    [DbContext(typeof(MangaUpdaterContext))]
+    [DbContext(typeof(IdentityMangaUpdaterContext))]
     [Migration("20230729010720_UserMangaPKChange")]
     partial class UserMangaPKChange
     {

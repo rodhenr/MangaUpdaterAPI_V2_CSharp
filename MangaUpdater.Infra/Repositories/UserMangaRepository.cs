@@ -7,9 +7,9 @@ namespace MangaUpdater.Infra.Data.Repositories;
 
 public class UserMangaRepository : IUserMangaRepository
 {
-    private readonly MangaUpdaterContext _context;
+    private readonly IdentityMangaUpdaterContext _context;
 
-    public UserMangaRepository(MangaUpdaterContext context)
+    public UserMangaRepository(IdentityMangaUpdaterContext context)
     {
         _context = context;
     }

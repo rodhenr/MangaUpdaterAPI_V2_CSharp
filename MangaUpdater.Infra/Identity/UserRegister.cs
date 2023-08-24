@@ -1,7 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
 namespace MangaUpdater.Infra.Data.Identity;
-
 public class UserRegister
 {
     [Required(ErrorMessage = "Required field")]

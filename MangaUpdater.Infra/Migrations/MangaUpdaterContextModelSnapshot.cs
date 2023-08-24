@@ -10,7 +10,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace MangaUpdater.Infra.Data.Migrations
 {
-    [DbContext(typeof(MangaUpdaterContext))]
+    [DbContext(typeof(IdentityMangaUpdaterContext))]
     partial class MangaUpdaterContextModelSnapshot : ModelSnapshot
     {
         protected override void BuildModel(ModelBuilder modelBuilder)

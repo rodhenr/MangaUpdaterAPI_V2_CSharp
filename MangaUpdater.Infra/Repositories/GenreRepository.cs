@@ -7,9 +7,9 @@ namespace MangaUpdater.Infra.Data.Repositories;
 
 public class GenreRepository : IGenreRepository
 {
-    private readonly MangaUpdaterContext _context;
+    private readonly IdentityMangaUpdaterContext _context;
 
-    public GenreRepository(MangaUpdaterContext context)
+    public GenreRepository(IdentityMangaUpdaterContext context)
     {
         _context = context;
     }

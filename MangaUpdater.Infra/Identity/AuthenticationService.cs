@@ -3,10 +3,8 @@ using Microsoft.AspNetCore.Identity;
 using MangaUpdater.Infra.Data.Identity;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
-using Newtonsoft.Json.Linq;
 
 namespace MangaUpdater.Infra.Data;
-
 public class AuthenticationService
 {
     private readonly SignInManager<IdentityUser> _signInManager;
@@ -74,7 +72,7 @@ public class AuthenticationService
         var roles = await _userManager.GetRolesAsync(user);
 
         claims.Add(new Claim(JwtRegisteredClaimNames.Sub, user.Id));
-        claims.Add(new Claim(JwtRegisteredClaimNames.Email, user.Email));
+        claims.Add(new Claim(JwtRegisteredClaimNames.Email, user.Email!));
         claims.Add(new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()));
         claims.Add(new Claim(JwtRegisteredClaimNames.Nbf, DateTime.Now.ToString()));
         claims.Add(new Claim(JwtRegisteredClaimNames.Iat, DateTime.Now.ToString()));
