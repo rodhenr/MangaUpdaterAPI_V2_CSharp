@@ -1,5 +1,4 @@
-﻿namespace MangaUpdater.Infra.Data.Identity;
-
+﻿namespace MangaUpdater.Application.Models;
 public record UserAuthenticateResponse
 {
     public UserAuthenticateResponse(DateTime? expirationDate, string? token, bool isSuccess)

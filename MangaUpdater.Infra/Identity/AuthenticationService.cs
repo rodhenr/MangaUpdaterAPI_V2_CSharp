@@ -1,11 +1,12 @@
 ﻿using Microsoft.Extensions.Options;
 using Microsoft.AspNetCore.Identity;
-using MangaUpdater.Infra.Data.Identity;
+using MangaUpdater.Application.Models;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
+using MangaUpdater.Application.Interfaces;
 
-namespace MangaUpdater.Infra.Data;
-public class AuthenticationService
+namespace MangaUpdater.Infra.Data.Identity;
+public class AuthenticationService: IAuthenticationService
 {
     private readonly SignInManager<IdentityUser> _signInManager;
     private readonly UserManager<IdentityUser> _userManager;

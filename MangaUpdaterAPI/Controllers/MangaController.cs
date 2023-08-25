@@ -1,9 +1,9 @@
-﻿using MangaUpdater.Application.DTOs;
+﻿using Microsoft.AspNetCore.Mvc;
+using Swashbuckle.AspNetCore.Annotations;
+using MangaUpdater.Application.DTOs;
 using MangaUpdater.Application.Interfaces;
 using MangaUpdater.Application.Interfaces.Scraping;
 using MangaUpdater.Domain.Entities;
-using Microsoft.AspNetCore.Mvc;
-using Swashbuckle.AspNetCore.Annotations;
 
 namespace MangaUpdater.API.Controllers;
 

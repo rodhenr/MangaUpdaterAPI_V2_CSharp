@@ -2,6 +2,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using MangaUpdater.Domain.Interfaces;
 using MangaUpdater.Infra.Data.Repositories;
+using MangaUpdater.Infra.Data.Identity;
 using MangaUpdater.Application.Services;
 using MangaUpdater.Application.Interfaces;
 using MangaUpdater.Application.Mappings;
@@ -31,6 +32,7 @@ public static class ServicesInjection
         services.AddScoped<IRegisterMangaService, RegisterMangaService>();
         services.AddScoped<IUpdateChaptersService, UpdateChaptersService>();
         services.AddScoped<IRegisterSourceService, RegisterSourceService>();
+        services.AddScoped<IAuthenticationService, AuthenticationService>();
         services.AddScoped<ChromeDriver>(provider =>
         {
             var driverOptions = new ChromeOptions()
