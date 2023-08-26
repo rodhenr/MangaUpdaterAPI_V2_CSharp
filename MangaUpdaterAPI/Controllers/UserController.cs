@@ -1,5 +1,6 @@
 ﻿using MangaUpdater.Application.DTOs;
 using MangaUpdater.Application.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
 
@@ -25,6 +26,7 @@ public class UserController : ControllerBase
 
     [SwaggerOperation("Get all mangas that the user follows with the last 3 released chapters")]
     [HttpGet("mangas")]
+    [Authorize]
     public async Task<ActionResult<IEnumerable<MangaUserLoggedDTO>>> GetLoggedUserMangas(int userId)
     {
         IEnumerable<MangaUserLoggedDTO> mangas = await _userMangaChapterService.GetUserMangasWithThreeLastChapterByUserId(userId);
@@ -34,6 +36,7 @@ public class UserController : ControllerBase
 
     [SwaggerOperation("User starts following a manga")]
     [HttpPost("mangas/{mangaId}")]
+    [Authorize]
     public async Task<ActionResult> FollowManga(int mangaId, int userId, IEnumerable<int> sourceIdList)
     {
         var manga = await _mangaService.GetMangaById(mangaId);
@@ -52,6 +55,7 @@ public class UserController : ControllerBase
 
     [SwaggerOperation("User doesn't follow a manga anymore")]
     [HttpDelete("mangas/{mangaId}")]
+    [Authorize]
     public async Task<ActionResult> UnfollowManga(int mangaId, int userId)
     {
         var manga = await _mangaService.GetMangaById(mangaId);
@@ -87,6 +91,7 @@ public class UserController : ControllerBase
 
     [SwaggerOperation("User starts following a source from a manga")]
     [HttpPost("mangas/{mangaId}/sources/{sourceId}")]
+    [Authorize]
     public async Task<ActionResult> AddUserManga(int mangaId, int userId, int sourceId)
     {
         var manga = await _mangaService.GetMangaById(mangaId);
@@ -103,6 +108,7 @@ public class UserController : ControllerBase
 
     [SwaggerOperation("User doesn't follow a source from a manga anymore")]
     [HttpDelete("mangas/{mangaId}/sources/{sourceId}")]
+    [Authorize]
     public async Task<ActionResult> DeleteUserManga(int mangaId, int userId, int sourceId)
     {
         var manga = await _mangaService.GetMangaById(mangaId);
@@ -119,6 +125,7 @@ public class UserController : ControllerBase
 
     [SwaggerOperation("User changes the last chapter read from a source from a manga")]
     [HttpPatch("mangas/{mangaId}/sources/{sourceId}")]
+    [Authorize]
     public async Task<ActionResult> UpdateManga(int mangaId, int sourceId, int userId, int chapterId)
     {
         try

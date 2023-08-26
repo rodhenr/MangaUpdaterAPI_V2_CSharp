@@ -4,6 +4,7 @@ using MangaUpdater.Application.DTOs;
 using MangaUpdater.Application.Interfaces;
 using MangaUpdater.Application.Interfaces.Scraping;
 using MangaUpdater.Domain.Entities;
+using Microsoft.AspNetCore.Authorization;
 
 namespace MangaUpdater.API.Controllers;
 
@@ -43,6 +44,7 @@ public class MangaController : ControllerBase
 
     [SwaggerOperation("Register a new manga")]
     [HttpPost]
+    [Authorize]
     public async Task<ActionResult<Manga>> RegisterManga(int malId)
     {
         Manga? mangaSearch = await _mangaService.GetMangaByMalId(malId);
@@ -79,6 +81,7 @@ public class MangaController : ControllerBase
 
     [SwaggerOperation("Get all sources from a manga")]
     [HttpGet("{mangaId}/sources")]
+    [Authorize]
     public async Task<ActionResult<IEnumerable<UserSourceDTO>>> GetUserSources(int mangaId, int userId = 0)
     {
         var userSources = await _userSourceService.GetUserSourcesByMangaId(mangaId, userId);
@@ -93,6 +96,7 @@ public class MangaController : ControllerBase
 
     [SwaggerOperation("Register and update source from a registered manga")]
     [HttpPost("/{mangaId}/source/{sourceId}/scraping")]
+    [Authorize]
     public async Task<ActionResult> RegisterFromScraping(int mangaId, int sourceId, string mangaUrl)
     {
         try
@@ -141,6 +145,7 @@ public class MangaController : ControllerBase
 
     [SwaggerOperation("Update chapters for a manga/source")]
     [HttpPost("/{mangaId}/source/{sourceId}/chapters")]
+    [Authorize]
     public async Task<ActionResult> UpdateChapterForMangaSource(int mangaId, int sourceId)
     {
         try
