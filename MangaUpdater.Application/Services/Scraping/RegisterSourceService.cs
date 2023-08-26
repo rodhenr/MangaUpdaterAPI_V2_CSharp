@@ -16,6 +16,7 @@ public class RegisterSourceService : IRegisterSourceService
     public Dictionary<string, string> RegisterFromMangaLivreSource(string sourceUrl, string linkUrl, string mangaName)
     {
         _driver.Navigate().GoToUrl(sourceUrl + linkUrl);
+
         var name = _driver.FindElement(By.CssSelector(".series-title h1")).Text;
         var altList = _driver.FindElements(By.CssSelector("ol.series-synom li"));
 

@@ -30,7 +30,7 @@ public class UserMangaRepository : IUserMangaRepository
             .ToListAsync();
     }
 
-    public async Task<IEnumerable<UserManga>> GetAllByUserIdAsync(int userId)
+    public async Task<IEnumerable<UserManga>> GetAllByUserIdAsync(string userId)
     {
         return await _context.UserMangas
             .Where(a => a.UserId == userId)
@@ -42,7 +42,7 @@ public class UserMangaRepository : IUserMangaRepository
             .ToListAsync();
     }
 
-    public async Task<IEnumerable<UserManga>> GetAllByMangaIdAndUserIdAsync(int mangaId, int userId)
+    public async Task<IEnumerable<UserManga>> GetAllByMangaIdAndUserIdAsync(int mangaId, string userId)
     {
         return await _context.UserMangas
             .Where(a => a.MangaId == mangaId && a.UserId == userId)
@@ -50,14 +50,14 @@ public class UserMangaRepository : IUserMangaRepository
             .ToListAsync();
     }
 
-    public async Task<UserManga?> GetByMangaIdUserIdAndSourceIdAsync(int mangaId, int userId, int sourceId)
+    public async Task<UserManga?> GetByMangaIdUserIdAndSourceIdAsync(int mangaId, string userId, int sourceId)
     {
         return await _context.UserMangas
             .AsNoTracking()
             .SingleOrDefaultAsync(a => a.UserId == userId && a.MangaId == mangaId && a.SourceId == sourceId);
     }
 
-    public async Task UpdateAsync(int userId, int mangaId, int sourceId, int chapterId)
+    public async Task UpdateAsync(string userId, int mangaId, int sourceId, int chapterId)
     {
         var userManga = await _context.UserMangas
             .SingleOrDefaultAsync(a => a.UserId == userId && a.MangaId == mangaId && a.SourceId == sourceId);
@@ -73,7 +73,7 @@ public class UserMangaRepository : IUserMangaRepository
         return;
     }
 
-    public async Task DeleteAsync(int userId, int mangaId, int sourceId)
+    public async Task DeleteAsync(string userId, int mangaId, int sourceId)
     {
         var userManga = await _context.UserMangas.SingleOrDefaultAsync(a => a.UserId == userId && a.MangaId == mangaId && a.SourceId == sourceId);
 
@@ -86,7 +86,7 @@ public class UserMangaRepository : IUserMangaRepository
         return;
     }
 
-    public async Task DeleteAllByMangaIdAndUserIdAsync(int mangaId, int UserId)
+    public async Task DeleteAllByMangaIdAndUserIdAsync(int mangaId, string UserId)
     {
         var userMangas = await _context.UserMangas
             .Where(a => a.MangaId == mangaId && a.UserId == UserId)

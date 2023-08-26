@@ -1,10 +1,11 @@
-﻿using System.Text.Json.Serialization;
+﻿using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 
 namespace MangaUpdater.Domain.Entities;
 
 public sealed class UserManga
 {
-    public UserManga(int userId, int mangaId, int sourceId, int currentChapterId)
+    public UserManga(string userId, int mangaId, int sourceId, int currentChapterId)
     {
         UserId = userId;
         MangaId = mangaId;
@@ -12,7 +13,8 @@ public sealed class UserManga
         CurrentChapterId = currentChapterId;
     }
 
-    public int UserId { get; set; }
+    [MaxLength(450)]
+    public string UserId { get; set; }
 
     public int MangaId { get; set; }
 

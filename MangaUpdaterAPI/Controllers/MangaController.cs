@@ -5,6 +5,8 @@ using MangaUpdater.Application.Interfaces;
 using MangaUpdater.Application.Interfaces.Scraping;
 using MangaUpdater.Domain.Entities;
 using Microsoft.AspNetCore.Authorization;
+using MangaUpdater.Application.Services;
+using Microsoft.AspNetCore.Identity;
 
 namespace MangaUpdater.API.Controllers;
 
@@ -20,9 +22,11 @@ public class MangaController : ControllerBase
     private readonly IRegisterMangaService _registerMangaService;
     private readonly IUpdateChaptersService _updateChaptersService;
     private readonly IRegisterSourceService _registerSourceService;
+    private readonly UserManager<IdentityUser> _userManager;
 
-    public MangaController(IMangaService mangaService, IUserSourceService userSourceService, IRegisterMangaService registerMangaService, IUpdateChaptersService updateChaptersService, IRegisterSourceService registerSourceService, ISourceService sourceService, IMangaSourceService mangaSourceService, IChapterService chapterService)
+    public MangaController(UserManager<IdentityUser> userManager, IMangaService mangaService, IUserSourceService userSourceService, IRegisterMangaService registerMangaService, IUpdateChaptersService updateChaptersService, IRegisterSourceService registerSourceService, ISourceService sourceService, IMangaSourceService mangaSourceService, IChapterService chapterService)
     {
+        _userManager = userManager;
         _mangaService = mangaService;
         _userSourceService = userSourceService;
         _registerMangaService = registerMangaService;
@@ -66,10 +70,19 @@ public class MangaController : ControllerBase
 
     [SwaggerOperation("Get a manga")]
     [HttpGet("{mangaId}")]
-    public async Task<ActionResult<MangaDTO>> GetManga(int mangaId, int userId = 0)
+    public async Task<ActionResult<MangaDTO>> GetManga(int mangaId)
     {
+        var emailClaim = User.FindFirst("email")?.Value;
+
+        if (emailClaim == null)
+        {
+            return BadRequest();
+        }
+
+        var user = await _userManager.FindByEmailAsync(emailClaim);
+
         //NEEDS TO SEPARATE IN 2 METHODS
-        var manga = await _mangaService.GetMangaByIdAndUserId(mangaId, userId);
+        var manga = await _mangaService.GetMangaByIdAndUserId(mangaId, user.Id); //TODO: Change
 
         if (manga == null)
         {
@@ -82,16 +95,35 @@ public class MangaController : ControllerBase
     [SwaggerOperation("Get all sources from a manga")]
     [HttpGet("{mangaId}/sources")]
     [Authorize]
-    public async Task<ActionResult<IEnumerable<UserSourceDTO>>> GetUserSources(int mangaId, int userId = 0)
+    public async Task<ActionResult<IEnumerable<UserSourceDTO>>> GetUserSources(int mangaId)
     {
-        var userSources = await _userSourceService.GetUserSourcesByMangaId(mangaId, userId);
-
-        if (userSources == null)
+        if (User.Identity.IsAuthenticated)
         {
-            return BadRequest($"No sources found for mangaId {mangaId}");
+            var emailClaim = User.FindFirst("email")?.Value;
+
+            if (emailClaim == null)
+            {
+                return BadRequest();
+            }
+
+            var user = await _userManager.FindByEmailAsync(emailClaim);
+
+            if (user == null)
+            {
+                return BadRequest();
+            }
+
+            var userSources = await _userSourceService.GetUserSourcesByMangaId(mangaId, user.Id);
+
+            if (userSources == null)
+            {
+                return BadRequest($"No sources found for mangaId {mangaId}");
+            }
+
+            return Ok(userSources);
         }
 
-        return Ok(userSources);
+        return BadRequest();
     }
 
     [SwaggerOperation("Register and update source from a registered manga")]

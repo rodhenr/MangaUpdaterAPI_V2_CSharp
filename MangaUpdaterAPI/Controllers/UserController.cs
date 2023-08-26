@@ -1,8 +1,11 @@
 ﻿using MangaUpdater.Application.DTOs;
 using MangaUpdater.Application.Interfaces;
+using MangaUpdater.Domain.Entities;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
+using System.Security.Claims;
 
 namespace MangaUpdater.API.Controllers;
 [Route("api/[controller]")]
@@ -14,9 +17,11 @@ public class UserController : ControllerBase
     private readonly IUserSourceService _userSourceService;
     private readonly IChapterService _chapterService;
     private readonly IUserMangaService _userMangaService;
+    private readonly UserManager<IdentityUser> _userManager;
 
-    public UserController(IMangaService mangaService, IUserMangaChapterService userMangaChapterService, IUserSourceService userSourceService, IChapterService chapterService, IUserMangaService userMangaService)
+    public UserController(UserManager<IdentityUser> userManager, IMangaService mangaService, IUserMangaChapterService userMangaChapterService, IUserSourceService userSourceService, IChapterService chapterService, IUserMangaService userMangaService)
     {
+        _userManager = userManager;
         _mangaService = mangaService;
         _userMangaChapterService = userMangaChapterService;
         _userSourceService = userSourceService;
@@ -27,17 +32,36 @@ public class UserController : ControllerBase
     [SwaggerOperation("Get all mangas that the user follows with the last 3 released chapters")]
     [HttpGet("mangas")]
     [Authorize]
-    public async Task<ActionResult<IEnumerable<MangaUserLoggedDTO>>> GetLoggedUserMangas(int userId)
+    public async Task<ActionResult<IEnumerable<MangaUserLoggedDTO>>> GetLoggedUserMangas()
     {
-        IEnumerable<MangaUserLoggedDTO> mangas = await _userMangaChapterService.GetUserMangasWithThreeLastChapterByUserId(userId);
+        if (User.Identity.IsAuthenticated)
+        {
+            var emailClaim = User.FindFirst("email")?.Value;
 
-        return Ok(mangas);
+            if (emailClaim == null)
+            {
+                return BadRequest();
+            }
+
+            var user = await _userManager.FindByEmailAsync(emailClaim);
+
+            if (user == null)
+            {
+                return BadRequest();
+            }
+
+            IEnumerable<MangaUserLoggedDTO> mangas = await _userMangaChapterService.GetUserMangasWithThreeLastChapterByUserId(user.Id);
+
+            return Ok(mangas);
+        }
+
+        return Ok(Array.Empty<Array>());
     }
 
     [SwaggerOperation("User starts following a manga")]
     [HttpPost("mangas/{mangaId}")]
     [Authorize]
-    public async Task<ActionResult> FollowManga(int mangaId, int userId, IEnumerable<int> sourceIdList)
+    public async Task<ActionResult> FollowManga(int mangaId, IEnumerable<int> sourceIdList)
     {
         var manga = await _mangaService.GetMangaById(mangaId);
 
@@ -46,17 +70,36 @@ public class UserController : ControllerBase
             return BadRequest($"Manga not found for id {mangaId}");
         }
 
-        var userSources = await _userSourceService.GetUserSourcesByMangaId(mangaId, userId);
+        if (User.Identity.IsAuthenticated)
+        {
+            var emailClaim = User.FindFirst("email")?.Value;
 
-        await _userMangaChapterService.AddUserMangaBySourceIdList(mangaId, userId, sourceIdList, userSources);
+            if (emailClaim == null)
+            {
+                return BadRequest();
+            }
 
-        return Ok();
+            var user = await _userManager.FindByEmailAsync(emailClaim);
+
+            if (user == null)
+            {
+                return BadRequest();
+            }
+
+            var userSources = await _userSourceService.GetUserSourcesByMangaId(mangaId, user.Id);
+
+            await _userMangaChapterService.AddUserMangaBySourceIdList(mangaId, user.Id, sourceIdList, userSources);
+
+            return Ok();
+        }
+
+        return BadRequest();
     }
 
     [SwaggerOperation("User doesn't follow a manga anymore")]
     [HttpDelete("mangas/{mangaId}")]
     [Authorize]
-    public async Task<ActionResult> UnfollowManga(int mangaId, int userId)
+    public async Task<ActionResult> UnfollowManga(int mangaId)
     {
         var manga = await _mangaService.GetMangaById(mangaId);
 
@@ -65,34 +108,90 @@ public class UserController : ControllerBase
             return BadRequest($"Manga not found for id {mangaId}");
         }
 
-        await _userMangaChapterService.DeleteUserMangasByMangaId(mangaId, userId);
+        if (User.Identity.IsAuthenticated)
+        {
+            var emailClaim = User.FindFirst("email")?.Value;
 
-        return Ok();
+            if (emailClaim == null)
+            {
+                return BadRequest();
+            }
+
+            var user = await _userManager.FindByEmailAsync(emailClaim);
+
+            if (user == null)
+            {
+                return BadRequest();
+            }
+
+            await _userMangaChapterService.DeleteUserMangasByMangaId(mangaId, user.Id);
+
+            return Ok();
+        }
+
+        return BadRequest();
     }
 
     [SwaggerOperation("Get all mangas that the user follows with a simplified response")]
     [HttpGet("mangas/list")]
-    public async Task<ActionResult<IEnumerable<MangaUserDTO>>> GetUserMangasList(int userId)
+    public async Task<ActionResult<IEnumerable<MangaUserDTO>>> GetUserMangasList()
     {
-        //TODO: Implement JWT token to check the userId
-        IEnumerable<MangaUserDTO> userMangas = await _userMangaService.GetMangasByUserId(userId);
+        if (User.Identity.IsAuthenticated)
+        {
+            var emailClaim = User.FindFirst("email")?.Value;
 
-        return Ok(userMangas);
+            if (emailClaim == null)
+            {
+                return BadRequest();
+            }
+
+            var user = await _userManager.FindByEmailAsync(emailClaim);
+
+            if (user == null)
+            {
+                return BadRequest();
+            }
+
+            IEnumerable<MangaUserDTO> userMangas = await _userMangaService.GetMangasByUserId(user.Id);
+
+            return Ok(userMangas);
+        }
+
+        return BadRequest();
     }
 
     [SwaggerOperation("Get all followed mangas by a user")]
     [HttpGet("{userId}/mangas")]
-    public async Task<ActionResult<IEnumerable<MangaUserDTO>>> GetUserMangas(int userId)
+    public async Task<ActionResult<IEnumerable<MangaUserDTO>>> GetUserManga()
     {
-        IEnumerable<MangaUserDTO> userMangas = await _userMangaService.GetMangasByUserId(userId);
+        if (User.Identity.IsAuthenticated)
+        {
+            var emailClaim = User.FindFirst("email")?.Value;
 
-        return Ok(userMangas);
+            if (emailClaim == null)
+            {
+                return BadRequest();
+            }
+
+            var user = await _userManager.FindByEmailAsync(emailClaim);
+
+            if (user == null)
+            {
+                return BadRequest();
+            }
+
+            IEnumerable<MangaUserDTO> userMangas = await _userMangaService.GetMangasByUserId(user.Id);
+
+            return Ok(userMangas);
+        }
+
+        return BadRequest();
     }
 
     [SwaggerOperation("User starts following a source from a manga")]
     [HttpPost("mangas/{mangaId}/sources/{sourceId}")]
     [Authorize]
-    public async Task<ActionResult> AddUserManga(int mangaId, int userId, int sourceId)
+    public async Task<ActionResult> AddUserManga(int mangaId, int sourceId)
     {
         var manga = await _mangaService.GetMangaById(mangaId);
 
@@ -101,15 +200,34 @@ public class UserController : ControllerBase
             return BadRequest("Manga not found");
         }
 
-        await _userMangaChapterService.AddUserManga(mangaId, userId, sourceId);
+        if (User.Identity.IsAuthenticated)
+        {
+            var emailClaim = User.FindFirst("email")?.Value;
 
-        return Ok();
+            if (emailClaim == null)
+            {
+                return BadRequest();
+            }
+
+            var user = await _userManager.FindByEmailAsync(emailClaim);
+
+            if (user == null)
+            {
+                return BadRequest();
+            }
+
+            await _userMangaChapterService.AddUserManga(mangaId, user.Id, sourceId);
+
+            return Ok();
+        }
+
+        return BadRequest();
     }
 
     [SwaggerOperation("User doesn't follow a source from a manga anymore")]
     [HttpDelete("mangas/{mangaId}/sources/{sourceId}")]
     [Authorize]
-    public async Task<ActionResult> DeleteUserManga(int mangaId, int userId, int sourceId)
+    public async Task<ActionResult> DeleteUserManga(int mangaId, int sourceId)
     {
         var manga = await _mangaService.GetMangaById(mangaId);
 
@@ -118,35 +236,73 @@ public class UserController : ControllerBase
             return BadRequest("Manga not found");
         }
 
-        await _userMangaChapterService.DeleteUserManga(mangaId, userId, sourceId);
+        if (User.Identity.IsAuthenticated)
+        {
+            var emailClaim = User.FindFirst("email")?.Value;
 
-        return Ok();
+            if (emailClaim == null)
+            {
+                return BadRequest();
+            }
+
+            var user = await _userManager.FindByEmailAsync(emailClaim);
+
+            if (user == null)
+            {
+                return BadRequest();
+            }
+
+            await _userMangaChapterService.DeleteUserManga(mangaId, user.Id, sourceId);
+
+            return Ok();
+        }
+
+        return BadRequest();
     }
 
     [SwaggerOperation("User changes the last chapter read from a source from a manga")]
     [HttpPatch("mangas/{mangaId}/sources/{sourceId}")]
     [Authorize]
-    public async Task<ActionResult> UpdateManga(int mangaId, int sourceId, int userId, int chapterId)
+    public async Task<ActionResult> UpdateManga(int mangaId, int sourceId, int chapterId)
     {
         try
         {
-            var manga = await _mangaService.GetMangaById(mangaId);
-
-            if (manga == null)
+            if (User.Identity.IsAuthenticated)
             {
-                return BadRequest("Manga not found");
+                var manga = await _mangaService.GetMangaById(mangaId);
+
+                if (manga == null)
+                {
+                    return BadRequest("Manga not found");
+                }
+
+                var chapter = await _chapterService.GetChapterById(chapterId);
+
+                if (chapter == null || chapter.Source!.Id != sourceId)
+                {
+                    return BadRequest("Invalid chapter/source");
+                }
+
+                var emailClaim = User.FindFirst("email")?.Value;
+
+                if (emailClaim == null)
+                {
+                    return BadRequest();
+                }
+
+                var user = await _userManager.FindByEmailAsync(emailClaim);
+
+                if (user == null)
+                {
+                    return BadRequest();
+                }
+
+                await _userMangaService.UpdateUserMangaAsync(user.Id, mangaId, sourceId, chapterId);
+
+                return Ok();
             }
 
-            var chapter = await _chapterService.GetChapterById(chapterId);
-
-            if (chapter == null || chapter.Source!.Id != sourceId)
-            {
-                return BadRequest("Invalid chapter/source");
-            }
-
-            await _userMangaService.UpdateUserMangaAsync(userId, mangaId, sourceId, chapterId);
-
-            return Ok();
+            return BadRequest();
         }
         catch (Exception ex)
         {

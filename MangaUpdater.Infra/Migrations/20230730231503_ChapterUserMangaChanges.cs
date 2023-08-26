@@ -57,12 +57,6 @@ namespace MangaUpdater.Infra.Data.Migrations
                 principalTable: "Chapters",
                 principalColumns: new[] { "MangaId", "SourceId", "Number" },
                 onDelete: ReferentialAction.NoAction);
-
-            migrationBuilder.Sql("INSERT INTO UserMangas(UserId,MangaId,SourceId,LastChapter,ChapterId) " +
-              "VALUES(1,1,1,998,1)");
-
-            migrationBuilder.Sql("INSERT INTO UserMangas(UserId,MangaId,SourceId,LastChapter,ChapterId) " +
-                "VALUES(1,2,2,135,5)");
         }
     }
 }

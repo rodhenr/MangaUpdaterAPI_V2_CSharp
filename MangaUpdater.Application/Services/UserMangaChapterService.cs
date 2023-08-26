@@ -20,7 +20,7 @@ public class UserMangaChapterService : IUserMangaChapterService
         _mapper = mapper;
     }
 
-    public async Task AddUserManga(int mangaId, int userId, int sourceId)
+    public async Task AddUserManga(int mangaId, string userId, int sourceId)
     {
         var userManga = await _userMangaRepository.GetAllByMangaIdAndUserIdAsync(mangaId, userId);
 
@@ -37,7 +37,7 @@ public class UserMangaChapterService : IUserMangaChapterService
         return;
     }
 
-    public async Task AddUserMangaBySourceIdList(int mangaId, int userId, IEnumerable<int> sourceIdList, IEnumerable<UserSourceDTO>? userSources)
+    public async Task AddUserMangaBySourceIdList(int mangaId, string userId, IEnumerable<int> sourceIdList, IEnumerable<UserSourceDTO>? userSources)
     {
         foreach (var sourceId in sourceIdList)
         {
@@ -57,7 +57,7 @@ public class UserMangaChapterService : IUserMangaChapterService
         return;
     }
 
-    public async Task<IEnumerable<MangaUserLoggedDTO>> GetUserMangasWithThreeLastChapterByUserId(int userId)
+    public async Task<IEnumerable<MangaUserLoggedDTO>> GetUserMangasWithThreeLastChapterByUserId(string userId)
     {
         var userMangas = await _userMangaRepository.GetAllByUserIdAsync(userId);
 
@@ -76,14 +76,14 @@ public class UserMangaChapterService : IUserMangaChapterService
         return _mapper.Map<IEnumerable<MangaUserLoggedDTO>>(userMangasByMangaId);
     }
 
-    public async Task DeleteUserMangasByMangaId(int mangaId, int userId)
+    public async Task DeleteUserMangasByMangaId(int mangaId, string userId)
     {
         await _userMangaRepository.DeleteAllByMangaIdAndUserIdAsync(mangaId, userId);
 
         return;
     }
 
-    public async Task DeleteUserManga(int mangaId, int userId, int sourceId)
+    public async Task DeleteUserManga(int mangaId, string userId, int sourceId)
     {
         var userManga = await _userMangaRepository.GetByMangaIdUserIdAndSourceIdAsync(mangaId, userId, sourceId);
 

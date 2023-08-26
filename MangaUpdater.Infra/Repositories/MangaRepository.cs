@@ -81,7 +81,7 @@ public class MangaRepository : IMangaRepository
             .SingleOrDefaultAsync(a => a.Id == id);
     }
 
-    public async Task<Manga?> GetByIdAndUserIdOrderedDescAsync(int id, int userId)
+    public async Task<Manga?> GetByIdAndUserIdOrderedDescAsync(int id, string userId)
     {
         return await _context.Mangas
             .Include(a => a.UserMangas.Where(b => b.UserId == userId))

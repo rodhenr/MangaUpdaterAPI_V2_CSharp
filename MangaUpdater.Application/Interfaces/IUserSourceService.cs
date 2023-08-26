@@ -4,5 +4,5 @@ namespace MangaUpdater.Application.Interfaces;
 
 public interface IUserSourceService
 {
-    Task<IEnumerable<UserSourceDTO>?> GetUserSourcesByMangaId(int mangaId, int userId);
+    Task<IEnumerable<UserSourceDTO>?> GetUserSourcesByMangaId(int mangaId, string userId);
 }

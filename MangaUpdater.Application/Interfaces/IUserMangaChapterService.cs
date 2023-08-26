@@ -4,9 +4,9 @@ namespace MangaUpdater.Application.Interfaces;
 
 public interface IUserMangaChapterService
 {
-    Task AddUserManga(int mangaId, int userId, int sourceId);
-    Task AddUserMangaBySourceIdList(int mangaId, int userId, IEnumerable<int> sourceIdList, IEnumerable<UserSourceDTO>? userSources);
-    Task<IEnumerable<MangaUserLoggedDTO>> GetUserMangasWithThreeLastChapterByUserId(int userId);
-    Task DeleteUserMangasByMangaId(int mangaId, int userId);
-    Task DeleteUserManga(int mangaId, int userId, int sourceId);
+    Task AddUserManga(int mangaId, string userId, int sourceId);
+    Task AddUserMangaBySourceIdList(int mangaId, string userId, IEnumerable<int> sourceIdList, IEnumerable<UserSourceDTO>? userSources);
+    Task<IEnumerable<MangaUserLoggedDTO>> GetUserMangasWithThreeLastChapterByUserId(string userId);
+    Task DeleteUserMangasByMangaId(int mangaId, string userId);
+    Task DeleteUserManga(int mangaId, string userId, int sourceId);
 }

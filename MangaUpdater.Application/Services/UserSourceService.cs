@@ -15,7 +15,7 @@ public class UserSourceService : IUserSourceService
         _mangaSourceRepository = mangaSourceRepository;
     }
 
-    public async Task<IEnumerable<UserSourceDTO>?> GetUserSourcesByMangaId(int mangaId, int userId)
+    public async Task<IEnumerable<UserSourceDTO>?> GetUserSourcesByMangaId(int mangaId, string userId)
     {
         var mangaSources = await _mangaSourceRepository.GetAllByMangaIdAsync(mangaId);
         var userMangas = await _userMangaRepository.GetAllByMangaIdAndUserIdAsync(mangaId, userId);
