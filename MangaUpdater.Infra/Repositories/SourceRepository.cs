@@ -1,7 +1,7 @@
-﻿using MangaUpdater.Domain.Entities;
+﻿using Microsoft.EntityFrameworkCore;
+using MangaUpdater.Domain.Entities;
 using MangaUpdater.Domain.Interfaces;
-using MangaUpdater.Infra.Context;
-using Microsoft.EntityFrameworkCore;
+using MangaUpdater.Infra.Data.Context;
 
 namespace MangaUpdater.Infra.Data.Repositories;
 
@@ -13,6 +13,7 @@ public class SourceRepository : ISourceRepository
     {
         _context = context;
     }
+
     public async Task<ICollection<Source>> GetAsync()
     {
         return await _context.Sources
@@ -24,6 +25,6 @@ public class SourceRepository : ISourceRepository
     {
         return await _context.Sources
             .AsNoTracking()
-            .SingleOrDefaultAsync(a => a.Id == id);
+            .SingleOrDefaultAsync(s => s.Id == id);
     }
 }

@@ -1,7 +1,7 @@
-﻿using MangaUpdater.Domain.Entities;
+﻿using Microsoft.EntityFrameworkCore;
+using MangaUpdater.Domain.Entities;
 using MangaUpdater.Domain.Interfaces;
-using MangaUpdater.Infra.Context;
-using Microsoft.EntityFrameworkCore;
+using MangaUpdater.Infra.Data.Context;
 
 namespace MangaUpdater.Infra.Data.Repositories;
 
@@ -18,14 +18,12 @@ public class UserMangaRepository : IUserMangaRepository
     {
         await _context.UserMangas.AddAsync(userManga);
         await _context.SaveChangesAsync();
-
-        return;
     }
 
     public async Task<IEnumerable<UserManga>> GetAllByMangaIdAsync(int mangaId)
     {
         return await _context.UserMangas
-            .Where(a => a.MangaId == mangaId)
+            .Where(um => um.MangaId == mangaId)
             .AsNoTracking()
             .ToListAsync();
     }
@@ -33,11 +31,11 @@ public class UserMangaRepository : IUserMangaRepository
     public async Task<IEnumerable<UserManga>> GetAllByUserIdAsync(string userId)
     {
         return await _context.UserMangas
-            .Where(a => a.UserId == userId)
-            .Include(a => a.Manga)
-            .Include(a => a.Source)
+            .Where(um => um.UserId == userId)
+            .Include(um => um.Manga)
+            .Include(um => um.Source)
             .AsNoTracking()
-            .GroupBy(a => a.MangaId)
+            .GroupBy(um => um.MangaId)
             .Select(group => group.First())
             .ToListAsync();
     }
@@ -45,7 +43,7 @@ public class UserMangaRepository : IUserMangaRepository
     public async Task<IEnumerable<UserManga>> GetAllByMangaIdAndUserIdAsync(int mangaId, string userId)
     {
         return await _context.UserMangas
-            .Where(a => a.MangaId == mangaId && a.UserId == userId)
+            .Where(um => um.MangaId == mangaId && um.UserId == userId)
             .AsNoTracking()
             .ToListAsync();
     }
@@ -54,48 +52,41 @@ public class UserMangaRepository : IUserMangaRepository
     {
         return await _context.UserMangas
             .AsNoTracking()
-            .SingleOrDefaultAsync(a => a.UserId == userId && a.MangaId == mangaId && a.SourceId == sourceId);
+            .SingleOrDefaultAsync(um => um.UserId == userId && um.MangaId == mangaId && um.SourceId == sourceId);
     }
 
     public async Task UpdateAsync(string userId, int mangaId, int sourceId, int chapterId)
     {
         var userManga = await _context.UserMangas
-            .SingleOrDefaultAsync(a => a.UserId == userId && a.MangaId == mangaId && a.SourceId == sourceId);
+            .SingleOrDefaultAsync(um => um.UserId == userId && um.MangaId == mangaId && um.SourceId == sourceId);
 
-        if (userManga == null)
+        if (userManga != null)
         {
-            throw new Exception("User doesn't follow this manga/source");
+            userManga.CurrentChapterId = chapterId;
+            await _context.SaveChangesAsync();
         }
-
-        userManga.CurrentChapterId = chapterId;
-        await _context.SaveChangesAsync();
-
-        return;
     }
 
     public async Task DeleteAsync(string userId, int mangaId, int sourceId)
     {
-        var userManga = await _context.UserMangas.SingleOrDefaultAsync(a => a.UserId == userId && a.MangaId == mangaId && a.SourceId == sourceId);
+        var userManga = await _context.UserMangas
+            .SingleOrDefaultAsync(um => um.UserId == userId && um.MangaId == mangaId && um.SourceId == sourceId);
 
         if (userManga != null)
         {
             _context.UserMangas.Remove(userManga);
             await _context.SaveChangesAsync();
         }
-
-        return;
     }
 
-    public async Task DeleteAllByMangaIdAndUserIdAsync(int mangaId, string UserId)
+    public async Task DeleteAllByMangaIdAndUserIdAsync(int mangaId, string userId)
     {
         var userMangas = await _context.UserMangas
-            .Where(a => a.MangaId == mangaId && a.UserId == UserId)
+            .Where(um => um.MangaId == mangaId && um.UserId == userId)
             .ToListAsync();
 
         _context.UserMangas.RemoveRange(userMangas);
 
         await _context.SaveChangesAsync();
-
-        return;
     }
 }

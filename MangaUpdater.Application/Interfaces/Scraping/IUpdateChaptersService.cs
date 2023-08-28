@@ -1,6 +1,4 @@
-﻿using MangaUpdater.Application.Models;
-
-namespace MangaUpdater.Application.Interfaces.Scraping;
+﻿namespace MangaUpdater.Application.Interfaces.Scraping;
 
 public interface IUpdateChaptersService
 {

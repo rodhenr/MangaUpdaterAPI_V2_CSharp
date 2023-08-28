@@ -1,10 +1,7 @@
-﻿using MangaUpdater.Application.DTOs;
-using MangaUpdater.Application.Interfaces;
-using MangaUpdater.Application.Services;
-using MangaUpdater.Domain.Entities;
-using MangaUpdater.Domain.Interfaces;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
+using MangaUpdater.Application.Interfaces;
+using MangaUpdater.Domain.Entities;
 
 namespace MangaUpdater.API.Controllers;
 
@@ -29,15 +26,13 @@ public class SourceController : ControllerBase
     }
 
     [SwaggerOperation("Get a source")]
-    [HttpGet("{sourceId}")]
+    [HttpGet("{sourceId:int}")]
     public async Task<ActionResult<Source>> GetSourceById(int sourceId)
     {
         var source = await _sourceService.GetSourcesById(sourceId);
 
         if (source == null)
-        {
             return BadRequest($"Source not found by id {sourceId}");
-        }
 
         return Ok(source);
     }

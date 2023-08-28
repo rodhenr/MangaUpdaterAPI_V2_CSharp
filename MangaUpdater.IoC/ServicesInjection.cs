@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using OpenQA.Selenium.Chrome;
 using MangaUpdater.Domain.Interfaces;
 using MangaUpdater.Infra.Data.Repositories;
 using MangaUpdater.Infra.Data.Identity;
@@ -8,10 +9,10 @@ using MangaUpdater.Application.Interfaces;
 using MangaUpdater.Application.Mappings;
 using MangaUpdater.Infra.Data.ExternalServices;
 using MangaUpdater.Application.Services.Scraping;
-using OpenQA.Selenium.Chrome;
 using MangaUpdater.Application.Interfaces.Scraping;
 
 namespace MangaUpdater.Infra.IoC;
+
 public static class ServicesInjection
 {
     public static void AddInfrastructure(this IServiceCollection services, IConfiguration configuration)
@@ -28,7 +29,7 @@ public static class ServicesInjection
         services.AddScoped<IUserMangaService, UserMangaService>();
         services.AddScoped<IUserSourceService, UserSourceService>();
         services.AddScoped<IUserMangaChapterService, UserMangaChapterService>();
-        services.AddScoped<IMyAnimeListAPIService, MyAnimeListAPIService>();
+        services.AddScoped<IMyAnimeListApiService, MyAnimeListApiService>();
         services.AddScoped<IRegisterMangaService, RegisterMangaService>();
         services.AddScoped<IUpdateChaptersService, UpdateChaptersService>();
         services.AddScoped<IRegisterSourceService, RegisterSourceService>();
@@ -37,7 +38,7 @@ public static class ServicesInjection
         {
             var driverOptions = new ChromeOptions()
             {
-                BinaryLocation = "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe"
+                BinaryLocation = @"C:\Program Files\Google\Chrome\Application\chrome.exe"
             };
 
             driverOptions.AddArguments(new List<string>() { "headless", "disable-gpu" });

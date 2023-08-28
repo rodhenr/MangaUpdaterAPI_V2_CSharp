@@ -4,7 +4,7 @@ using MangaUpdater.Domain.Interfaces;
 
 namespace MangaUpdater.Application.Services;
 
-public class GenreService: IGenreService
+public class GenreService : IGenreService
 {
     private readonly IGenreRepository _genreRepository;
 

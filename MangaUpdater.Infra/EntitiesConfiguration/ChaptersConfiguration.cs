@@ -1,6 +1,6 @@
-﻿using MangaUpdater.Domain.Entities;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using MangaUpdater.Domain.Entities;
 
 namespace MangaUpdater.Infra.Data.EntitiesConfiguration;
 

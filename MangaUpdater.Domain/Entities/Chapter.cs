@@ -22,9 +22,7 @@ public sealed class Chapter
 
     public float Number { get; set; }
 
-    [JsonIgnore]
-    public Manga? Manga { get; set; }
+    [JsonIgnore] public Manga? Manga { get; set; }
 
-    [JsonIgnore]
-    public Source? Source { get; set; }
+    [JsonIgnore] public Source? Source { get; set; }
 }

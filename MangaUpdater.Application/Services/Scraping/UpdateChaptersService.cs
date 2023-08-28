@@ -15,7 +15,7 @@ public class UpdateChaptersService : IUpdateChaptersService
 
     public Dictionary<string, string> UpdateChaptersFromMangaLivreSource(string sourceUrl, string linkUrl)
     {
-        string fullUrl = sourceUrl + linkUrl;
+        var fullUrl = sourceUrl + linkUrl;
 
         _driver.Navigate().GoToUrl(fullUrl);
 
@@ -23,12 +23,13 @@ public class UpdateChaptersService : IUpdateChaptersService
 
         Dictionary<string, string> chapters = new();
 
-        IEnumerable<IWebElement> lastThreeChapters = _driver.FindElements(By.XPath("//li[a[contains(@class, 'link-dark')]]")).Take(3);
+        IEnumerable<IWebElement> lastThreeChapters =
+            _driver.FindElements(By.XPath("//li[a[contains(@class, 'link-dark')]]")).Take(3);
 
         foreach (var chapter in lastThreeChapters)
         {
-            string chapterNumber = chapter.FindElement(By.ClassName("cap-text")).Text.Replace("Capítulo", "").Trim();
-            string chapterDate = chapter.FindElement(By.ClassName("chapter-date")).Text.Trim();
+            var chapterNumber = chapter.FindElement(By.ClassName("cap-text")).Text.Replace("Capítulo", "").Trim();
+            var chapterDate = chapter.FindElement(By.ClassName("chapter-date")).Text.Trim();
 
             chapters.Add(chapterNumber, chapterDate);
         }

@@ -15,12 +15,13 @@ public class UserSourceService : IUserSourceService
         _mangaSourceRepository = mangaSourceRepository;
     }
 
-    public async Task<IEnumerable<UserSourceDTO>?> GetUserSourcesByMangaId(int mangaId, string userId)
+    public async Task<IEnumerable<UserSourceDto>?> GetUserSourcesByMangaId(int mangaId, string userId)
     {
         var mangaSources = await _mangaSourceRepository.GetAllByMangaIdAsync(mangaId);
         var userMangas = await _userMangaRepository.GetAllByMangaIdAndUserIdAsync(mangaId, userId);
 
-        var userSources = mangaSources.Select(a => new UserSourceDTO(a.SourceId, a.Source.Name, userMangas.Any(b => b.SourceId == a.SourceId))).ToList();
+        var userSources = mangaSources.Select(a =>
+            new UserSourceDto(a.SourceId, a.Source!.Name, userMangas.Any(b => b.SourceId == a.SourceId))).ToList();
 
         return userSources;
     }

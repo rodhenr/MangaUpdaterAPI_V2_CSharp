@@ -33,20 +33,24 @@ public class ChapterService : IChapterService
         return await _chapterRepository.GetAllByMangaIdAsync(mangaId, max ?? 0);
     }
 
-    public async Task CreateOrUpdateChaptersByMangaSource(int mangaId, int sourceId, Dictionary<string, string> chapters)
+    public async Task CreateOrUpdateChaptersByMangaSource(int mangaId, int sourceId,
+        Dictionary<string, string> chapters)
     {
-        List<Chapter> chaptersToUpdate = new();
-
         var chaptersInDatabase = await _chapterRepository.GetChaptersNumberByMangaIdAndSourceIdAsync(mangaId, sourceId);
 
-        foreach (var chapter in chapters)
-        {
-            if (!chaptersInDatabase.Any(c => c == float.Parse(chapter.Key)))
-            {
-                chaptersToUpdate.Add(new Chapter(mangaId, sourceId, DateTime.Parse(chapter.Value), float.Parse(chapter.Key)));
-            }
-        }
+        List<Chapter> chaptersToUpdate = (from chapter in chapters
+            where !chaptersInDatabase.Any(ch => Math.Abs(ch - float.Parse(chapter.Key)) < 0)
+            select new Chapter(mangaId, sourceId, DateTime.Parse(chapter.Value), float.Parse(chapter.Key))).ToList();
 
         await _chapterRepository.BulkCreateAsync(chaptersToUpdate);
     }
 }
+
+// foreach (var chapter in chapters)
+// {
+//     if (!chaptersInDatabase.Any(c => c == float.Parse(chapter.Key)))
+//     {
+//         chaptersToUpdate.Add(new Chapter(mangaId, sourceId, DateTime.Parse(chapter.Value),
+//             float.Parse(chapter.Key)));
+//     }
+// }

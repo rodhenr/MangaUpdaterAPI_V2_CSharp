@@ -5,23 +5,20 @@ namespace MangaUpdater.Domain.Entities;
 
 public sealed class MangaSource
 {
-    public MangaSource(int mangaId, int sourceId, string uRL)
+    public MangaSource(int mangaId, int sourceId, string url)
     {
         MangaId = mangaId;
         SourceId = sourceId;
-        URL = uRL;
+        Url = url;
     }
 
     public int MangaId { get; set; }
 
     public int SourceId { get; set; }
 
-    [MaxLength(100)]
-    public string URL { get; set; }
+    [MaxLength(100)] public string Url { get; set; }
 
-    [JsonIgnore]
-    public Manga? Manga { get; set; }
+    [JsonIgnore] public Manga? Manga { get; set; }
 
-    [JsonIgnore]
-    public Source? Source { get; set; }
+    [JsonIgnore] public Source? Source { get; set; }
 }

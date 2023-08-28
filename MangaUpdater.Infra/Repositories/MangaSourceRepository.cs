@@ -1,7 +1,7 @@
-﻿using MangaUpdater.Domain.Entities;
+﻿using Microsoft.EntityFrameworkCore;
+using MangaUpdater.Domain.Entities;
 using MangaUpdater.Domain.Interfaces;
-using MangaUpdater.Infra.Context;
-using Microsoft.EntityFrameworkCore;
+using MangaUpdater.Infra.Data.Context;
 
 namespace MangaUpdater.Infra.Data.Repositories;
 
@@ -18,15 +18,13 @@ public class MangaSourceRepository : IMangaSourceRepository
     {
         await _context.AddAsync(mangaSource);
         await _context.SaveChangesAsync();
-
-        return;
     }
 
     public async Task<ICollection<MangaSource>> GetAllByMangaIdAsync(int mangaId)
     {
         return await _context.MangaSources
-            .Where(a => a.MangaId == mangaId)
-            .Include(a => a.Source)
+            .Where(ms => ms.MangaId == mangaId)
+            .Include(ms => ms.Source)
             .Include(ms => ms.Manga)
             .AsNoTracking()
             .ToListAsync();
@@ -35,10 +33,10 @@ public class MangaSourceRepository : IMangaSourceRepository
     public async Task<ICollection<MangaSource>> GetAllBySourceIdAsync(int sourceId)
     {
         return await _context.MangaSources
-             .Where(a => a.SourceId == sourceId)
-             .Include(a => a.Source)
-             .AsNoTracking()
-             .ToListAsync();
+            .Where(ms => ms.SourceId == sourceId)
+            .Include(ms => ms.Source)
+            .AsNoTracking()
+            .ToListAsync();
     }
 
     public async Task<MangaSource?> GetByMangaIdAndSourceIdAsync(int mangaId, int sourceId)

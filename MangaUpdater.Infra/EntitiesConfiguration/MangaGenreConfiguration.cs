@@ -1,10 +1,10 @@
-﻿using MangaUpdater.Domain.Entities;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using MangaUpdater.Domain.Entities;
 
 namespace MangaUpdater.Infra.Data.EntitiesConfiguration;
 
-public class MangaGenreConfiguration: IEntityTypeConfiguration<MangaGenre>
+public class MangaGenreConfiguration : IEntityTypeConfiguration<MangaGenre>
 {
     public void Configure(EntityTypeBuilder<MangaGenre> builder)
     {

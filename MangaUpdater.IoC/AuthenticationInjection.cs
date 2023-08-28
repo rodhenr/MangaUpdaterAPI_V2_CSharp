@@ -6,20 +6,23 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using MangaUpdater.Infra.Data.Identity;
 
 namespace MangaUpdater.Infra.IoC;
+
 public static class AuthenticationInjection
 {
     public static void AddJwtAuthentication(this IServiceCollection services, IConfiguration configuration)
     {
         var jwtAppSettingsOptions = configuration.GetSection(nameof(JwtOptions));
-        var securityKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(configuration.GetSection("JwtOptions:SecurityKey").Value!));
+        var securityKey =
+            new SymmetricSecurityKey(
+                Encoding.ASCII.GetBytes(configuration.GetSection("JwtOptions:SecurityKey").Value!));
 
         services.Configure<JwtOptions>(options =>
-            {
-                options.Issuer = jwtAppSettingsOptions[nameof(JwtOptions.Issuer)]!;
-                options.Audience = jwtAppSettingsOptions[nameof(JwtOptions.Audience)]!;
-                options.SigningCredentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha512);
-                options.Expiration = int.Parse(jwtAppSettingsOptions[nameof(JwtOptions.Expiration)] ?? "0");
-            });
+        {
+            options.Issuer = jwtAppSettingsOptions[nameof(JwtOptions.Issuer)]!;
+            options.Audience = jwtAppSettingsOptions[nameof(JwtOptions.Audience)]!;
+            options.SigningCredentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha512);
+            options.Expiration = int.Parse(jwtAppSettingsOptions[nameof(JwtOptions.Expiration)] ?? "0");
+        });
 
         var tokenValidationParameters = new TokenValidationParameters
         {
@@ -42,9 +45,6 @@ public static class AuthenticationInjection
         {
             options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
             options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-        }).AddJwtBearer(options =>
-        {
-            options.TokenValidationParameters = tokenValidationParameters;
-        });
+        }).AddJwtBearer(options => { options.TokenValidationParameters = tokenValidationParameters; });
     }
 }

@@ -13,8 +13,7 @@ public sealed class UserManga
         CurrentChapterId = currentChapterId;
     }
 
-    [MaxLength(450)]
-    public string UserId { get; set; }
+    [MaxLength(450)] public string UserId { get; set; }
 
     public int MangaId { get; set; }
 
@@ -22,9 +21,7 @@ public sealed class UserManga
 
     public int CurrentChapterId { get; set; }
 
-    [JsonIgnore]
-    public Manga? Manga { get; set; }
+    [JsonIgnore] public Manga? Manga { get; set; }
 
-    [JsonIgnore]
-    public Source? Source { get; set; }
+    [JsonIgnore] public Source? Source { get; set; }
 }

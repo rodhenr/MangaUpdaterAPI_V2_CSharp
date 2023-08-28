@@ -1,6 +1,6 @@
-using MangaUpdater.Infra.IoC;
 using Microsoft.OpenApi.Models;
 using System.Text.Json.Serialization;
+using MangaUpdater.Infra.IoC;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -36,7 +36,8 @@ builder.Services.AddSwaggerGen(options =>
         {
             new OpenApiSecurityScheme
             {
-                Reference = new OpenApiReference{
+                Reference = new OpenApiReference
+                {
                     Type = ReferenceType.SecurityScheme,
                     Id = "Bearer"
                 },
@@ -45,7 +46,7 @@ builder.Services.AddSwaggerGen(options =>
                 In = ParameterLocation.Header
             },
             new List<string>()
-            }
+        }
     });
 });
 
@@ -53,7 +54,8 @@ builder.Services.AddJwtAuthentication(builder.Configuration);
 builder.Services.AddInfrastructure(builder.Configuration);
 builder.Services.AddIdentity(builder.Configuration);
 
-builder.Services.AddControllers().AddJsonOptions(x => x.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles);
+builder.Services.AddControllers()
+    .AddJsonOptions(x => x.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles);
 
 var app = builder.Build();
 

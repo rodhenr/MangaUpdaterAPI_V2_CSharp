@@ -1,6 +1,7 @@
 ﻿using MangaUpdater.Application.Models;
 
 namespace MangaUpdater.Application.Interfaces;
+
 public interface IAuthenticationService
 {
     Task<bool> Register(UserRegister userRegister);

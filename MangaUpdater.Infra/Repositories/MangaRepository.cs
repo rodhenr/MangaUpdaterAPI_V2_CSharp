@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using MangaUpdater.Domain.Entities;
 using MangaUpdater.Domain.Interfaces;
-using MangaUpdater.Infra.Context;
+using MangaUpdater.Infra.Data.Context;
 
 namespace MangaUpdater.Infra.Data.Repositories;
 
@@ -18,8 +18,6 @@ public class MangaRepository : IMangaRepository
     {
         await _context.AddAsync(manga);
         await _context.SaveChangesAsync();
-
-        return;
     }
 
     public async Task<IEnumerable<Manga>> GetAsync()
@@ -30,41 +28,29 @@ public class MangaRepository : IMangaRepository
             .ToListAsync();
     }
 
-    public async Task<IEnumerable<Manga>> GetWithFiltersAsync(string? orderBy, List<int>? sourceIdList, List<int>? genreIdList)
+    public async Task<IEnumerable<Manga>> GetWithFiltersAsync(string? orderBy, List<int>? sourceIdList,
+        List<int>? genreIdList)
     {
         var query = _context.Mangas
             .AsQueryable();
 
-        if (!string.IsNullOrEmpty(orderBy))
+        query = orderBy switch
         {
-            switch (orderBy.ToLower())
-            {
-                case "alphabet":
-                    query = query
-                        .OrderBy(a => a.Name);
-                    break;
-                case "latest":
-                    query = query
-                        .OrderByDescending(a => a.Id);
-                    break;
-                default:
-                    break;
-            }
-        }
+            "alphabet" => query.OrderBy(m => m.Name),
+            "latest" => query.OrderByDescending(m => m.Id),
+            _ => query
+        };
 
         if (sourceIdList != null && sourceIdList.Any())
-        {
-            query = query.Where(a => a.MangaSources.Any(b => sourceIdList.Contains(b.SourceId)));
-        }
+            query = query.Where(m =>
+                m.MangaSources != null && m.MangaSources.Any(b => sourceIdList.Contains(b.SourceId)));
 
         if (genreIdList != null && genreIdList.Any())
-        {
-            query = query.Where(a => a.MangaGenres.Any(b => genreIdList.Contains(b.GenreId)));
-        }
+            query = query.Where(m => m.MangaGenres != null && m.MangaGenres.Any(b => genreIdList.Contains(b.GenreId)));
 
         return await query
-            .Include(a => a.MangaSources)
-            .Include(a => a.MangaGenres)
+            .Include(m => m.MangaSources)
+            .Include(m => m.MangaGenres)
             .AsNoTracking()
             .ToListAsync();
     }
@@ -72,32 +58,32 @@ public class MangaRepository : IMangaRepository
     public async Task<Manga?> GetByIdOrderedDescAsync(int id)
     {
         return await _context.Mangas
-            .Include(a => a.MangaGenres)
-                .ThenInclude(a => a.Genre)
-            .Include(a => a.MangaSources)
-                .ThenInclude(a => a.Source)
-            .Include(a => a.Chapters.OrderByDescending(b => b.Date))
+            .Include(m => m.MangaGenres)
+            .ThenInclude(mg => mg.Genre)
+            .Include(m => m.MangaSources)
+            .ThenInclude(ms => ms.Source)
+            .Include(m => m.Chapters.OrderByDescending(ch => ch.Date))
             .AsNoTracking()
-            .SingleOrDefaultAsync(a => a.Id == id);
+            .SingleOrDefaultAsync(m => m.Id == id);
     }
 
     public async Task<Manga?> GetByIdAndUserIdOrderedDescAsync(int id, string userId)
     {
         return await _context.Mangas
-            .Include(a => a.UserMangas.Where(b => b.UserId == userId))
-            .Include(a => a.MangaGenres)
-                .ThenInclude(a => a.Genre)
-            .Include(a => a.MangaSources)
-                .ThenInclude(a => a.Source)
-            .Include(a => a.Chapters.OrderByDescending(b => b.Date))
+            .Include(m => m.UserMangas.Where(um => um.UserId == userId))
+            .Include(m => m.MangaGenres)
+            .ThenInclude(m => m.Genre)
+            .Include(m => m.MangaSources)
+            .ThenInclude(ms => ms.Source)
+            .Include(m => m.Chapters.OrderByDescending(ch => ch.Date))
             .AsNoTracking()
-            .SingleOrDefaultAsync(a => a.Id == id);
+            .SingleOrDefaultAsync(m => m.Id == id);
     }
 
     public async Task<Manga?> GetByMalIdAsync(int malId)
     {
         return await _context.Mangas
             .AsNoTracking()
-            .SingleOrDefaultAsync(a => a.MyAnimeListId == malId);
+            .SingleOrDefaultAsync(m => m.MyAnimeListId == malId);
     }
 }

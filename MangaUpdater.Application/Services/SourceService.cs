@@ -4,9 +4,10 @@ using MangaUpdater.Domain.Interfaces;
 
 namespace MangaUpdater.Application.Services;
 
-public class SourceService: ISourceService
+public class SourceService : ISourceService
 {
     private readonly ISourceRepository _sourceRepository;
+
     public SourceService(ISourceRepository sourceRepository)
     {
         _sourceRepository = sourceRepository;

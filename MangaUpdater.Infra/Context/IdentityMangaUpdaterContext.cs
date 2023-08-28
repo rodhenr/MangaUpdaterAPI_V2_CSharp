@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using MangaUpdater.Domain.Entities;
 
-namespace MangaUpdater.Infra.Context;
+namespace MangaUpdater.Infra.Data.Context;
 
 public class IdentityMangaUpdaterContext : IdentityDbContext
 {
@@ -13,6 +13,7 @@ public class IdentityMangaUpdaterContext : IdentityDbContext
     public DbSet<Chapter> Chapters { get; set; }
     public DbSet<Genre> Genres { get; set; }
     public DbSet<Manga> Mangas { get; set; }
+    
     public DbSet<MangaGenre> MangaGenres { get; set; }
     public DbSet<MangaSource> MangaSources { get; set; }
     public DbSet<Source> Sources { get; set; }

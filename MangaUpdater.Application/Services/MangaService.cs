@@ -5,6 +5,7 @@ using MangaUpdater.Domain.Entities;
 using MangaUpdater.Domain.Interfaces;
 
 namespace MangaUpdater.Application.Services;
+
 public class MangaService : IMangaService
 {
     private readonly IMangaRepository _mangaRepository;
@@ -26,11 +27,12 @@ public class MangaService : IMangaService
         return await _mangaRepository.GetAsync();
     }
 
-    public async Task<IEnumerable<MangaUserDTO>> GetMangasWithFilter(string? orderBy, List<int>? sourceIdList, List<int>? genreIdList)
+    public async Task<IEnumerable<MangaUserDto>> GetMangasWithFilter(string? orderBy, List<int>? sourceIdList,
+        List<int>? genreIdList)
     {
         var mangas = await _mangaRepository.GetWithFiltersAsync(orderBy, sourceIdList, genreIdList);
 
-        return _mapper.Map<IEnumerable<MangaUserDTO>>(mangas);
+        return _mapper.Map<IEnumerable<MangaUserDto>>(mangas);
     }
 
     public async Task<Manga?> GetMangaById(int id)
@@ -38,16 +40,11 @@ public class MangaService : IMangaService
         return await _mangaRepository.GetByIdOrderedDescAsync(id);
     }
 
-    public async Task<MangaDTO?> GetMangaByIdAndUserId(int id, string userId)
+    public async Task<MangaDto?> GetMangaByIdAndUserId(int id, string userId)
     {
         var data = await _mangaRepository.GetByIdAndUserIdOrderedDescAsync(id, userId);
 
-        if (data == null)
-        {
-            return null;
-        }
-
-        return _mapper.Map<MangaDTO>(data);
+        return data == null ? null : _mapper.Map<MangaDto>(data);
     }
 
     public async Task<Manga?> GetMangaByMalId(int malId)

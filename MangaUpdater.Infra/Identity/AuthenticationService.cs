@@ -1,18 +1,21 @@
-﻿using Microsoft.Extensions.Options;
+﻿using System.Globalization;
+using System.Security.Claims;
+using System.IdentityModel.Tokens.Jwt;
+using Microsoft.Extensions.Options;
 using Microsoft.AspNetCore.Identity;
 using MangaUpdater.Application.Models;
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
 using MangaUpdater.Application.Interfaces;
 
 namespace MangaUpdater.Infra.Data.Identity;
-public class AuthenticationService: IAuthenticationService
+
+public class AuthenticationService : IAuthenticationService
 {
     private readonly SignInManager<IdentityUser> _signInManager;
     private readonly UserManager<IdentityUser> _userManager;
     private readonly JwtOptions _jwtOptions;
 
-    public AuthenticationService(SignInManager<IdentityUser> signInManager, UserManager<IdentityUser> userManager, IOptions<JwtOptions> jwtOptions)
+    public AuthenticationService(SignInManager<IdentityUser> signInManager, UserManager<IdentityUser> userManager,
+        IOptions<JwtOptions> jwtOptions)
     {
         _signInManager = signInManager;
         _userManager = userManager;
@@ -38,7 +41,8 @@ public class AuthenticationService: IAuthenticationService
 
     public async Task<UserAuthenticateResponse> Authenticate(UserAuthenticate userAuthenticate)
     {
-        var result = await _signInManager.PasswordSignInAsync(userAuthenticate.Email, userAuthenticate.Password, false, false);
+        var result =
+            await _signInManager.PasswordSignInAsync(userAuthenticate.Email, userAuthenticate.Password, false, false);
 
         if (result.Succeeded)
             return await GenerateToken(userAuthenticate.Email);
@@ -71,12 +75,13 @@ public class AuthenticationService: IAuthenticationService
     {
         var claims = await _userManager.GetClaimsAsync(user);
         var roles = await _userManager.GetRolesAsync(user);
+        var usCulture = new CultureInfo("en-US");
 
         claims.Add(new Claim(JwtRegisteredClaimNames.Sub, user.Id));
         claims.Add(new Claim(JwtRegisteredClaimNames.Email, user.Email!));
         claims.Add(new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()));
-        claims.Add(new Claim(JwtRegisteredClaimNames.Nbf, DateTime.Now.ToString()));
-        claims.Add(new Claim(JwtRegisteredClaimNames.Iat, DateTime.Now.ToString()));
+        claims.Add(new Claim(JwtRegisteredClaimNames.Nbf, DateTime.Now.ToString(usCulture)));
+        claims.Add(new Claim(JwtRegisteredClaimNames.Iat, DateTime.Now.ToString(usCulture)));
 
         foreach (var role in roles)
             claims.Add(new Claim("role", role));

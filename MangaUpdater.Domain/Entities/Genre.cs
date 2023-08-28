@@ -12,9 +12,7 @@ public sealed class Genre
 
     public int Id { get; set; }
 
-    [MaxLength(20)]
-    public string Name { get; set; }
+    [MaxLength(20)] public string Name { get; set; }
 
-    [JsonIgnore]
-    public ICollection<MangaGenre>? MangaGenres { get; set; }
+    [JsonIgnore] public ICollection<MangaGenre>? MangaGenres { get; set; }
 }

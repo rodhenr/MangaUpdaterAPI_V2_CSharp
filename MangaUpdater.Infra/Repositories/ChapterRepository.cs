@@ -1,7 +1,7 @@
-﻿using MangaUpdater.Domain.Entities;
+﻿using Microsoft.EntityFrameworkCore;
+using MangaUpdater.Domain.Entities;
 using MangaUpdater.Domain.Interfaces;
-using MangaUpdater.Infra.Context;
-using Microsoft.EntityFrameworkCore;
+using MangaUpdater.Infra.Data.Context;
 
 namespace MangaUpdater.Infra.Data.Repositories;
 
@@ -18,16 +18,12 @@ public class ChapterRepository : IChapterRepository
     {
         await _context.AddAsync(chapter);
         await _context.SaveChangesAsync();
-
-        return;
     }
 
-    public async Task BulkCreateAsync(List<Chapter> chapters)
+    public async Task BulkCreateAsync(IEnumerable<Chapter> chapters)
     {
         await _context.Chapters.AddRangeAsync(chapters);
         await _context.SaveChangesAsync();
-
-        return;
     }
 
     public async Task<Chapter?> GetByIdAsync(int id)
@@ -35,21 +31,19 @@ public class ChapterRepository : IChapterRepository
         return await _context.Chapters
             .Include(ch => ch.Source)
             .AsNoTracking()
-            .SingleOrDefaultAsync(a => a.Id == id);
+            .SingleOrDefaultAsync(ch => ch.Id == id);
     }
 
     public async Task<IEnumerable<Chapter>> GetAllByMangaIdAsync(int mangaId, int max)
     {
         if (max == 0)
-        {
             return await _context.Chapters
-                .Where(a => a.Id == mangaId)
+                .Where(ch => ch.Id == mangaId)
                 .AsNoTracking()
                 .ToListAsync();
-        }
 
         return await _context.Chapters
-            .Where(a => a.Id == mangaId)
+            .Where(ch => ch.Id == mangaId)
             .TakeLast(max)
             .AsNoTracking()
             .ToListAsync();
@@ -58,9 +52,9 @@ public class ChapterRepository : IChapterRepository
     public async Task<ICollection<Chapter>> GetThreeLastByMangaIdAndSourceListAsync(int mangaId, List<int> sourceList)
     {
         return await _context.Chapters
-            .Where(a => a.MangaId == mangaId && sourceList.Contains(a.SourceId))
+            .Where(ch => ch.MangaId == mangaId && sourceList.Contains(ch.SourceId))
             .Include(ch => ch.Source)
-            .OrderByDescending(a => a.Date)
+            .OrderByDescending(ch => ch.Date)
             .Take(3)
             .AsNoTracking()
             .ToListAsync();
@@ -69,8 +63,8 @@ public class ChapterRepository : IChapterRepository
     public async Task<Chapter?> GetSmallestChapterByMangaIdAsync(int mangaId, int sourceId)
     {
         return await _context.Chapters
-            .Where(a => a.MangaId == mangaId && a.SourceId == sourceId)
-            .OrderBy(a => a.Number)
+            .Where(ch => ch.MangaId == mangaId && ch.SourceId == sourceId)
+            .OrderBy(ch => ch.Number)
             .AsNoTracking()
             .FirstOrDefaultAsync();
     }

@@ -14,9 +14,7 @@ public sealed class MangaGenre
 
     public int GenreId { get; set; }
 
-    [JsonIgnore]
-    public Manga? Manga { get; set; }
+    [JsonIgnore] public Manga? Manga { get; set; }
 
-    [JsonIgnore]
-    public Genre? Genre { get; set; }
+    [JsonIgnore] public Genre? Genre { get; set; }
 }
