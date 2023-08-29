@@ -1,6 +1,5 @@
 ﻿using AutoMapper;
 using MangaUpdater.Application.Interfaces;
-using MangaUpdater.Application.Models;
 using MangaUpdater.Domain.Entities;
 using MangaUpdater.Domain.Interfaces;
 

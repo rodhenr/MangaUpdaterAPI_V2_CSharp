@@ -35,18 +35,15 @@ public class UserController : ControllerBase
     [Authorize]
     public async Task<ActionResult<IEnumerable<MangaUserLoggedDto>>> GetLoggedUserMangas()
     {
-        if (!User.Identity.IsAuthenticated)
-            return Ok(Array.Empty<Array>());
-
         var emailClaim = User.FindFirst("email")?.Value;
 
         if (emailClaim == null)
-            return BadRequest();
+            return BadRequest("Invalid user");
 
         var user = await _userManager.FindByEmailAsync(emailClaim);
 
         if (user == null)
-            return BadRequest();
+            return BadRequest("Invalid user");
 
         var mangas =
             await _userMangaChapterService.GetUserMangasWithThreeLastChapterByUserId(user.Id);
@@ -62,22 +59,17 @@ public class UserController : ControllerBase
         var manga = await _mangaService.GetMangaById(mangaId);
 
         if (manga == null)
-        {
             return BadRequest($"Manga not found for id {mangaId}");
-        }
-
-        if (!User.Identity.IsAuthenticated)
-            return BadRequest();
 
         var emailClaim = User.FindFirst("email")?.Value;
 
         if (emailClaim == null)
-            return BadRequest();
+            return BadRequest("Invalid user");
 
         var user = await _userManager.FindByEmailAsync(emailClaim);
 
         if (user == null)
-            return BadRequest();
+            return BadRequest("Invalid user");
 
         var userSources = await _userSourceService.GetUserSourcesByMangaId(mangaId, user.Id);
 
@@ -96,19 +88,15 @@ public class UserController : ControllerBase
         if (manga == null)
             return BadRequest($"Manga not found for id {mangaId}");
 
-        if (!User.Identity.IsAuthenticated)
-            return BadRequest();
-
-
         var emailClaim = User.FindFirst("email")?.Value;
 
         if (emailClaim == null)
-            return BadRequest();
+            return BadRequest("Invalid user");
 
         var user = await _userManager.FindByEmailAsync(emailClaim);
 
         if (user == null)
-            return BadRequest();
+            return BadRequest("Invalid user");
 
         await _userMangaChapterService.DeleteUserMangasByMangaId(mangaId, user.Id);
 
@@ -117,20 +105,18 @@ public class UserController : ControllerBase
 
     [SwaggerOperation("Get all mangas that the user follows with a simplified response")]
     [HttpGet("mangas/list")]
+    [Authorize]
     public async Task<ActionResult<IEnumerable<MangaUserDto>>> GetUserMangasList()
     {
-        if (!User.Identity.IsAuthenticated)
-            return BadRequest();
-
         var emailClaim = User.FindFirst("email")?.Value;
 
         if (emailClaim == null)
-            return BadRequest();
+            return BadRequest("Invalid user");
 
         var user = await _userManager.FindByEmailAsync(emailClaim);
 
         if (user == null)
-            return BadRequest();
+            return BadRequest("Invalid user");
 
         var userMangas = await _userMangaService.GetMangasByUserId(user.Id);
 
@@ -139,22 +125,9 @@ public class UserController : ControllerBase
 
     [SwaggerOperation("Get all followed mangas by a user")]
     [HttpGet("{userId}/mangas")]
-    public async Task<ActionResult<IEnumerable<MangaUserDto>>> GetUserManga()
+    public async Task<ActionResult<IEnumerable<MangaUserDto>>> GetUserManga(string userId)
     {
-        if (User.Identity.IsAuthenticated)
-            return BadRequest();
-
-        var emailClaim = User.FindFirst("email")?.Value;
-
-        if (emailClaim == null)
-            return BadRequest();
-
-        var user = await _userManager.FindByEmailAsync(emailClaim);
-
-        if (user == null)
-            return BadRequest();
-
-        var userMangas = await _userMangaService.GetMangasByUserId(user.Id);
+        var userMangas = await _userMangaService.GetMangasByUserId(userId);
 
         return Ok(userMangas);
     }
@@ -169,18 +142,15 @@ public class UserController : ControllerBase
         if (manga == null)
             return BadRequest("Manga not found");
 
-        if (User.Identity.IsAuthenticated)
-            return BadRequest();
-
         var emailClaim = User.FindFirst("email")?.Value;
 
         if (emailClaim == null)
-            return BadRequest();
+            return BadRequest("Invalid user");
 
         var user = await _userManager.FindByEmailAsync(emailClaim);
 
         if (user == null)
-            return BadRequest();
+            return BadRequest("Invalid user");
 
         await _userMangaChapterService.AddUserManga(mangaId, user.Id, sourceId);
 
@@ -197,19 +167,15 @@ public class UserController : ControllerBase
         if (manga == null)
             return BadRequest("Manga not found");
 
-
-        if (User.Identity.IsAuthenticated)
-            return BadRequest();
-
         var emailClaim = User.FindFirst("email")?.Value;
 
         if (emailClaim == null)
-            return BadRequest();
+            return BadRequest("Invalid user");
 
         var user = await _userManager.FindByEmailAsync(emailClaim);
 
         if (user == null)
-            return BadRequest();
+            return BadRequest("Invalid user");
 
         await _userMangaChapterService.DeleteUserManga(mangaId, user.Id, sourceId);
 
@@ -221,9 +187,6 @@ public class UserController : ControllerBase
     [Authorize]
     public async Task<ActionResult> UpdateManga(int mangaId, int sourceId, int chapterId)
     {
-        if (User.Identity.IsAuthenticated)
-            return BadRequest();
-
         var manga = await _mangaService.GetMangaById(mangaId);
 
         if (manga == null)
@@ -237,12 +200,12 @@ public class UserController : ControllerBase
         var emailClaim = User.FindFirst("email")?.Value;
 
         if (emailClaim == null)
-            return BadRequest();
+            return BadRequest("Invalid user");
 
         var user = await _userManager.FindByEmailAsync(emailClaim);
 
         if (user == null)
-            return BadRequest();
+            return BadRequest("Invalid user");
 
         await _userMangaService.UpdateUserMangaAsync(user.Id, mangaId, sourceId, chapterId);
 

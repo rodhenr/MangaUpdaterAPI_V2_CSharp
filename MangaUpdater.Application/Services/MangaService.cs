@@ -40,6 +40,13 @@ public class MangaService : IMangaService
         return await _mangaRepository.GetByIdOrderedDescAsync(id);
     }
 
+    public async Task<MangaDto?> GetMangaNotLoggedById(int id)
+    {
+        var data = await _mangaRepository.GetByIdOrderedDescAsync(id);
+
+        return data == null ? null : _mapper.Map<MangaDto>(data);
+    }
+
     public async Task<MangaDto?> GetMangaByIdAndUserId(int id, string userId)
     {
         var data = await _mangaRepository.GetByIdAndUserIdOrderedDescAsync(id, userId);

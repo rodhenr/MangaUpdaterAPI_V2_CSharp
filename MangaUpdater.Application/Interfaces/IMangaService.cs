@@ -12,6 +12,7 @@ public interface IMangaService
         List<int>? genreIdList);
 
     Task<Manga?> GetMangaById(int id);
+    Task<MangaDto?> GetMangaNotLoggedById(int id);
     Task<Manga?> GetMangaByMalId(int malId);
     Task<MangaDto?> GetMangaByIdAndUserId(int id, string userId);
 }

@@ -18,17 +18,17 @@ public class AuthController : ControllerBase
 
     [SwaggerOperation("Register")]
     [HttpPost("register")]
-    public async Task<ActionResult<bool>> UserRegister(UserRegister userRegister)
+    public async Task<ActionResult<UserRegisterResponse>> UserRegister(UserRegister userRegister)
     {
         if (!ModelState.IsValid)
             return BadRequest();
 
         var registered = await _identityService.Register(userRegister);
 
-        if (registered)
+        if (registered.Success)
             return Ok(true);
 
-        return BadRequest();
+        return BadRequest(registered.ErrorList);
     }
 
     [SwaggerOperation("Login")]
@@ -41,7 +41,7 @@ public class AuthController : ControllerBase
         var response = await _identityService.Authenticate(userAuthenticate);
 
         if (!response.IsSuccess)
-            return BadRequest();
+            return Unauthorized(response.ErrorList);
 
         return Ok(response);
     }

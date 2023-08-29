@@ -22,7 +22,7 @@ public class AuthenticationService : IAuthenticationService
         _jwtOptions = jwtOptions.Value;
     }
 
-    public async Task<bool> Register(UserRegister userRegister)
+    public async Task<UserRegisterResponse> Register(UserRegister userRegister)
     {
         var identityUser = new IdentityUser
         {
@@ -36,7 +36,12 @@ public class AuthenticationService : IAuthenticationService
         if (result.Succeeded)
             await _userManager.SetLockoutEnabledAsync(identityUser, false);
 
-        return result.Succeeded;
+        var userResponse = new UserRegisterResponse(result.Succeeded);
+
+        if (!result.Succeeded && result.Errors.Any())
+            userResponse.AddErrors(result.Errors.Select(r => r.Description));
+
+        return userResponse;
     }
 
     public async Task<UserAuthenticateResponse> Authenticate(UserAuthenticate userAuthenticate)
@@ -47,7 +52,18 @@ public class AuthenticationService : IAuthenticationService
         if (result.Succeeded)
             return await GenerateToken(userAuthenticate.Email);
 
-        return new UserAuthenticateResponse(null, null, false);
+        var authResponse = new UserAuthenticateResponse();
+
+        if (result.IsLockedOut)
+            authResponse.AddError("Account blocked");
+        else if (result.IsNotAllowed)
+            authResponse.AddError("Not allowed");
+        else if (result.RequiresTwoFactor)
+            authResponse.AddError("Require two factor");
+        else
+            authResponse.AddError("Invalid user/password");
+
+        return authResponse;
     }
 
     private async Task<UserAuthenticateResponse> GenerateToken(string email)
@@ -68,7 +84,7 @@ public class AuthenticationService : IAuthenticationService
 
         var token = new JwtSecurityTokenHandler().WriteToken(jwt);
 
-        return new UserAuthenticateResponse(tokenExpirationDate, token, true);
+        return new UserAuthenticateResponse(tokenExpirationDate, token);
     }
 
     private async Task<IList<Claim>> GetClaims(IdentityUser user)

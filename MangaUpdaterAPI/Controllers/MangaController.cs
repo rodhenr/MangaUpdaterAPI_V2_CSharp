@@ -6,7 +6,6 @@ using MangaUpdater.Application.DTOs;
 using MangaUpdater.Application.Interfaces;
 using MangaUpdater.Application.Interfaces.Scraping;
 using MangaUpdater.Domain.Entities;
-using Microsoft.IdentityModel.Tokens;
 
 namespace MangaUpdater.API.Controllers;
 
@@ -72,23 +71,28 @@ public class MangaController : ControllerBase
     [HttpGet("{mangaId:int}")]
     public async Task<ActionResult<MangaDto>> GetManga(int mangaId)
     {
+        if (User.Identity is { IsAuthenticated: false })
+        {
+            var manga = await _mangaService.GetMangaNotLoggedById(mangaId);
+            return Ok(manga);
+        }
+
         var emailClaim = User.FindFirst("email")?.Value;
 
         if (emailClaim == null)
-            return BadRequest();
+            return BadRequest("Invalid user");
 
         var user = await _userManager.FindByEmailAsync(emailClaim);
 
         if (user == null)
-            return BadRequest();
+            return BadRequest("Invalid user");
 
-        //NEEDS TO SEPARATE IN 2 METHODS
-        var manga = await _mangaService.GetMangaByIdAndUserId(mangaId, user.Id); //TODO: Change
+        var mangaUserLogged = await _mangaService.GetMangaByIdAndUserId(mangaId, user.Id);
 
-        if (manga == null)
+        if (mangaUserLogged == null)
             return BadRequest($"Manga not found for id {mangaId}");
 
-        return Ok(manga);
+        return (mangaUserLogged);
     }
 
     [SwaggerOperation("Get all sources from a manga")]
@@ -96,18 +100,15 @@ public class MangaController : ControllerBase
     [Authorize]
     public async Task<ActionResult<IEnumerable<UserSourceDto>>> GetUserSources(int mangaId)
     {
-        if (!User.Identity.IsAuthenticated)
-            return BadRequest();
-
         var emailClaim = User.FindFirst("email")?.Value;
 
         if (emailClaim == null)
-            return BadRequest();
+            return BadRequest("Invalid user");
 
         var user = await _userManager.FindByEmailAsync(emailClaim);
 
         if (user == null)
-            return BadRequest();
+            return BadRequest("Invalid user");
 
         var userSources = await _userSourceService.GetUserSourcesByMangaId(mangaId, user.Id);
 
@@ -140,10 +141,10 @@ public class MangaController : ControllerBase
                 return BadRequest($"No chapters found");
 
             //TODO: Implement transaction
-            await _mangaSourceService.AddMangaSource(new MangaSource(mangaId, sourceId, mangaUrl));
-
             var chapterList = chapters.Select(ch =>
                 new Chapter(mangaId, sourceId, DateTime.Parse(ch.Value), float.Parse(ch.Key))).ToList();
+
+            await _mangaSourceService.AddMangaSource(new MangaSource(mangaId, sourceId, mangaUrl));
 
             await _chapterService.BulkCreate(chapterList);
 
