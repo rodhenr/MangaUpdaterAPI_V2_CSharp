@@ -14,17 +14,13 @@ public class GenreRepository : IGenreRepository
         _context = context;
     }
 
-    public Task CreateAsync(Genre entity)
+    public async Task CreateAsync(Genre entity)
     {
-        throw new NotImplementedException();
+        await _context.Genres.AddAsync(entity);
+        await _context.SaveChangesAsync();
     }
 
-    public Task BulkCreateAsync(IEnumerable<Genre> entities)
-    {
-        throw new NotImplementedException();
-    }
-
-    public async Task<IEnumerable<Genre>> GetAllAsync()
+    public async Task<IEnumerable<Genre>> GetAsync()
     {
         return await _context.Genres
             .AsNoTracking()
@@ -38,8 +34,9 @@ public class GenreRepository : IGenreRepository
             .SingleOrDefaultAsync(g => g.Id == id);
     }
 
-    public Task DeleteAsync(Genre entity)
+    public async Task DeleteAsync(Genre entity)
     {
-        throw new NotImplementedException();
+        _context.Genres.Remove(entity);
+        await _context.SaveChangesAsync();
     }
 }

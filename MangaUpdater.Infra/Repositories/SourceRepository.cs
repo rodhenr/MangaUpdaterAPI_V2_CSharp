@@ -14,17 +14,13 @@ public class SourceRepository : ISourceRepository
         _context = context;
     }
 
-    public Task CreateAsync(Source entity)
+    public async Task CreateAsync(Source entity)
     {
-        throw new NotImplementedException();
+        await _context.Sources.AddAsync(entity);
+        await _context.SaveChangesAsync();
     }
 
-    public Task BulkCreateAsync(IEnumerable<Source> entities)
-    {
-        throw new NotImplementedException();
-    }
-
-    public async Task<IEnumerable<Source>> GetAllAsync()
+    public async Task<IEnumerable<Source>> GetAsync()
     {
         return await _context.Sources
             .AsNoTracking()
@@ -38,8 +34,9 @@ public class SourceRepository : ISourceRepository
             .SingleOrDefaultAsync(s => s.Id == id);
     }
 
-    public Task DeleteAsync(Source entity)
+    public async Task DeleteAsync(Source entity)
     {
-        throw new NotImplementedException();
+        _context.Sources.Remove(entity);
+        await _context.SaveChangesAsync();
     }
 }

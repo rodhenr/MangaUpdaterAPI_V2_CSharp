@@ -20,26 +20,6 @@ public class MangaSourceRepository : IMangaSourceRepository
         await _context.SaveChangesAsync();
     }
 
-    public Task BulkCreateAsync(IEnumerable<MangaSource> entities)
-    {
-        throw new NotImplementedException();
-    }
-
-    public Task<IEnumerable<MangaSource>> GetAllAsync()
-    {
-        throw new NotImplementedException();
-    }
-
-    public Task<MangaSource?> GetByIdAsync(int id)
-    {
-        throw new NotImplementedException();
-    }
-
-    public Task DeleteAsync(MangaSource entity)
-    {
-        throw new NotImplementedException();
-    }
-
     public async Task<ICollection<MangaSource>> GetAllByMangaIdAsync(int mangaId)
     {
         return await _context.MangaSources

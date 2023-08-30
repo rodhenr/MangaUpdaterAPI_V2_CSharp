@@ -2,8 +2,9 @@
 
 namespace MangaUpdater.Domain.Interfaces;
 
-public interface IUserMangaRepository: IRepository<UserManga>
+public interface IUserMangaRepository
 {
+    Task CreateAsync(UserManga entity);
     Task<IEnumerable<UserManga>> GetAllByMangaIdAsync(int mangaId);
     Task<IEnumerable<UserManga>> GetAllByUserIdAsync(string userId);
     Task<IEnumerable<UserManga>> GetAllByMangaIdAndUserIdAsync(int mangaId, string userId);

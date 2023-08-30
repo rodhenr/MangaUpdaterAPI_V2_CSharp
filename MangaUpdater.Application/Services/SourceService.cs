@@ -20,6 +20,6 @@ public class SourceService : ISourceService
 
     public async Task<IEnumerable<Source>> GetSources()
     {
-        return await _sourceRepository.GetAllAsync();
+        return await _sourceRepository.GetAsync();
     }
 }

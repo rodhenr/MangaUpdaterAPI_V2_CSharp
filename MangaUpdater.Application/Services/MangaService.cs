@@ -24,7 +24,7 @@ public class MangaService : IMangaService
 
     public async Task<IEnumerable<Manga>> GetMangas()
     {
-        return await _mangaRepository.GetAllAsync();
+        return await _mangaRepository.GetAsync();
     }
 
     public async Task<IEnumerable<MangaUserDto>> GetMangasWithFilter(string? orderBy, List<int>? sourceIdList,

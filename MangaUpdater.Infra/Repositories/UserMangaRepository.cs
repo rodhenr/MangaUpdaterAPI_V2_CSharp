@@ -20,26 +20,6 @@ public class UserMangaRepository : IUserMangaRepository
         await _context.SaveChangesAsync();
     }
 
-    public Task BulkCreateAsync(IEnumerable<UserManga> entities)
-    {
-        throw new NotImplementedException();
-    }
-
-    public Task<IEnumerable<UserManga>> GetAllAsync()
-    {
-        throw new NotImplementedException();
-    }
-
-    public Task<UserManga?> GetByIdAsync(int id)
-    {
-        throw new NotImplementedException();
-    }
-
-    public Task DeleteAsync(UserManga entity)
-    {
-        throw new NotImplementedException();
-    }
-
     public async Task<IEnumerable<UserManga>> GetAllByMangaIdAsync(int mangaId)
     {
         return await _context.UserMangas
