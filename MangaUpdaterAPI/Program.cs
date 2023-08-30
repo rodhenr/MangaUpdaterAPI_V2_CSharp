@@ -1,5 +1,6 @@
 using Microsoft.OpenApi.Models;
 using System.Text.Json.Serialization;
+using MangaUpdater.API.Exceptions;
 using MangaUpdater.Infra.IoC;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -69,6 +70,8 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 
 app.UseAuthorization();
+
+app.UseMiddleware<ExceptionMiddleware>();
 
 app.MapControllers();
 

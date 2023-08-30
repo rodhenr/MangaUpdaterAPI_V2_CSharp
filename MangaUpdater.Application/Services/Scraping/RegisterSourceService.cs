@@ -27,7 +27,7 @@ public class RegisterSourceService : IRegisterSourceService
 
         possibleNames.AddRange(altList.Select(alternativeName => alternativeName.Text.Replace(" ", "")));
 
-        if (possibleNames.Any(n =>
+        if (!possibleNames.Any(n =>
                 string.Equals(n, mangaName.Replace(" ", ""), StringComparison.CurrentCultureIgnoreCase)))
             return chapters;
 
