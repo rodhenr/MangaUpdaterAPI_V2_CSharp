@@ -2,12 +2,9 @@
 
 namespace MangaUpdater.Domain.Interfaces;
 
-public interface IChapterRepository
+public interface IChapterRepository: IRepository<Chapter>
 {
-    Task CreateAsync(Chapter chapter);
-    Task BulkCreateAsync(IEnumerable<Chapter> chapters);
-    Task<IEnumerable<Chapter>> GetAllByMangaIdAsync(int mangaId, int max);
-    Task<Chapter?> GetByIdAsync(int id);
+    Task<IEnumerable<Chapter>> GetByMangaIdAsync(int mangaId, int max);
     Task<Chapter?> GetSmallestChapterByMangaIdAsync(int mangaId, int sourceId);
     Task<ICollection<Chapter>> GetThreeLastByMangaIdAndSourceListAsync(int mangaId, List<int> sourceList);
     Task<IEnumerable<float>> GetChaptersNumberByMangaIdAndSourceIdAsync(int mangaId, int sourceId);

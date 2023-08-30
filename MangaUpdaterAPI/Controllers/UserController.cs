@@ -4,12 +4,11 @@ using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
 using MangaUpdater.Application.DTOs;
 using MangaUpdater.Application.Interfaces;
+using MangaUpdater.API.Controllers.Shared;
 
 namespace MangaUpdater.API.Controllers;
 
-[Route("api/[controller]")]
-[ApiController]
-public class UserController : ControllerBase
+public class UserController : BaseController
 {
     private readonly IMangaService _mangaService;
     private readonly IUserMangaChapterService _userMangaChapterService;
@@ -30,6 +29,12 @@ public class UserController : ControllerBase
         _userMangaService = userMangaService;
     }
 
+    /// <summary>
+    /// Get all followed mangas for a logged user.
+    /// </summary>
+    /// <returns>All existing mangas, if any..</returns>
+    /// <response code="200">Returns all existing mangas, if any.</response>
+    /// <response code="400">If the user is incorrect.</response>
     [SwaggerOperation("Get all mangas that the user follows with the last 3 released chapters")]
     [HttpGet("mangas")]
     [Authorize]

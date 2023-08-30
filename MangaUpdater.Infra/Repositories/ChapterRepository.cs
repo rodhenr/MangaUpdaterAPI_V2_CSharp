@@ -26,6 +26,11 @@ public class ChapterRepository : IChapterRepository
         await _context.SaveChangesAsync();
     }
 
+    public Task<IEnumerable<Chapter>> GetAllAsync()
+    {
+        throw new NotImplementedException();
+    }
+
     public async Task<Chapter?> GetByIdAsync(int id)
     {
         return await _context.Chapters
@@ -34,7 +39,12 @@ public class ChapterRepository : IChapterRepository
             .SingleOrDefaultAsync(ch => ch.Id == id);
     }
 
-    public async Task<IEnumerable<Chapter>> GetAllByMangaIdAsync(int mangaId, int max)
+    public Task DeleteAsync(Chapter entity)
+    {
+        throw new NotImplementedException();
+    }
+
+    public async Task<IEnumerable<Chapter>> GetByMangaIdAsync(int mangaId, int max)
     {
         if (max == 0)
             return await _context.Chapters

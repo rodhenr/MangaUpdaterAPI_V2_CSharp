@@ -18,4 +18,5 @@
     <ProjectReference Include="..\MangaUpdater.IoC\MangaUpdater.Infra.IoC.csproj" />
   </ItemGroup>
 
+
 </Project>

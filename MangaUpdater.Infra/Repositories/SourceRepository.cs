@@ -14,7 +14,17 @@ public class SourceRepository : ISourceRepository
         _context = context;
     }
 
-    public async Task<ICollection<Source>> GetAsync()
+    public Task CreateAsync(Source entity)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task BulkCreateAsync(IEnumerable<Source> entities)
+    {
+        throw new NotImplementedException();
+    }
+
+    public async Task<IEnumerable<Source>> GetAllAsync()
     {
         return await _context.Sources
             .AsNoTracking()
@@ -26,5 +36,10 @@ public class SourceRepository : ISourceRepository
         return await _context.Sources
             .AsNoTracking()
             .SingleOrDefaultAsync(s => s.Id == id);
+    }
+
+    public Task DeleteAsync(Source entity)
+    {
+        throw new NotImplementedException();
     }
 }

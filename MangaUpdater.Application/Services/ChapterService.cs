@@ -30,7 +30,7 @@ public class ChapterService : IChapterService
 
     public async Task<IEnumerable<Chapter>> GetChaptersByMangaId(int mangaId, int? max)
     {
-        return await _chapterRepository.GetAllByMangaIdAsync(mangaId, max ?? 0);
+        return await _chapterRepository.GetByMangaIdAsync(mangaId, max ?? 0);
     }
 
     public async Task CreateOrUpdateChaptersByMangaSource(int mangaId, int sourceId,

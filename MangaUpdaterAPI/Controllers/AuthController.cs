@@ -2,12 +2,11 @@
 using Swashbuckle.AspNetCore.Annotations;
 using MangaUpdater.Application.Interfaces;
 using MangaUpdater.Application.Models;
+using MangaUpdater.API.Controllers.Shared;
 
 namespace MangaUpdater.API.Controllers;
 
-[Route("api/[controller]")]
-[ApiController]
-public class AuthController : ControllerBase
+public class AuthController : BaseController
 {
     private readonly IAuthenticationService _identityService;
 
@@ -16,6 +15,12 @@ public class AuthController : ControllerBase
         _identityService = identityService;
     }
 
+    /// <summary>
+    /// Register an user.
+    /// </summary>
+    /// <param name="userRegister">Data to register an user.</param>
+    /// <response code="200">Returns success.</response>
+    /// <response code="400">Returns all validation errors.</response>
     [SwaggerOperation("Register")]
     [HttpPost("register")]
     public async Task<ActionResult<UserRegisterResponse>> UserRegister(UserRegister userRegister)
@@ -31,6 +36,12 @@ public class AuthController : ControllerBase
         return BadRequest(registered.ErrorList);
     }
 
+    /// <summary>
+    /// Authenticate an user.
+    /// </summary>
+    /// <param name="userAuthenticate">Data to authenticate an user.</param>
+    /// <response code="200">Returns token.</response>
+    /// <response code="400">Returns all validation errors.</response>
     [SwaggerOperation("Login")]
     [HttpPost("login")]
     public async Task<ActionResult<UserAuthenticateResponse>> UserLogin(UserAuthenticate userAuthenticate)

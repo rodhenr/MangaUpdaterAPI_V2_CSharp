@@ -6,12 +6,11 @@ using MangaUpdater.Application.DTOs;
 using MangaUpdater.Application.Interfaces;
 using MangaUpdater.Application.Interfaces.Scraping;
 using MangaUpdater.Domain.Entities;
+using MangaUpdater.API.Controllers.Shared;
 
 namespace MangaUpdater.API.Controllers;
 
-[Route("api/[controller]")]
-[ApiController]
-public class MangaController : ControllerBase
+public class MangaController : BaseController
 {
     private readonly IMangaService _mangaService;
     private readonly ISourceService _sourceService;
@@ -39,6 +38,11 @@ public class MangaController : ControllerBase
         _chapterService = chapterService;
     }
 
+    /// <summary>
+    /// Get all mangas.
+    /// </summary>
+    /// <returns>All mangas, if any.</returns>
+    /// <response code="200">Returns all existing mangas, if any.</response>
     [SwaggerOperation("Get all mangas")]
     [HttpGet]
     public async Task<ActionResult<IEnumerable<MangaUserDto>>> GetMangas([FromQuery] string? orderBy = null,

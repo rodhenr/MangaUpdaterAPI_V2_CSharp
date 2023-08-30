@@ -2,12 +2,11 @@
 using Swashbuckle.AspNetCore.Annotations;
 using MangaUpdater.Application.Interfaces;
 using MangaUpdater.Domain.Entities;
+using MangaUpdater.API.Controllers.Shared;
 
 namespace MangaUpdater.API.Controllers;
 
-[Route("api/[controller]")]
-[ApiController]
-public class SourceController : ControllerBase
+public class SourceController : BaseController
 {
     private readonly ISourceService _sourceService;
 
@@ -16,6 +15,11 @@ public class SourceController : ControllerBase
         _sourceService = sourceService;
     }
 
+    /// <summary>
+    /// Get all sources.
+    /// </summary>
+    /// <returns>All sources, if any.</returns>
+    /// <response code="200">Returns all existing sources, if any.</response>
     [SwaggerOperation("Get all sources")]
     [HttpGet]
     public async Task<ActionResult<IEnumerable<Source>>> GetSources()
