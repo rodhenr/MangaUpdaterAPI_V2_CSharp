@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using System.Security.Claims;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Swashbuckle.AspNetCore.Annotations;
@@ -12,6 +13,7 @@ namespace MangaUpdater.API.Controllers;
 
 public class MangaController : BaseController
 {
+    private string? UserId => User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
     private readonly IMangaService _mangaService;
     private readonly ISourceService _sourceService;
     private readonly IMangaSourceService _mangaSourceService;
@@ -39,11 +41,11 @@ public class MangaController : BaseController
     }
 
     /// <summary>
-    /// Get all mangas.
+    /// Get all manga.
     /// </summary>
-    /// <returns>All mangas, if any.</returns>
-    /// <response code="200">Returns all existing mangas, if any.</response>
-    [SwaggerOperation("Get all mangas")]
+    /// <returns>All manga, if any.</returns>
+    /// <response code="200">Returns all existing manga, if any.</response>
+    [SwaggerOperation("Get all manga")]
     [HttpGet]
     public async Task<ActionResult<IEnumerable<MangaUserDto>>> GetMangas([FromQuery] string? orderBy = null,
         [FromQuery] List<int>? sourceId = null, [FromQuery] List<int>? genreId = null)
@@ -51,76 +53,55 @@ public class MangaController : BaseController
         return Ok(await _mangaService.GetMangasWithFilter(orderBy, sourceId, genreId));
     }
 
-    [SwaggerOperation("Register a new manga")]
+    /// <summary>
+    /// Register a new manga using a MyAnimeList id.
+    /// </summary>
+    /// <returns>Manga data, if success.</returns>
+    /// <response code="200">Returns the registered manga data.</response>
+    /// <response code="400">Error.</response>
+    [SwaggerOperation("Register a new manga using a MyAnimeList id")]
     [HttpPost]
     [Authorize]
     public async Task<ActionResult<Manga>> RegisterManga(int malId)
     {
-        var mangaSearch = await _mangaService.GetMangaByMalId(malId);
-
-        if (mangaSearch != null)
-            return Ok(mangaSearch);
-
-        var mangaData = await _registerMangaService.RegisterMangaFromMyAnimeListById(malId);
-
-        if (mangaData == null)
-            return BadRequest($"Manga not found for id {malId}");
-
-        return Ok(mangaData);
+        return Ok(await _registerMangaService.RegisterMangaFromMyAnimeListById(malId));
     }
 
-    [SwaggerOperation("Get a manga")]
+    /// <summary>
+    /// Get manga data by id.
+    /// </summary>
+    /// <returns>Manga data, if success.</returns>
+    /// <response code="200">Returns the manga data.</response>
+    /// <response code="400">Error.</response>
+    [SwaggerOperation("Get manga data by id")]
     [HttpGet("{mangaId:int}")]
     public async Task<ActionResult<MangaDto>> GetManga(int mangaId)
     {
-        if (User.Identity is { IsAuthenticated: false })
-        {
-            var manga = await _mangaService.GetMangaNotLoggedById(mangaId);
-            return Ok(manga);
-        }
+        if (UserId is not null) return (await _mangaService.GetMangaByIdAndUserId(mangaId, UserId!)!);
 
-        var emailClaim = User.FindFirst("email")?.Value;
-
-        if (emailClaim == null)
-            return BadRequest("Invalid user");
-
-        var user = await _userManager.FindByEmailAsync(emailClaim);
-
-        if (user == null)
-            return BadRequest("Invalid user");
-
-        var mangaUserLogged = await _mangaService.GetMangaByIdAndUserId(mangaId, user.Id);
-
-        if (mangaUserLogged == null)
-            return BadRequest($"Manga not found for id {mangaId}");
-
-        return (mangaUserLogged);
+        return Ok(await _mangaService.GetMangaNotLoggedById(mangaId));
     }
 
-    [SwaggerOperation("Get all sources from a manga")]
+    /// <summary>
+    /// Get all sources from a manga with following info for a logged-in user.
+    /// </summary>
+    /// <returns>All manga sources, if any.</returns>
+    /// <response code="200">Returns all manga sources.</response>
+    /// <response code="400">Error.</response>
+    [SwaggerOperation("Get all sources from a manga with following info for a logged-in user")]
     [HttpGet("{mangaId:int}/sources")]
     [Authorize]
     public async Task<ActionResult<IEnumerable<UserSourceDto>>> GetUserSources(int mangaId)
     {
-        var emailClaim = User.FindFirst("email")?.Value;
-
-        if (emailClaim == null)
-            return BadRequest("Invalid user");
-
-        var user = await _userManager.FindByEmailAsync(emailClaim);
-
-        if (user == null)
-            return BadRequest("Invalid user");
-
-        var userSources = await _userSourceService.GetUserSourcesByMangaId(mangaId, user.Id);
-
-        if (userSources == null)
-            return BadRequest($"No sources found for mangaId {mangaId}");
-
-        return Ok(userSources);
+        return Ok(await _userSourceService.GetUserSourcesByMangaId(mangaId, UserId!));
     }
 
-    [SwaggerOperation("Register and update source from a registered manga")]
+    /// <summary>
+    /// Register a new manga from scraping a source.
+    /// </summary>
+    /// <response code="200">Success.</response>
+    /// <response code="400">Error.</response>
+    [SwaggerOperation("Register a new manga from scraping a source.")]
     [HttpPost("/{mangaId:int}/source/{sourceId:int}/scraping")]
     [Authorize]
     public async Task<ActionResult> RegisterFromScraping(int mangaId, int sourceId, string mangaUrl)
@@ -150,7 +131,12 @@ public class MangaController : BaseController
         return Ok();
     }
 
-    [SwaggerOperation("Update chapters for a manga/source")]
+    /// <summary>
+    /// Update chapters from a combination of manga and source.
+    /// </summary>
+    /// <response code="200">Success.</response>
+    /// <response code="400">Error.</response>
+    [SwaggerOperation("Update chapters from a combination of manga and source.")]
     [HttpPost("/{mangaId:int}/source/{sourceId:int}/chapters")]
     [Authorize]
     public async Task<ActionResult> UpdateChapterForMangaSource(int mangaId, int sourceId)

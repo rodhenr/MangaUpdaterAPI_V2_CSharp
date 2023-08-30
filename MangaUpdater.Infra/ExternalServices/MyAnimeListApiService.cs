@@ -20,9 +20,12 @@ public class MyAnimeListApiService : IMyAnimeListApiService
 
         var response = await client.GetAsync(url);
 
-        var content = !response.IsSuccessStatusCode
-            ? null
-            : await response.Content.ReadFromJsonAsync<MyAnimeListApiData>();
+        if (!response.IsSuccessStatusCode)
+        {
+            throw new Exception($"Invalid id {malMangaId}");
+        }
+
+        var content = await response.Content.ReadFromJsonAsync<MyAnimeListApiData>();
 
         return content?.Data;
     }

@@ -1,5 +1,5 @@
-﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
+﻿using System.Security.Claims;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
 using MangaUpdater.Application.DTOs;
@@ -10,18 +10,16 @@ namespace MangaUpdater.API.Controllers;
 
 public class UserController : BaseController
 {
+    private string? UserId => User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
     private readonly IMangaService _mangaService;
     private readonly IUserMangaChapterService _userMangaChapterService;
     private readonly IUserSourceService _userSourceService;
     private readonly IChapterService _chapterService;
     private readonly IUserMangaService _userMangaService;
-    private readonly UserManager<IdentityUser> _userManager;
 
-    public UserController(UserManager<IdentityUser> userManager, IMangaService mangaService,
-        IUserMangaChapterService userMangaChapterService, IUserSourceService userSourceService,
-        IChapterService chapterService, IUserMangaService userMangaService)
+    public UserController(IMangaService mangaService, IUserMangaChapterService userMangaChapterService,
+        IUserSourceService userSourceService, IChapterService chapterService, IUserMangaService userMangaService)
     {
-        _userManager = userManager;
         _mangaService = mangaService;
         _userMangaChapterService = userMangaChapterService;
         _userSourceService = userSourceService;
@@ -30,190 +28,116 @@ public class UserController : BaseController
     }
 
     /// <summary>
-    /// Get all followed mangas for a logged user.
+    /// Get all followed manga for a logged-in user with 3 last released chapters from the sources followed.
     /// </summary>
-    /// <returns>All existing mangas, if any..</returns>
-    /// <response code="200">Returns all existing mangas, if any.</response>
-    /// <response code="400">If the user is incorrect.</response>
-    [SwaggerOperation("Get all mangas that the user follows with the last 3 released chapters")]
+    /// <returns>All followed manga for a logged-in user, if any..</returns>
+    /// <response code="200">Returns all followed manga, if any.</response>
+    /// <response code="400">Error.</response>
+    [SwaggerOperation(
+        "Get all followed manga for a logged-in user with 3 last released chapters from the sources followed")]
     [HttpGet("mangas")]
     [Authorize]
     public async Task<ActionResult<IEnumerable<MangaUserLoggedDto>>> GetLoggedUserMangas()
     {
-        var emailClaim = User.FindFirst("email")?.Value;
-
-        if (emailClaim == null)
-            return BadRequest("Invalid user");
-
-        var user = await _userManager.FindByEmailAsync(emailClaim);
-
-        if (user == null)
-            return BadRequest("Invalid user");
-
-        var mangas =
-            await _userMangaChapterService.GetUserMangasWithThreeLastChapterByUserId(user.Id);
-
-        return Ok(mangas);
+        return Ok(await _userMangaChapterService.GetUserMangasWithThreeLastChapterByUserId(UserId!));
     }
 
-    [SwaggerOperation("User starts following a manga")]
-    [HttpPost("mangas/{mangaId:int}")]
-    [Authorize]
-    public async Task<ActionResult> FollowManga(int mangaId, IEnumerable<int> sourceIdList)
-    {
-        var manga = await _mangaService.GetMangaById(mangaId);
-
-        if (manga == null)
-            return BadRequest($"Manga not found for id {mangaId}");
-
-        var emailClaim = User.FindFirst("email")?.Value;
-
-        if (emailClaim == null)
-            return BadRequest("Invalid user");
-
-        var user = await _userManager.FindByEmailAsync(emailClaim);
-
-        if (user == null)
-            return BadRequest("Invalid user");
-
-        var userSources = await _userSourceService.GetUserSourcesByMangaId(mangaId, user.Id);
-
-        await _userMangaChapterService.AddUserMangaBySourceIdList(mangaId, user.Id, sourceIdList, userSources);
-
-        return Ok();
-    }
-
-    [SwaggerOperation("User doesn't follow a manga anymore")]
-    [HttpDelete("mangas/{mangaId:int}")]
-    [Authorize]
-    public async Task<ActionResult> UnfollowManga(int mangaId)
-    {
-        var manga = await _mangaService.GetMangaById(mangaId);
-
-        if (manga == null)
-            return BadRequest($"Manga not found for id {mangaId}");
-
-        var emailClaim = User.FindFirst("email")?.Value;
-
-        if (emailClaim == null)
-            return BadRequest("Invalid user");
-
-        var user = await _userManager.FindByEmailAsync(emailClaim);
-
-        if (user == null)
-            return BadRequest("Invalid user");
-
-        await _userMangaChapterService.DeleteUserMangasByMangaId(mangaId, user.Id);
-
-        return Ok();
-    }
-
-    [SwaggerOperation("Get all mangas that the user follows with a simplified response")]
+    /// <summary>
+    /// Get all followed manga for a logged-in user.
+    /// </summary>
+    /// <returns>All followed manga for a logged-in user, if any..</returns>
+    /// <response code="200">Returns all followed manga, if any.</response>
+    /// <response code="400">Error.</response>
+    [SwaggerOperation("Get all followed manga for a logged-in user")]
     [HttpGet("mangas/list")]
     [Authorize]
     public async Task<ActionResult<IEnumerable<MangaUserDto>>> GetUserMangasList()
     {
-        var emailClaim = User.FindFirst("email")?.Value;
-
-        if (emailClaim == null)
-            return BadRequest("Invalid user");
-
-        var user = await _userManager.FindByEmailAsync(emailClaim);
-
-        if (user == null)
-            return BadRequest("Invalid user");
-
-        var userMangas = await _userMangaService.GetMangasByUserId(user.Id);
-
-        return Ok(userMangas);
+        return Ok(await _userMangaService.GetMangasByUserId(UserId!));
     }
 
-    [SwaggerOperation("Get all followed mangas by a user")]
+    /// <summary>
+    /// Get all followed manga by an user.
+    /// </summary>
+    /// <returns>All followed manga for an user, if any..</returns>
+    /// <response code="200">Returns all followed manga for an user, if any.</response>
+    /// <response code="400">Error.</response>
+    [SwaggerOperation("Get all followed manga by a user")]
     [HttpGet("{userId}/mangas")]
     public async Task<ActionResult<IEnumerable<MangaUserDto>>> GetUserManga(string userId)
     {
-        var userMangas = await _userMangaService.GetMangasByUserId(userId);
-
-        return Ok(userMangas);
+        return Ok(await _userMangaService.GetMangasByUserId(userId));
     }
 
-    [SwaggerOperation("User starts following a source from a manga")]
+    /// <summary>
+    /// A logged-in user starts following a manga.
+    /// </summary>
+    /// <response code="200">Success.</response>
+    /// <response code="400">Error.</response>
+    [SwaggerOperation("A logged-in user starts following a manga")]
+    [HttpPost("mangas/{mangaId:int}")]
+    [Authorize]
+    public async Task<ActionResult> FollowManga(int mangaId, IEnumerable<int> sourceIdList)
+    {
+        var userSources = await _userSourceService.GetUserSourcesByMangaId(mangaId, UserId!);
+        await _userMangaChapterService.AddUserMangaBySourceIdList(mangaId, UserId!, sourceIdList, userSources);
+
+        return Ok();
+    }
+
+    /// <summary>
+    /// A logged-in user no longer follows a manga.
+    /// </summary>
+    /// <response code="200">Success.</response>
+    /// <response code="400">Error.</response>
+    [SwaggerOperation("A logged-in user no longer follows a manga")]
+    [HttpDelete("mangas/{mangaId:int}")]
+    [Authorize]
+    public async Task<ActionResult> UnfollowManga(int mangaId)
+    {
+        await _userMangaChapterService.DeleteUserMangasByMangaId(mangaId, UserId!);
+        return Ok();
+    }
+
+    /// <summary>
+    /// A logged-in user starts following a source from a manga.
+    /// </summary>
+    /// <response code="200">Success.</response>
+    /// <response code="400">Error.</response>
+    [SwaggerOperation("A logged-in user starts following a source from a manga")]
     [HttpPost("mangas/{mangaId:int}/sources/{sourceId:int}")]
     [Authorize]
     public async Task<ActionResult> AddUserManga(int mangaId, int sourceId)
     {
-        var manga = await _mangaService.GetMangaById(mangaId);
-
-        if (manga == null)
-            return BadRequest("Manga not found");
-
-        var emailClaim = User.FindFirst("email")?.Value;
-
-        if (emailClaim == null)
-            return BadRequest("Invalid user");
-
-        var user = await _userManager.FindByEmailAsync(emailClaim);
-
-        if (user == null)
-            return BadRequest("Invalid user");
-
-        await _userMangaChapterService.AddUserManga(mangaId, user.Id, sourceId);
-
+        await _userMangaChapterService.AddUserManga(mangaId, UserId!, sourceId);
         return Ok();
     }
 
-    [SwaggerOperation("User doesn't follow a source from a manga anymore")]
+    /// <summary>
+    /// A logged-in user no longer follows a source from a manga.
+    /// </summary>
+    /// <response code="200">Success.</response>
+    /// <response code="400">Error.</response>
+    [SwaggerOperation("A logged-in user no longer follows a source from a manga")]
     [HttpDelete("mangas/{mangaId:int}/sources/{sourceId:int}")]
     [Authorize]
     public async Task<ActionResult> DeleteUserManga(int mangaId, int sourceId)
     {
-        var manga = await _mangaService.GetMangaById(mangaId);
-
-        if (manga == null)
-            return BadRequest("Manga not found");
-
-        var emailClaim = User.FindFirst("email")?.Value;
-
-        if (emailClaim == null)
-            return BadRequest("Invalid user");
-
-        var user = await _userManager.FindByEmailAsync(emailClaim);
-
-        if (user == null)
-            return BadRequest("Invalid user");
-
-        await _userMangaChapterService.DeleteUserManga(mangaId, user.Id, sourceId);
-
+        await _userMangaChapterService.DeleteUserManga(mangaId, UserId!, sourceId);
         return Ok();
     }
 
-    [SwaggerOperation("User changes the last chapter read from a source from a manga")]
+    /// <summary>
+    /// A logged-in user changes its last chapter read from a combination of manga and source.
+    /// </summary>
+    /// <response code="200">Success.</response>
+    /// <response code="400">Error.</response>
+    [SwaggerOperation("A logged-in user changes its last chapter read from a combination of manga and source")]
     [HttpPatch("mangas/{mangaId:int}/sources/{sourceId:int}")]
     [Authorize]
     public async Task<ActionResult> UpdateManga(int mangaId, int sourceId, int chapterId)
     {
-        var manga = await _mangaService.GetMangaById(mangaId);
-
-        if (manga == null)
-            return BadRequest("Manga not found");
-
-        var chapter = await _chapterService.GetChapterById(chapterId);
-
-        if (chapter == null || chapter.Source!.Id != sourceId)
-            return BadRequest("Invalid chapter/source");
-
-        var emailClaim = User.FindFirst("email")?.Value;
-
-        if (emailClaim == null)
-            return BadRequest("Invalid user");
-
-        var user = await _userManager.FindByEmailAsync(emailClaim);
-
-        if (user == null)
-            return BadRequest("Invalid user");
-
-        await _userMangaService.UpdateUserMangaAsync(user.Id, mangaId, sourceId, chapterId);
-
+        await _userMangaService.UpdateUserMangaAsync(UserId!, mangaId, sourceId, chapterId);
         return Ok();
     }
 }

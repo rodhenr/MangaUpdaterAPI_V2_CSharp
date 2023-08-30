@@ -21,19 +21,14 @@ public class AuthController : BaseController
     /// <param name="userRegister">Data to register an user.</param>
     /// <response code="200">Returns success.</response>
     /// <response code="400">Returns all validation errors.</response>
-    [SwaggerOperation("Register")]
+    [SwaggerOperation("Register an user")]
     [HttpPost("register")]
     public async Task<ActionResult<UserRegisterResponse>> UserRegister(UserRegister userRegister)
     {
         if (!ModelState.IsValid)
             return BadRequest();
 
-        var registered = await _identityService.Register(userRegister);
-
-        if (registered.Success)
-            return Ok(true);
-
-        return BadRequest(registered.ErrorList);
+        return Ok(await _identityService.Register(userRegister));
     }
 
     /// <summary>
@@ -42,18 +37,13 @@ public class AuthController : BaseController
     /// <param name="userAuthenticate">Data to authenticate an user.</param>
     /// <response code="200">Returns token.</response>
     /// <response code="400">Returns all validation errors.</response>
-    [SwaggerOperation("Login")]
+    [SwaggerOperation("Authenticate an user")]
     [HttpPost("login")]
     public async Task<ActionResult<UserAuthenticateResponse>> UserLogin(UserAuthenticate userAuthenticate)
     {
         if (!ModelState.IsValid)
             return BadRequest();
 
-        var response = await _identityService.Authenticate(userAuthenticate);
-
-        if (!response.IsSuccess)
-            return Unauthorized(response.ErrorList);
-
-        return Ok(response);
+        return Ok(await _identityService.Authenticate(userAuthenticate));
     }
 }

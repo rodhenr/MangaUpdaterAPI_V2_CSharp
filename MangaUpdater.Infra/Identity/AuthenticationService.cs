@@ -38,10 +38,10 @@ public class AuthenticationService : IAuthenticationService
 
         var userResponse = new UserRegisterResponse(result.Succeeded);
 
-        if (!result.Succeeded && result.Errors.Any())
-            userResponse.AddErrors(result.Errors.Select(r => r.Description));
+        if (result.Succeeded || !result.Errors.Any()) return userResponse;
 
-        return userResponse;
+        userResponse.AddErrors(result.Errors.Select(r => r.Description));
+        throw new Exception(userResponse.ErrorList.ToString());
     }
 
     public async Task<UserAuthenticateResponse> Authenticate(UserAuthenticate userAuthenticate)
@@ -63,12 +63,14 @@ public class AuthenticationService : IAuthenticationService
         else
             authResponse.AddError("Invalid user/password");
 
+        if (authResponse.ErrorList.Count > 0) throw new Exception(authResponse.ErrorList.ToString());
+
         return authResponse;
     }
 
     private async Task<UserAuthenticateResponse> GenerateToken(string email)
     {
-        var user = await _userManager.FindByEmailAsync(email) ?? throw new Exception("");
+        var user = await _userManager.FindByEmailAsync(email) ?? throw new Exception("User not found");
 
         var tokenClaims = await GetClaims(user);
 
@@ -93,7 +95,7 @@ public class AuthenticationService : IAuthenticationService
         var roles = await _userManager.GetRolesAsync(user);
         var usCulture = new CultureInfo("en-US");
 
-        claims.Add(new Claim(JwtRegisteredClaimNames.Sub, user.Id));
+        claims.Add(new Claim(JwtRegisteredClaimNames.NameId, user.Id));
         claims.Add(new Claim(JwtRegisteredClaimNames.Email, user.Email!));
         claims.Add(new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()));
         claims.Add(new Claim(JwtRegisteredClaimNames.Nbf, DateTime.Now.ToString(usCulture)));

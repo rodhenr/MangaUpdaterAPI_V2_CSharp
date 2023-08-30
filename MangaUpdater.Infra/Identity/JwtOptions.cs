@@ -8,7 +8,7 @@ public class JwtOptions
     {
     }
 
-    public JwtOptions(string issuer, string audience, SigningCredentials signingCredentials, int expiration)
+    public JwtOptions(string issuer, string audience, SigningCredentials signingCredentials, int expiration): this()
     {
         Issuer = issuer;
         Audience = audience;

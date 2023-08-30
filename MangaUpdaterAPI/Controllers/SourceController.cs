@@ -24,20 +24,19 @@ public class SourceController : BaseController
     [HttpGet]
     public async Task<ActionResult<IEnumerable<Source>>> GetSources()
     {
-        var sources = await _sourceService.GetSources();
-
-        return Ok(sources);
+        return Ok(await _sourceService.GetSources());
     }
 
-    [SwaggerOperation("Get a source")]
+    /// <summary>
+    /// Get a source by id.
+    /// </summary>
+    /// <returns>A source, if exists.</returns>
+    /// <response code="200">Returns a source, if exist.</response>
+    /// <response code="400">If doesn't exist.</response>
+    [SwaggerOperation("Get a source by id")]
     [HttpGet("{sourceId:int}")]
     public async Task<ActionResult<Source>> GetSourceById(int sourceId)
     {
-        var source = await _sourceService.GetSourcesById(sourceId);
-
-        if (source == null)
-            return BadRequest($"Source not found by id {sourceId}");
-
-        return Ok(source);
+        return Ok(await _sourceService.GetSourcesById(sourceId));
     }
 }
