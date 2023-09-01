@@ -1,6 +1,7 @@
 ﻿using MangaUpdater.Application.Interfaces;
 using MangaUpdater.Domain.Entities;
 using MangaUpdater.Domain.Interfaces;
+using Microsoft.EntityFrameworkCore;
 
 namespace MangaUpdater.Application.Services;
 
@@ -13,13 +14,13 @@ public class SourceService : ISourceService
         _sourceRepository = sourceRepository;
     }
 
-    public async Task<Source?> GetSourcesById(int id)
+    public async Task<IEnumerable<Source>> Get()
     {
-        return await _sourceRepository.GetByIdAsync(id);
+        return await _sourceRepository.Get().ToListAsync();
     }
 
-    public async Task<IEnumerable<Source>> GetSources()
+    public async Task<Source?> GetById(int id)
     {
-        return await _sourceRepository.GetAsync();
+        return await _sourceRepository.GetByIdAsync(id);
     }
 }

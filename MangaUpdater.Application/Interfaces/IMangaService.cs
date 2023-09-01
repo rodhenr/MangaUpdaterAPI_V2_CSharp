@@ -5,14 +5,13 @@ namespace MangaUpdater.Application.Interfaces;
 
 public interface IMangaService
 {
-    Task AddManga(Manga manga);
-    Task<IEnumerable<Manga>> GetMangas();
+    Task Add(Manga manga);
+    Task<IEnumerable<Manga>> Get();
 
-    Task<IEnumerable<MangaUserDto>> GetMangasWithFilter(string? orderBy, List<int>? sourceIdList,
+    Task<IEnumerable<MangaUserDto>> GetWithFilter(string? orderBy, List<int>? sourceIdList,
         List<int>? genreIdList);
 
-    Task<Manga?> GetMangaById(int id);
-    Task<MangaDto?> GetMangaNotLoggedById(int id);
-    Task<Manga?> GetMangaByMalId(int malId);
-    Task<MangaDto?> GetMangaByIdAndUserId(int id, string userId);
+    Task<Manga?> GetById(int id);
+    Task<MangaDto?> GetByIdNotLogged(int id);
+    Task<MangaDto?> GetByIdAndUserId(int id, string userId);
 }

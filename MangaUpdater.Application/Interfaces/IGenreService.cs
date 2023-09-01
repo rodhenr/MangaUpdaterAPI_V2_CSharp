@@ -4,5 +4,5 @@ namespace MangaUpdater.Application.Interfaces;
 
 public interface IGenreService
 {
-    Task<IEnumerable<Genre>> GetGenres();
+    Task<IEnumerable<Genre>> Get();
 }

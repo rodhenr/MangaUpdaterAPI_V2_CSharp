@@ -13,7 +13,8 @@ public class UserMangaChapterService : IUserMangaChapterService
     private readonly IChapterRepository _chapterRepository;
     private readonly IMapper _mapper;
 
-    public UserMangaChapterService(IUserMangaRepository userMangaRepository, IChapterRepository chapterRepository,
+    public UserMangaChapterService(IUserMangaRepository userMangaRepository,
+        IChapterRepository chapterRepository,
         IMapper mapper)
     {
         _userMangaRepository = userMangaRepository;
@@ -83,6 +84,6 @@ public class UserMangaChapterService : IUserMangaChapterService
         var userManga = await _userMangaRepository.GetByMangaIdUserIdAndSourceIdAsync(mangaId, userId, sourceId);
 
         if (userManga != null)
-            await _userMangaRepository.DeleteAsync(userId, mangaId, sourceId);
+            await _userMangaRepository.RemoveAsync(userManga);
     }
 }

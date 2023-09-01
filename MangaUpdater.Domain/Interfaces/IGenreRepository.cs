@@ -2,6 +2,6 @@
 
 namespace MangaUpdater.Domain.Interfaces;
 
-public interface IGenreRepository: IRepository<Genre>
+public interface IGenreRepository: IBaseRepository<Genre>
 {
 }

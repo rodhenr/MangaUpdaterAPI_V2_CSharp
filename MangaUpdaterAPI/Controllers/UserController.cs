@@ -11,19 +11,15 @@ namespace MangaUpdater.API.Controllers;
 public class UserController : BaseController
 {
     private string? UserId => User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-    private readonly IMangaService _mangaService;
     private readonly IUserMangaChapterService _userMangaChapterService;
     private readonly IUserSourceService _userSourceService;
-    private readonly IChapterService _chapterService;
     private readonly IUserMangaService _userMangaService;
 
-    public UserController(IMangaService mangaService, IUserMangaChapterService userMangaChapterService,
-        IUserSourceService userSourceService, IChapterService chapterService, IUserMangaService userMangaService)
+    public UserController(IUserMangaChapterService userMangaChapterService, IUserSourceService userSourceService,
+        IUserMangaService userMangaService)
     {
-        _mangaService = mangaService;
         _userMangaChapterService = userMangaChapterService;
         _userSourceService = userSourceService;
-        _chapterService = chapterService;
         _userMangaService = userMangaService;
     }
 
@@ -137,7 +133,10 @@ public class UserController : BaseController
     [Authorize]
     public async Task<ActionResult> UpdateManga(int mangaId, int sourceId, int chapterId)
     {
-        await _userMangaService.UpdateUserMangaAsync(UserId!, mangaId, sourceId, chapterId);
+        var userManga = await _userMangaService.GetByMangaIdUserIdAndSourceId(mangaId, UserId!, sourceId);
+        userManga.CurrentChapterId = chapterId;
+
+        await _userMangaService.Update(userManga);
         return Ok();
     }
 }

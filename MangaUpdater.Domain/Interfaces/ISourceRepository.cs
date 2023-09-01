@@ -2,6 +2,6 @@
 
 namespace MangaUpdater.Domain.Interfaces;
 
-public interface ISourceRepository: IRepository<Source>
+public interface ISourceRepository: IBaseRepository<Source>
 {
 }

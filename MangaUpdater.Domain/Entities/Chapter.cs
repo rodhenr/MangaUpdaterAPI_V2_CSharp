@@ -2,7 +2,7 @@
 
 namespace MangaUpdater.Domain.Entities;
 
-public sealed class Chapter
+public sealed class Chapter: Entity
 {
     public Chapter(int mangaId, int sourceId, DateTime date, float number)
     {
@@ -12,14 +12,9 @@ public sealed class Chapter
         Number = number;
     }
 
-    public int Id { get; set; }
-
     public int MangaId { get; set; }
-
     public int SourceId { get; set; }
-
     public DateTime Date { get; set; }
-
     public float Number { get; set; }
 
     [JsonIgnore] public Manga? Manga { get; set; }

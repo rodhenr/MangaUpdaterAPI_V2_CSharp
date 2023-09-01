@@ -1,4 +1,5 @@
 ﻿using MangaUpdater.Application.DTOs;
+using MangaUpdater.Domain.Entities;
 
 namespace MangaUpdater.Application.Interfaces;
 

@@ -3,16 +3,14 @@ using System.Text.Json.Serialization;
 
 namespace MangaUpdater.Domain.Entities;
 
-public sealed class Genre
+public sealed class Genre : Entity
 {
     public Genre(string name)
     {
         Name = name;
     }
 
-    public int Id { get; set; }
-
     [MaxLength(20)] public string Name { get; set; }
-
-    [JsonIgnore] public ICollection<MangaGenre>? MangaGenres { get; set; }
+    
+    [JsonIgnore] public IEnumerable<MangaGenre>? MangaGenres { get; set; }
 }

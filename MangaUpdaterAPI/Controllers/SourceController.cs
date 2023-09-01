@@ -24,7 +24,7 @@ public class SourceController : BaseController
     [HttpGet]
     public async Task<ActionResult<IEnumerable<Source>>> GetSources()
     {
-        return Ok(await _sourceService.GetSources());
+        return Ok(await _sourceService.Get());
     }
 
     /// <summary>
@@ -37,6 +37,6 @@ public class SourceController : BaseController
     [HttpGet("{sourceId:int}")]
     public async Task<ActionResult<Source>> GetSourceById(int sourceId)
     {
-        return Ok(await _sourceService.GetSourcesById(sourceId));
+        return Ok(await _sourceService.GetById(sourceId));
     }
 }

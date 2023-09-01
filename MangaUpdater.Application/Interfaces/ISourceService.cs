@@ -4,6 +4,6 @@ namespace MangaUpdater.Application.Interfaces;
 
 public interface ISourceService
 {
-    Task<IEnumerable<Source>> GetSources();
-    Task<Source?> GetSourcesById(int id);
+    Task<IEnumerable<Source>> Get();
+    Task<Source?> GetById(int id);
 }

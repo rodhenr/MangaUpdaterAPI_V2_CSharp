@@ -13,7 +13,7 @@ public class MangaSourceService : IMangaSourceService
         _mangaSourceRepository = mangaSourceRepository;
     }
 
-    public async Task AddMangaSource(MangaSource mangaSource)
+    public async Task Add(MangaSource mangaSource)
     {
         await _mangaSourceRepository.CreateAsync(mangaSource);
     }

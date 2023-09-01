@@ -2,10 +2,8 @@
 
 namespace MangaUpdater.Domain.Interfaces;
 
-public interface IMangaSourceRepository
+public interface IMangaSourceRepository: IBaseRepository<MangaSource>
 {
-    Task CreateAsync(MangaSource entity);
     Task<ICollection<MangaSource>> GetAllByMangaIdAsync(int mangaId);
-    Task<ICollection<MangaSource>> GetAllBySourceIdAsync(int sourceId);
     Task<MangaSource?> GetByMangaIdAndSourceIdAsync(int mangaId, int sourceId);
 }

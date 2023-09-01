@@ -3,6 +3,7 @@ using MangaUpdater.Application.DTOs;
 using MangaUpdater.Application.Interfaces;
 using MangaUpdater.Domain.Entities;
 using MangaUpdater.Domain.Interfaces;
+using Microsoft.EntityFrameworkCore;
 
 namespace MangaUpdater.Application.Services;
 
@@ -17,14 +18,14 @@ public class UserMangaService : IUserMangaService
         _mapper = mapper;
     }
 
-    public async Task<IEnumerable<UserManga>> GetUserMangasByMangaIdAndUserId(int mangaId, string userId)
-    {
-        return await _userMangaRepository.GetAllByMangaIdAndUserIdAsync(mangaId, userId);
-    }
-
-    public async Task<IEnumerable<UserManga>> GetUserMangasByMangaId(int mangaId)
+    public async Task<IEnumerable<UserManga>> GetByMangaId(int mangaId)
     {
         return await _userMangaRepository.GetAllByMangaIdAsync(mangaId);
+    }
+
+    public async Task<IEnumerable<UserManga>> GetByMangaIdAndUserId(int mangaId, string userId)
+    {
+        return await _userMangaRepository.GetAllByMangaIdAndUserIdAsync(mangaId, userId);
     }
 
     public async Task<IEnumerable<MangaUserDto>> GetMangasByUserId(string userId)
@@ -34,8 +35,15 @@ public class UserMangaService : IUserMangaService
         return _mapper.Map<IEnumerable<MangaUserDto>>(mangas.Select(userManga => userManga.Manga));
     }
 
-    public async Task UpdateUserMangaAsync(string userId, int mangaId, int sourceId, int chapterId)
+    public async Task<UserManga?> GetByMangaIdUserIdAndSourceId(int mangaId, string userId, int sourceId)
     {
-        await _userMangaRepository.UpdateAsync(userId, mangaId, sourceId, chapterId);
+        return await _userMangaRepository.Get()
+            .Where(um => um.MangaId == mangaId && um.UserId == userId && um.SourceId == sourceId)
+            .SingleOrDefaultAsync();
+    }
+
+    public async Task Update(UserManga userManga)
+    {
+        await _userMangaRepository.UpdateAsync(userManga);
     }
 }
