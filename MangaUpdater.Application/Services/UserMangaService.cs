@@ -3,7 +3,6 @@ using MangaUpdater.Application.DTOs;
 using MangaUpdater.Application.Interfaces;
 using MangaUpdater.Domain.Entities;
 using MangaUpdater.Domain.Interfaces;
-using Microsoft.EntityFrameworkCore;
 
 namespace MangaUpdater.Application.Services;
 
@@ -37,13 +36,12 @@ public class UserMangaService : IUserMangaService
 
     public async Task<UserManga?> GetByMangaIdUserIdAndSourceId(int mangaId, string userId, int sourceId)
     {
-        return await _userMangaRepository.Get()
-            .Where(um => um.MangaId == mangaId && um.UserId == userId && um.SourceId == sourceId)
-            .SingleOrDefaultAsync();
+        return await _userMangaRepository.GetByMangaIdUserIdAndSourceIdAsync(mangaId, userId, sourceId);
     }
 
     public async Task Update(UserManga userManga)
     {
-        await _userMangaRepository.UpdateAsync(userManga);
+        _userMangaRepository.UpdateAsync(userManga);
+        await _userMangaRepository.SaveAsync();
     }
 }

@@ -3,7 +3,6 @@ using MangaUpdater.Application.DTOs;
 using MangaUpdater.Application.Interfaces;
 using MangaUpdater.Domain.Entities;
 using MangaUpdater.Domain.Interfaces;
-using Microsoft.EntityFrameworkCore;
 
 namespace MangaUpdater.Application.Services;
 
@@ -20,12 +19,13 @@ public class MangaService : IMangaService
 
     public async Task Add(Manga manga)
     {
-        await _mangaRepository.CreateAsync(manga);
+        _mangaRepository.CreateAsync(manga);
+        await _mangaRepository.SaveAsync();
     }
 
     public async Task<IEnumerable<Manga>> Get()
     {
-        return await _mangaRepository.Get().ToListAsync();
+        return await _mangaRepository.GetAsync();
     }
 
     public async Task<Manga?> GetById(int id)

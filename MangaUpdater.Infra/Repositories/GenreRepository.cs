@@ -14,6 +14,7 @@ public class GenreRepository : BaseRepository<Genre>, IGenreRepository
     public override async Task<Genre?> GetByIdAsync(int id)
     {
         return await Get()
+            .AsNoTracking()
             .SingleOrDefaultAsync(g => g.Id == id);
     }
 }

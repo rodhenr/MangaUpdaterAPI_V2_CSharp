@@ -1,7 +1,6 @@
 ﻿using MangaUpdater.Application.Interfaces;
 using MangaUpdater.Domain.Entities;
 using MangaUpdater.Domain.Interfaces;
-using Microsoft.EntityFrameworkCore;
 
 namespace MangaUpdater.Application.Services;
 
@@ -16,6 +15,6 @@ public class GenreService : IGenreService
 
     public async Task<IEnumerable<Genre>> Get()
     {
-        return await _genreRepository.Get().ToListAsync();
+        return await _genreRepository.GetAsync();
     }
 }

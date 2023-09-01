@@ -13,9 +13,9 @@ public class MangaSourceService : IMangaSourceService
         _mangaSourceRepository = mangaSourceRepository;
     }
 
-    public async Task Add(MangaSource mangaSource)
+    public void Add(MangaSource mangaSource)
     {
-        await _mangaSourceRepository.CreateAsync(mangaSource);
+        _mangaSourceRepository.CreateAsync(mangaSource);
     }
 
     public async Task<ICollection<MangaSource>> GetAllByMangaId(int mangaId)
@@ -26,5 +26,10 @@ public class MangaSourceService : IMangaSourceService
     public async Task<MangaSource?> GetByMangaIdAndSourceId(int mangaId, int sourceId)
     {
         return await _mangaSourceRepository.GetByMangaIdAndSourceIdAsync(mangaId, sourceId);
+    }
+
+    public async Task SaveChanges()
+    {
+        await _mangaSourceRepository.SaveAsync();
     }
 }

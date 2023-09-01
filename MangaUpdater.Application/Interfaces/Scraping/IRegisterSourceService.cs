@@ -2,6 +2,5 @@
 
 public interface IRegisterSourceService
 {
-    //Task<MangaRegister> GetAsuraAsync();
-    Dictionary<string, string> RegisterFromMangaLivreSource(string sourceUrl, string linkUrl, string mangaName);
+    Task RegisterFromMangaLivreSource(int mangaId, int sourceId, string sourceUrl, string linkUrl, string mangaName);
 }

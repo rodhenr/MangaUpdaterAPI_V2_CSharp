@@ -3,7 +3,7 @@ using MangaUpdater.Application.Interfaces;
 using MangaUpdater.Domain.Entities;
 using MangaUpdater.Domain.Interfaces;
 
-namespace MangaUpdater.Application.Services;
+namespace MangaUpdater.Application.Services.External;
 
 public class RegisterMangaService : IRegisterMangaService
 {
@@ -29,7 +29,8 @@ public class RegisterMangaService : IRegisterMangaService
         if (mangaInfo == null)
             return null;
 
-        await _mangaRepository.CreateAsync(mangaInfo);
+        _mangaRepository.CreateAsync(mangaInfo);
+        await _mangaRepository.SaveAsync();
 
         return mangaInfo;
     }

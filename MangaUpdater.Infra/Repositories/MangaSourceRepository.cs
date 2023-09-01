@@ -17,6 +17,7 @@ public class MangaSourceRepository : BaseRepository<MangaSource>,IMangaSourceRep
             .Where(ms => ms.MangaId == mangaId)
             .Include(ms => ms.Source)
             .Include(ms => ms.Manga)
+            .AsNoTracking()
             .ToListAsync();
     }
 
@@ -25,6 +26,7 @@ public class MangaSourceRepository : BaseRepository<MangaSource>,IMangaSourceRep
         return await Get()
             .Where(ms => ms.MangaId == mangaId && ms.SourceId == sourceId)
             .Include(ms => ms.Source)
+            .AsNoTracking()
             .SingleOrDefaultAsync();
     }
 }

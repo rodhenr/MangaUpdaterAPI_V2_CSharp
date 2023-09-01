@@ -15,12 +15,14 @@ public class MangaRepository : BaseRepository<Manga>, IMangaRepository
     {
         return await Get()
             .Include(m => m.MangaSources)
+            .AsNoTracking()
             .SingleOrDefaultAsync(m => m.Id == id);
     }
 
     public async Task<Manga?> GetByMalIdAsync(int malId)
     {
         return await Get()
+            .AsNoTracking()
             .SingleOrDefaultAsync(m => m.MyAnimeListId == malId);
     }
 
@@ -46,6 +48,7 @@ public class MangaRepository : BaseRepository<Manga>, IMangaRepository
         return await query
             .Include(m => m.MangaSources)
             .Include(m => m.MangaGenres)
+            .AsNoTracking()
             .ToListAsync();
     }
 
@@ -57,6 +60,7 @@ public class MangaRepository : BaseRepository<Manga>, IMangaRepository
             .Include(m => m.MangaSources)
             .ThenInclude(ms => ms.Source)
             .Include(m => m.Chapters.OrderByDescending(ch => ch.Date))
+            .AsNoTracking()
             .SingleOrDefaultAsync(m => m.Id == id);
     }
 
@@ -69,6 +73,7 @@ public class MangaRepository : BaseRepository<Manga>, IMangaRepository
             .Include(m => m.MangaSources)
             .ThenInclude(ms => ms.Source)
             .Include(m => m.Chapters.OrderByDescending(ch => ch.Date))
+            .AsNoTracking()
             .SingleOrDefaultAsync(m => m.Id == id);
     }
 }

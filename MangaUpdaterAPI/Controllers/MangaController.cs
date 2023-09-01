@@ -74,9 +74,9 @@ public class MangaController : BaseController
     [HttpGet("{mangaId:int}")]
     public async Task<ActionResult<MangaDto>> GetManga(int mangaId)
     {
-        if (UserId is not null) return (await _mangaService.GetByIdAndUserId(mangaId, UserId!)!);
-
-        return Ok(await _mangaService.GetByIdNotLogged(mangaId));
+        return UserId is not null
+            ? Ok(await _mangaService.GetByIdAndUserId(mangaId, UserId!))
+            : Ok(await _mangaService.GetByIdNotLogged(mangaId));
     }
 
     /// <summary>
@@ -104,26 +104,10 @@ public class MangaController : BaseController
     public async Task<ActionResult> RegisterFromScraping(int mangaId, int sourceId, string mangaUrl)
     {
         var manga = await _mangaService.GetById(mangaId);
-
-        if (manga == null)
-            return BadRequest("Manga not found");
-
-        if (manga.MangaSources!.Any(ms => ms.SourceId == sourceId))
-            return BadRequest($"Source already registered for source id {sourceId}");
-
         var source = await _sourceService.GetById(sourceId);
 
-        var chapters =
-            _registerSourceService.RegisterFromMangaLivreSource(source!.BaseUrl, mangaUrl, manga.Name);
-
-        if (chapters.Count == 0)
-            return BadRequest($"No chapters found");
-
-        var chapterList = chapters.Select(ch =>
-            new Chapter(mangaId, sourceId, DateTime.Parse(ch.Value), float.Parse(ch.Key))).ToList();
-
-        await _mangaSourceService.Add(new MangaSource(mangaId, sourceId, mangaUrl));
-        await _chapterService.BulkCreate(chapterList);
+        await _registerSourceService.RegisterFromMangaLivreSource(mangaId, sourceId, source!.BaseUrl, mangaUrl,
+            manga!.Name);
 
         return Ok();
     }

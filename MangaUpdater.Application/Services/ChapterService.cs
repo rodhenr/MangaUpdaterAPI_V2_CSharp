@@ -1,5 +1,4 @@
-﻿using System.Collections;
-using MangaUpdater.Application.Interfaces;
+﻿using MangaUpdater.Application.Interfaces;
 using MangaUpdater.Domain.Entities;
 using MangaUpdater.Domain.Interfaces;
 
@@ -14,14 +13,14 @@ public class ChapterService : IChapterService
         _chapterRepository = chapterRepository;
     }
 
-    public async Task Add(Chapter chapter)
+    public void Add(Chapter chapter)
     {
-        await _chapterRepository.CreateAsync(chapter);
+        _chapterRepository.CreateAsync(chapter);
     }
 
-    public async Task BulkCreate(IEnumerable<Chapter> chapters)
+    public void BulkCreate(IEnumerable<Chapter> chapters)
     {
-        await _chapterRepository.BulkCreateAsync(chapters);
+        _chapterRepository.BulkCreateAsync(chapters);
     }
 
     public async Task<Chapter?> GetById(int id)
@@ -41,8 +40,20 @@ public class ChapterService : IChapterService
 
         List<Chapter> chaptersToUpdate = (from chapter in chapters
             where !chaptersInDatabase.Any(ch => Math.Abs(ch - float.Parse(chapter.Key)) < 0)
-            select new Chapter(mangaId, sourceId, DateTime.Parse(chapter.Value), float.Parse(chapter.Key))).ToList();
+            select new Chapter
+            {
+                MangaId = mangaId,
+                SourceId = sourceId,
+                Date = DateTime.Parse(chapter.Value),
+                Number = float.Parse(chapter.Key)
+            }).ToList();
 
-        await _chapterRepository.BulkCreateAsync(chaptersToUpdate);
+        _chapterRepository.BulkCreateAsync(chaptersToUpdate);
+        await _chapterRepository.SaveAsync();
+    }
+
+    public async Task SaveChanges()
+    {
+        await _chapterRepository.SaveAsync();
     }
 }

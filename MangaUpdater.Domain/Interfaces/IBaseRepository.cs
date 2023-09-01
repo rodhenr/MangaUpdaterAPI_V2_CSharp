@@ -4,9 +4,10 @@ namespace MangaUpdater.Domain.Interfaces;
 
 public interface IBaseRepository<TEntity> where TEntity : Entity
 {
-    Task CreateAsync(TEntity entity);
-    IQueryable<TEntity> Get();
+    void CreateAsync(TEntity entity);
+    Task<IEnumerable<TEntity>> GetAsync();
     Task<TEntity?> GetByIdAsync(int id);
-    Task UpdateAsync(TEntity entity);
-    Task RemoveAsync(TEntity entity);
+    void UpdateAsync(TEntity entity);
+    void RemoveAsync(TEntity entity);
+    Task SaveAsync();
 }

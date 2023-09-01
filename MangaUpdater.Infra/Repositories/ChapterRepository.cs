@@ -11,37 +11,42 @@ public class ChapterRepository : BaseRepository<Chapter>, IChapterRepository
     {
     }
 
-    public async Task BulkCreateAsync(IEnumerable<Chapter> chapters)
+    public void BulkCreateAsync(IEnumerable<Chapter> chapters)
     {
-        await Context.Chapters.AddRangeAsync(chapters);
-        await Context.SaveChangesAsync();
+        Context.Chapters.AddRange(chapters);
+    }
+    
+    public override async Task<Chapter?> GetByIdAsync(int id)
+    {
+        return await Get()
+            .Include(ch => ch.Source)
+            .AsNoTracking()
+            .SingleOrDefaultAsync(ch => ch.Id == id);
     }
 
-    public override IQueryable<Chapter> Get()
-    {
-        return Context.Set<Chapter>()
-            .Include(ch => ch.Source);
-    }
-
-    public async Task<IEnumerable<Chapter>> GetByMangaIdAsync(int mangaId, int max)
+    public async Task<IEnumerable<Chapter>> GetByMangaIdAsync(int mangaId, int max = 0)
     {
         if (max == 0)
             return await Get()
                 .Where(ch => ch.Id == mangaId)
+                .AsNoTracking()
                 .ToListAsync();
 
         return await Get()
             .Where(ch => ch.Id == mangaId)
             .TakeLast(max)
+            .AsNoTracking()
             .ToListAsync();
     }
 
-    public async Task<ICollection<Chapter>> GetThreeLastByMangaIdAndSourceListAsync(int mangaId, List<int> sourceList)
+    public async Task<IEnumerable<Chapter>> GetThreeLastByMangaIdAndSourceListAsync(int mangaId, List<int> sourceList)
     {
         return await Get()
             .Where(ch => ch.MangaId == mangaId && sourceList.Contains(ch.SourceId))
+            .Include(ch => ch.Source)
             .OrderByDescending(ch => ch.Date)
             .Take(3)
+            .AsNoTracking()
             .ToListAsync();
     }
 
@@ -50,6 +55,7 @@ public class ChapterRepository : BaseRepository<Chapter>, IChapterRepository
         return await Get()
             .Where(ch => ch.MangaId == mangaId && ch.SourceId == sourceId)
             .OrderBy(ch => ch.Number)
+            .AsNoTracking()
             .FirstOrDefaultAsync();
     }
 
@@ -57,6 +63,7 @@ public class ChapterRepository : BaseRepository<Chapter>, IChapterRepository
     {
         return await Get()
             .Where(ch => ch.MangaId == mangaId && ch.SourceId == sourceId)
+            .AsNoTracking()
             .Select(ch => ch.Number)
             .ToListAsync();
     }

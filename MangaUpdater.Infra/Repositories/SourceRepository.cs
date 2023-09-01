@@ -14,6 +14,7 @@ public class SourceRepository : BaseRepository<Source>, ISourceRepository
     public override async Task<Source?> GetByIdAsync(int id)
     {
         return await Get()
+            .AsNoTracking()
             .SingleOrDefaultAsync(s => s.Id == id);
     }
 }

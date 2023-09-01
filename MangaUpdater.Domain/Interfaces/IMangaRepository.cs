@@ -2,7 +2,7 @@
 
 namespace MangaUpdater.Domain.Interfaces;
 
-public interface IMangaRepository: IBaseRepository<Manga>
+public interface IMangaRepository : IBaseRepository<Manga>
 {
     Task<IEnumerable<Manga>> GetWithFiltersAsync(string? orderBy, List<int>? sourceIdList, List<int>? genreIdList);
     Task<Manga?> GetByMalIdAsync(int malId);

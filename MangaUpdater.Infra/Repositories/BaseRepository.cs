@@ -14,17 +14,20 @@ public abstract class BaseRepository<TEntity> : IBaseRepository<TEntity> where T
         Context = context;
     }
 
-    public virtual async Task CreateAsync(TEntity entity)
+    public virtual void CreateAsync(TEntity entity)
     {
         Context.Add(entity);
-        await Context.SaveChangesAsync();
     }
 
-    public virtual IQueryable<TEntity> Get()
+    protected IQueryable<TEntity> Get()
     {
         return Context
-            .Set<TEntity>()
-            .AsNoTracking();
+            .Set<TEntity>();
+    }
+
+    public async Task<IEnumerable<TEntity>> GetAsync()
+    {
+        return await Context.Set<TEntity>().ToListAsync();
     }
 
     public virtual async Task<TEntity?> GetByIdAsync(int id)
@@ -33,15 +36,18 @@ public abstract class BaseRepository<TEntity> : IBaseRepository<TEntity> where T
             .SingleOrDefaultAsync(t => t.Id == id);
     }
 
-    public virtual async Task UpdateAsync(TEntity entity)
+    public virtual void UpdateAsync(TEntity entity)
     {
         Context.Update(entity);
-        await Context.SaveChangesAsync();
     }
 
-    public virtual async Task RemoveAsync(TEntity entity)
+    public virtual void RemoveAsync(TEntity entity)
     {
         Context.Remove(entity);
+    }
+
+    public async Task SaveAsync()
+    {
         await Context.SaveChangesAsync();
     }
 }
