@@ -73,6 +73,7 @@ public class MangaRepository : BaseRepository<Manga>, IMangaRepository
             .Include(m => m.MangaSources)
             .ThenInclude(ms => ms.Source)
             .Include(m => m.Chapters.OrderByDescending(ch => ch.Date))
+            .ThenInclude(ms => ms.Source)
             .AsNoTracking()
             .SingleOrDefaultAsync(m => m.Id == id);
     }

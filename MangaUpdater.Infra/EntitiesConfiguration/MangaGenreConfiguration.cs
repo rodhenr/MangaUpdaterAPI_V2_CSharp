@@ -8,8 +8,21 @@ public class MangaGenreConfiguration : IEntityTypeConfiguration<MangaGenre>
 {
     public void Configure(EntityTypeBuilder<MangaGenre> builder)
     {
-        builder.HasKey(a => new { a.MangaId, a.GenreId });
-        builder.HasOne(a => a.Manga).WithMany(a => a.MangaGenres).HasForeignKey(a => a.MangaId);
-        builder.HasOne(a => a.Genre).WithMany(a => a.MangaGenres).HasForeignKey(a => a.GenreId);
+        builder
+            .HasKey(mg => new { mg.MangaId, mg.GenreId });
+
+        builder
+            .Property(mg => mg.Id)
+            .ValueGeneratedOnAdd();
+
+        builder
+            .HasOne(mg => mg.Manga)
+            .WithMany(mg => mg.MangaGenres)
+            .HasForeignKey(mg => mg.MangaId);
+
+        builder
+            .HasOne(mg => mg.Genre)
+            .WithMany(mg => mg.MangaGenres)
+            .HasForeignKey(mg => mg.GenreId);
     }
 }

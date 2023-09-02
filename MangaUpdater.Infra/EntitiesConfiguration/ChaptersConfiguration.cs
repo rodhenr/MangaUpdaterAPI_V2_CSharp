@@ -8,9 +8,19 @@ public class ChaptersConfiguration : IEntityTypeConfiguration<Chapter>
 {
     public void Configure(EntityTypeBuilder<Chapter> builder)
     {
-        builder.HasKey(a => new { a.MangaId, a.SourceId, a.Number });
-        builder.Property(a => a.Id).ValueGeneratedOnAdd();
-        builder.HasOne(a => a.Manga).WithMany(a => a.Chapters).HasForeignKey(a => a.MangaId);
-        builder.HasOne(a => a.Source).WithMany(a => a.Chapters).HasForeignKey(a => a.SourceId);
+        builder
+            .HasKey(ch => new { ch.MangaId, ch.SourceId, ch.Number });
+
+        builder
+            .Property(ch => ch.Id)
+            .ValueGeneratedOnAdd();
+
+        builder.HasOne(ch => ch.Manga)
+            .WithMany(ch => ch.Chapters)
+            .HasForeignKey(ch => ch.MangaId);
+
+        builder.HasOne(ch => ch.Source)
+            .WithMany(ch => ch.Chapters)
+            .HasForeignKey(ch => ch.SourceId);
     }
 }

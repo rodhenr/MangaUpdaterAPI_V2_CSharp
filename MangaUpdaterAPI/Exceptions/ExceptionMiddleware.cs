@@ -2,6 +2,10 @@
 
 public class ExceptionMiddleware : IMiddleware
 {
+    public ExceptionMiddleware()
+    {
+    }
+
     public async Task InvokeAsync(HttpContext context, RequestDelegate next)
     {
         try

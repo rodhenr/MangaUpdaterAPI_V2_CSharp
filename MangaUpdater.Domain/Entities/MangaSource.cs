@@ -1,5 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
-using System.Text.Json.Serialization;
+﻿using System.Text.Json.Serialization;
 
 namespace MangaUpdater.Domain.Entities;
 
@@ -7,7 +6,7 @@ public sealed class MangaSource: Entity
 {
     public required int MangaId { get; set; }
     public required int SourceId { get; set; }
-    [MaxLength(100)] public required string Url { get; set; }
+    public required string Url { get; set; }
     
     [JsonIgnore] public Manga? Manga { get; set; }
     [JsonIgnore] public Source? Source { get; set; }

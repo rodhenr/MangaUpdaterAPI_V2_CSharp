@@ -124,7 +124,7 @@ public class MangaController : BaseController
     {
         var manga = await _mangaService.GetById(mangaId);
 
-        if (manga is not { MangaSources: null } ||
+        if (manga?.MangaSources == null ||
             !manga.MangaSources.Any(ms => ms.SourceId == sourceId))
             return BadRequest("Manga not found");
 

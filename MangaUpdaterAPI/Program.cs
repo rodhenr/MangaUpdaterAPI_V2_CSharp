@@ -1,5 +1,5 @@
-using Microsoft.OpenApi.Models;
 using System.Text.Json.Serialization;
+using Microsoft.OpenApi.Models;
 using MangaUpdater.API.Exceptions;
 using MangaUpdater.Infra.IoC;
 
@@ -54,6 +54,7 @@ builder.Services.AddSwaggerGen(options =>
 builder.Services.AddJwtAuthentication(builder.Configuration);
 builder.Services.AddInfrastructure(builder.Configuration);
 builder.Services.AddIdentity(builder.Configuration);
+builder.Services.AddTransient<ExceptionMiddleware>();
 
 builder.Services.AddControllers()
     .AddJsonOptions(x => x.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles);

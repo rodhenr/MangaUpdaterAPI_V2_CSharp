@@ -52,6 +52,6 @@ public class MangaService : IMangaService
     {
         var data = await _mangaRepository.GetByIdAndUserIdOrderedDescAsync(id, userId);
 
-        return data == null ? null : _mapper.Map<MangaDto>(data);
+        return _mapper.Map<MangaDto>(data);
     }
 }

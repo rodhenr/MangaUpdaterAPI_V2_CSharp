@@ -8,8 +8,25 @@ public class UserMangaConfiguration : IEntityTypeConfiguration<UserManga>
 {
     public void Configure(EntityTypeBuilder<UserManga> builder)
     {
-        builder.HasKey(p => new { p.MangaId, p.UserId, p.SourceId });
-        builder.HasOne(a => a.Manga).WithMany(a => a.UserMangas).HasForeignKey(a => a.MangaId);
-        builder.HasOne(a => a.Source).WithMany(a => a.UserMangas).HasForeignKey(a => a.SourceId);
+        builder
+            .HasKey(um => new { um.MangaId, um.UserId, um.SourceId });
+
+        builder
+            .Property(um => um.Id)
+            .ValueGeneratedOnAdd();
+
+        builder
+            .HasOne(um => um.Manga)
+            .WithMany(um => um.UserMangas)
+            .HasForeignKey(um => um.MangaId);
+
+        builder
+            .HasOne(um => um.Source)
+            .WithMany(um => um.UserMangas)
+            .HasForeignKey(um => um.SourceId);
+
+        builder
+            .Property(um => um.UserId)
+            .HasMaxLength(450);
     }
 }
