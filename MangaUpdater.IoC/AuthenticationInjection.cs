@@ -28,16 +28,12 @@ public static class AuthenticationInjection
         {
             ValidateIssuer = true,
             ValidIssuer = configuration.GetSection("JwtOptions:Issuer").Value,
-
             ValidateAudience = true,
             ValidAudience = configuration.GetSection("JwtOptions:Audience").Value,
-
             ValidateIssuerSigningKey = true,
             IssuerSigningKey = securityKey,
-
             RequireExpirationTime = true,
             ValidateLifetime = true,
-
             ClockSkew = TimeSpan.Zero
         };
 

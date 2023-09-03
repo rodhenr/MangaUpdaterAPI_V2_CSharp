@@ -27,5 +27,8 @@ public class UserAuthenticateResponse
 
     public void AddError(string error) => ErrorList.Add(error);
 
-    public void AddErrors(IEnumerable<string> errors) => ErrorList.AddRange(errors);
+    public override string ToString()
+    {
+        return string.Join(", ", ErrorList);
+    }
 };

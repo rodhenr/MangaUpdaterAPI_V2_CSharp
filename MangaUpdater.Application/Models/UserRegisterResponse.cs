@@ -16,4 +16,9 @@ public class UserRegisterResponse
     public List<string> ErrorList { get; }
 
     public void AddErrors(IEnumerable<string> errors) => ErrorList.AddRange(errors);
+
+    public override string ToString()
+    {
+        return string.Join(", ", ErrorList);
+    }
 }

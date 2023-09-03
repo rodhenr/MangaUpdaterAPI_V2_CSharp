@@ -5,6 +5,7 @@ using Microsoft.Extensions.Options;
 using Microsoft.AspNetCore.Identity;
 using MangaUpdater.Application.Models;
 using MangaUpdater.Application.Interfaces;
+using Microsoft.IdentityModel.Tokens;
 
 namespace MangaUpdater.Infra.Data.Identity;
 
@@ -41,7 +42,7 @@ public class AuthenticationService : IAuthenticationService
         if (result.Succeeded || !result.Errors.Any()) return userResponse;
 
         userResponse.AddErrors(result.Errors.Select(r => r.Description));
-        throw new Exception(userResponse.ErrorList.ToString());
+        throw new Exception(userResponse.ToString());
     }
 
     public async Task<UserAuthenticateResponse> Authenticate(UserAuthenticate userAuthenticate)
@@ -63,7 +64,7 @@ public class AuthenticationService : IAuthenticationService
         else
             authResponse.AddError("Invalid user/password");
 
-        if (authResponse.ErrorList.Count > 0) throw new Exception(authResponse.ErrorList.ToString());
+        if (authResponse.ErrorList.Count > 0) throw new Exception(authResponse.ToString());
 
         return authResponse;
     }
@@ -71,22 +72,24 @@ public class AuthenticationService : IAuthenticationService
     private async Task<UserAuthenticateResponse> GenerateToken(string email)
     {
         var user = await _userManager.FindByEmailAsync(email) ?? throw new Exception("User not found");
-
         var tokenClaims = await GetClaims(user);
-
         var tokenExpirationDate = DateTime.Now.AddSeconds(_jwtOptions.Expiration);
 
-        var jwt = new JwtSecurityToken(
-            issuer: _jwtOptions.Issuer,
-            audience: _jwtOptions.Audience,
-            claims: tokenClaims,
-            notBefore: DateTime.Now,
-            expires: tokenExpirationDate,
-            signingCredentials: _jwtOptions.SigningCredentials);
+        var tokenHandler = new JwtSecurityTokenHandler();
 
-        var token = new JwtSecurityTokenHandler().WriteToken(jwt);
+        var jwt = new SecurityTokenDescriptor
+        {
+            Issuer = _jwtOptions.Issuer,
+            Audience = _jwtOptions.Audience,
+            Subject = new ClaimsIdentity(tokenClaims),
+            NotBefore = DateTime.Now,
+            Expires = tokenExpirationDate,
+            SigningCredentials = _jwtOptions.SigningCredentials
+        };
 
-        return new UserAuthenticateResponse(tokenExpirationDate, token);
+        var token = tokenHandler.CreateToken(jwt);
+
+        return new UserAuthenticateResponse(tokenExpirationDate, tokenHandler.WriteToken(token));
     }
 
     private async Task<IList<Claim>> GetClaims(IdentityUser user)

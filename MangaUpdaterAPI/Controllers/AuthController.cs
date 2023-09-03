@@ -25,9 +25,6 @@ public class AuthController : BaseController
     [HttpPost("register")]
     public async Task<ActionResult<UserRegisterResponse>> UserRegister(UserRegister userRegister)
     {
-        if (!ModelState.IsValid)
-            return BadRequest();
-
         return Ok(await _identityService.Register(userRegister));
     }
 
@@ -41,9 +38,6 @@ public class AuthController : BaseController
     [HttpPost("login")]
     public async Task<ActionResult<UserAuthenticateResponse>> UserLogin(UserAuthenticate userAuthenticate)
     {
-        if (!ModelState.IsValid)
-            return BadRequest();
-
         return Ok(await _identityService.Authenticate(userAuthenticate));
     }
 }
