@@ -1,9 +1,14 @@
-﻿namespace MangaUpdater.API.Exceptions;
+﻿using Microsoft.AspNetCore.Mvc;
+
+namespace MangaUpdater.API.Exceptions;
 
 public class ExceptionMiddleware : IMiddleware
 {
-    public ExceptionMiddleware()
+    private readonly IEnumerable<IExceptionHandler> _handlers;
+
+    public ExceptionMiddleware(IEnumerable<IExceptionHandler> handlers)
     {
+        _handlers = handlers;
     }
 
     public async Task InvokeAsync(HttpContext context, RequestDelegate next)
@@ -14,9 +19,16 @@ public class ExceptionMiddleware : IMiddleware
         }
         catch (Exception ex)
         {
-            // TODO:Implement types of errors
-            context.Response.StatusCode = 400;
-            await context.Response.WriteAsJsonAsync(ex.Message);
+            var handler = _handlers.FirstOrDefault(h => h.CanHandle(ex));
+            var problemsDetails = handler?.Handle(context, ex) ?? new ProblemDetails
+            {
+                Title = "Error",
+                Status = StatusCodes.Status500InternalServerError,
+                Detail = ex.Message
+            };
+
+            context.Response.StatusCode = problemsDetails.Status!.Value;
+            await context.Response.WriteAsJsonAsync(problemsDetails);
         }
     }
 }

@@ -3,9 +3,10 @@ using System.Security.Claims;
 using System.IdentityModel.Tokens.Jwt;
 using Microsoft.Extensions.Options;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.IdentityModel.Tokens;
 using MangaUpdater.Application.Models;
 using MangaUpdater.Application.Interfaces;
-using Microsoft.IdentityModel.Tokens;
+using MangaUpdater.Domain.Exceptions;
 
 namespace MangaUpdater.Infra.Data.Identity;
 
@@ -40,7 +41,7 @@ public class AuthenticationService : IAuthenticationService
         var userResponse = new UserRegisterResponse(result.Succeeded);
 
         if (result.Succeeded || !result.Errors.Any()) return userResponse;
-
+        
         userResponse.AddErrors(result.Errors.Select(r => r.Description));
         throw new Exception(userResponse.ToString());
     }
@@ -64,14 +65,14 @@ public class AuthenticationService : IAuthenticationService
         else
             authResponse.AddError("Invalid user/password");
 
-        if (authResponse.ErrorList.Count > 0) throw new Exception(authResponse.ToString());
+        if (authResponse.ErrorList.Count > 0) throw new AuthorizationException(authResponse.ToString());
 
         return authResponse;
     }
 
     private async Task<UserAuthenticateResponse> GenerateToken(string email)
     {
-        var user = await _userManager.FindByEmailAsync(email) ?? throw new Exception("User not found");
+        var user = await _userManager.FindByEmailAsync(email) ?? throw new AuthorizationException("User not found");
         var tokenClaims = await GetClaims(user);
         var tokenExpirationDate = DateTime.Now.AddSeconds(_jwtOptions.Expiration);
 
