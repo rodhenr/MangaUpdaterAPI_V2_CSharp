@@ -15,21 +15,21 @@ namespace MangaUpdater.Infra.Data.Migrations
                 table: "UserMangas",
                 type: "int",
                 nullable: false,
-                defaultValue: 0);
+                defaultValue: 0).Annotation("SqlServer:Identity", "1, 1");
 
             migrationBuilder.AddColumn<int>(
                 name: "Id",
                 table: "MangaSources",
                 type: "int",
                 nullable: false,
-                defaultValue: 0);
+                defaultValue: 0).Annotation("SqlServer:Identity", "1, 1");
 
             migrationBuilder.AddColumn<int>(
                 name: "Id",
                 table: "MangaGenres",
                 type: "int",
                 nullable: false,
-                defaultValue: 0);
+                defaultValue: 0).Annotation("SqlServer:Identity", "1, 1");
         }
 
         /// <inheritdoc />

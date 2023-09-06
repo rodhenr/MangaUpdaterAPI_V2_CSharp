@@ -16,7 +16,7 @@ public sealed class UserMangaGroupByManga
 
 public sealed class SourceWithLastChapterRead
 {
-    public SourceWithLastChapterRead(int sourceId, string sourceName, int lastChapterRead)
+    public SourceWithLastChapterRead(int sourceId, string sourceName, int? lastChapterRead)
     {
         SourceId = sourceId;
         SourceName = sourceName;
@@ -25,5 +25,5 @@ public sealed class SourceWithLastChapterRead
 
     public int SourceId { get; set; }
     public string SourceName { get; set; }
-    public int LastChapterRead { get; set; }
+    public int? LastChapterRead { get; set; }
 }

@@ -30,12 +30,9 @@ public class UserMangaChapterService : IUserMangaChapterService
         {
             var chapter = await _chapterRepository.GetSmallestChapterByMangaIdAsync(mangaId, sourceId);
 
-            if (chapter != null)
-            {
-                _userMangaRepository.CreateAsync(new UserManga
-                    { UserId = userId, MangaId = mangaId, SourceId = sourceId, CurrentChapterId = chapter.Id });
-                await _userMangaRepository.SaveAsync();
-            }
+            _userMangaRepository.CreateAsync(new UserManga
+                { UserId = userId, MangaId = mangaId, SourceId = sourceId, CurrentChapterId = chapter?.Id });
+            await _userMangaRepository.SaveAsync();
         }
     }
 
@@ -62,7 +59,7 @@ public class UserMangaChapterService : IUserMangaChapterService
     {
         var userMangas = await _userMangaRepository.GetAllByUserIdAsync(userId);
 
-        var userMangasByMangaId = userMangas
+        List<UserMangaGroupByManga> userMangasByMangaId = userMangas
             .GroupBy(um => um.MangaId)
             .Select(group => new UserMangaGroupByManga(group.Select(us => us.Manga).FirstOrDefault()!,
                 group.Select(um => new SourceWithLastChapterRead(um.SourceId, um.Source!.Name, um.CurrentChapterId))
@@ -71,8 +68,12 @@ public class UserMangaChapterService : IUserMangaChapterService
 
         foreach (var userManga in userMangasByMangaId)
         {
-            var chapters = await _chapterRepository.GetThreeLastByMangaIdAndSourceListAsync(userManga.Manga.Id,
-                userManga.SourcesWithLastChapterRead.Select(sch => sch.SourceId).ToList());
+            var sourceList = userManga.SourcesWithLastChapterRead
+                .Where(sch => sch.LastChapterRead is not null)
+                .Select(sch => sch.SourceId)
+                .ToList();
+            var chapters =
+                await _chapterRepository.GetThreeLastByMangaIdAndSourceListAsync(userManga.Manga.Id, sourceList);
 
             userManga.Manga.Chapters = chapters;
         }
