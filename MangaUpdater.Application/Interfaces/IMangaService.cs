@@ -11,7 +11,7 @@ public interface IMangaService
     Task<IEnumerable<MangaUserDto>> GetWithFilter(string? orderBy, List<int>? sourceIdList,
         List<int>? genreIdList);
 
-    Task<Manga?> GetById(int id);
-    Task<MangaDto?> GetByIdNotLogged(int id);
-    Task<MangaDto?> GetByIdAndUserId(int id, string userId);
+    Task<Manga> GetById(int id);
+    Task<MangaDto> GetByIdNotLogged(int id);
+    Task<MangaDto> GetByIdAndUserId(int id, string userId);
 }

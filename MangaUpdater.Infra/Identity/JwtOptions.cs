@@ -4,6 +4,8 @@ namespace MangaUpdater.Infra.Data.Identity;
 
 public class JwtOptions
 {
+    public const string Section = "JwtOptions";
+    
     public JwtOptions()
     {
     }

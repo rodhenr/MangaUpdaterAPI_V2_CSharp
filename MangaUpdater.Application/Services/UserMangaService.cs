@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using MangaUpdater.Application.DTOs;
+using MangaUpdater.Application.Helpers;
 using MangaUpdater.Application.Interfaces;
 using MangaUpdater.Domain.Entities;
 using MangaUpdater.Domain.Interfaces;
@@ -34,9 +35,12 @@ public class UserMangaService : IUserMangaService
         return _mapper.Map<IEnumerable<MangaUserDto>>(mangas.Select(userManga => userManga.Manga));
     }
 
-    public async Task<UserManga?> GetByMangaIdUserIdAndSourceId(int mangaId, string userId, int sourceId)
+    public async Task<UserManga> GetByMangaIdUserIdAndSourceId(int mangaId, string userId, int sourceId)
     {
-        return await _userMangaRepository.GetByMangaIdUserIdAndSourceIdAsync(mangaId, userId, sourceId);
+        var userManga = await _userMangaRepository.GetByMangaIdUserIdAndSourceIdAsync(mangaId, userId, sourceId);
+        ValidationHelper.ValidateEntity(userManga);
+
+        return userManga;
     }
 
     public async Task Update(UserManga userManga)

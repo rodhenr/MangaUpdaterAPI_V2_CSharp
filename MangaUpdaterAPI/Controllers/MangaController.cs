@@ -123,15 +123,7 @@ public class MangaController : BaseController
     public async Task<ActionResult> UpdateChapterForMangaSource(int mangaId, int sourceId)
     {
         var manga = await _mangaService.GetById(mangaId);
-
-        if (manga?.MangaSources == null ||
-            !manga.MangaSources.Any(ms => ms.SourceId == sourceId))
-            return BadRequest("Manga not found");
-
         var source = await _sourceService.GetById(sourceId);
-
-        if (source == null)
-            return BadRequest("Source not found");
 
         var chapters = _updateChaptersService.UpdateChaptersFromMangaLivreSource(source.BaseUrl,
             manga.MangaSources.First(ms => ms.SourceId == sourceId).Url);

@@ -1,4 +1,5 @@
-﻿using MangaUpdater.Application.Interfaces;
+﻿using MangaUpdater.Application.Helpers;
+using MangaUpdater.Application.Interfaces;
 using MangaUpdater.Domain.Entities;
 using MangaUpdater.Domain.Interfaces;
 
@@ -23,9 +24,12 @@ public class ChapterService : IChapterService
         _chapterRepository.BulkCreateAsync(chapters);
     }
 
-    public async Task<Chapter?> GetById(int id)
+    public async Task<Chapter> GetById(int id)
     {
-        return await _chapterRepository.GetByIdAsync(id);
+        var chapter = await _chapterRepository.GetByIdAsync(id);
+        ValidationHelper.ValidateEntity(chapter);
+        
+        return chapter;
     }
 
     public async Task<IEnumerable<Chapter>> GetByMangaId(int mangaId, int? max)

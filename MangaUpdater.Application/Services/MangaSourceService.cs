@@ -1,4 +1,5 @@
-﻿using MangaUpdater.Application.Interfaces;
+﻿using MangaUpdater.Application.Helpers;
+using MangaUpdater.Application.Interfaces;
 using MangaUpdater.Domain.Entities;
 using MangaUpdater.Domain.Interfaces;
 
@@ -23,9 +24,12 @@ public class MangaSourceService : IMangaSourceService
         return await _mangaSourceRepository.GetAllByMangaIdAsync(mangaId);
     }
 
-    public async Task<MangaSource?> GetByMangaIdAndSourceId(int mangaId, int sourceId)
+    public async Task<MangaSource> GetByMangaIdAndSourceId(int mangaId, int sourceId)
     {
-        return await _mangaSourceRepository.GetByMangaIdAndSourceIdAsync(mangaId, sourceId);
+        var mangaSource = await _mangaSourceRepository.GetByMangaIdAndSourceIdAsync(mangaId, sourceId);
+        ValidationHelper.ValidateEntity(mangaSource);
+
+        return mangaSource;
     }
 
     public async Task SaveChanges()

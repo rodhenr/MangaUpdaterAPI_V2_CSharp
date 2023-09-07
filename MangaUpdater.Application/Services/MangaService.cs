@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using MangaUpdater.Application.DTOs;
+using MangaUpdater.Application.Helpers;
 using MangaUpdater.Application.Interfaces;
 using MangaUpdater.Domain.Entities;
 using MangaUpdater.Domain.Interfaces;
@@ -28,9 +29,12 @@ public class MangaService : IMangaService
         return await _mangaRepository.GetAsync();
     }
 
-    public async Task<Manga?> GetById(int id)
+    public async Task<Manga> GetById(int id)
     {
-        return await _mangaRepository.GetByIdOrderedDescAsync(id);
+        var manga = await _mangaRepository.GetByIdOrderedDescAsync(id);
+        ValidationHelper.ValidateEntity(manga);
+
+        return manga;
     }
 
     public async Task<IEnumerable<MangaUserDto>> GetWithFilter(string? orderBy, List<int>? sourceIdList,
@@ -41,17 +45,19 @@ public class MangaService : IMangaService
         return _mapper.Map<IEnumerable<MangaUserDto>>(mangas);
     }
 
-    public async Task<MangaDto?> GetByIdNotLogged(int id)
+    public async Task<MangaDto> GetByIdNotLogged(int id)
     {
-        var data = await _mangaRepository.GetByIdOrderedDescAsync(id);
+        var manga = await _mangaRepository.GetByIdOrderedDescAsync(id);
+        ValidationHelper.ValidateEntity(manga);
 
-        return data == null ? null : _mapper.Map<MangaDto>(data);
+        return _mapper.Map<MangaDto>(manga);
     }
 
-    public async Task<MangaDto?> GetByIdAndUserId(int id, string userId)
+    public async Task<MangaDto> GetByIdAndUserId(int id, string userId)
     {
-        var data = await _mangaRepository.GetByIdAndUserIdOrderedDescAsync(id, userId);
-
-        return _mapper.Map<MangaDto>(data);
+        var manga = await _mangaRepository.GetByIdAndUserIdOrderedDescAsync(id, userId);
+        ValidationHelper.ValidateEntity(manga);
+        
+        return _mapper.Map<MangaDto>(manga);
     }
 }

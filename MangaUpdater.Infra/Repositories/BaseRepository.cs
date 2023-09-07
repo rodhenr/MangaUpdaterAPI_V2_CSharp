@@ -27,7 +27,8 @@ public abstract class BaseRepository<TEntity> : IBaseRepository<TEntity> where T
 
     public async Task<IEnumerable<TEntity>> GetAsync()
     {
-        return await Context.Set<TEntity>().ToListAsync();
+        return await Get()
+            .ToListAsync();
     }
 
     public virtual async Task<TEntity?> GetByIdAsync(int id)
