@@ -125,8 +125,18 @@ public class MangaController : BaseController
         var manga = await _mangaService.GetById(mangaId);
         var source = await _sourceService.GetById(sourceId);
 
-        var chapters = _updateChaptersService.UpdateChaptersFromMangaLivreSource(source.BaseUrl,
-            manga.MangaSources.First(ms => ms.SourceId == sourceId).Url);
+        var chapters = new Dictionary<string, string>();
+
+        if (source.Name == "MangaLivre")
+        {
+            chapters = _updateChaptersService.UpdateChaptersFromMangaLivreSource(source.BaseUrl,
+                manga.MangaSources.First(ms => ms.SourceId == sourceId).Url);
+        }
+        else
+        {
+            chapters = _updateChaptersService.UpdateChaptersFromAsuraScansSource(source.BaseUrl,
+                manga.MangaSources.First(ms => ms.SourceId == sourceId).Url);
+        }
 
         await _chapterService.CreateOrUpdateByMangaSource(mangaId, sourceId, chapters);
 
