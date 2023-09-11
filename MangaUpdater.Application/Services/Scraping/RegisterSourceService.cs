@@ -58,16 +58,41 @@ public class RegisterSourceService : IRegisterSourceService
         js.ExecuteScript("window.scrollTo(0, document.body.scrollHeight);");
         Thread.Sleep(2000);
 
-        IEnumerable<IWebElement> allChapters =
-            _driver.FindElements(By.XPath("//li[a[contains(@class, 'link-dark')]]"));
+        var allChapters = _driver.FindElements(By.XPath("//li[a[contains(@class, 'link-dark')]]"));
 
-        Dictionary<string, string> chapters = new();
+        var chapters = new Dictionary<string, string>();
 
         foreach (var chapter in allChapters)
         {
-            var chapterNumber =
-                chapter.FindElement(By.ClassName("cap-text")).Text.Replace("Capítulo", "").Trim();
+            var chapterNumber = chapter.FindElement(By.ClassName("cap-text")).Text.Replace("Capítulo", "").Trim();
             var chapterDate = chapter.FindElement(By.ClassName("chapter-date")).Text.Trim();
+
+            chapters.Add(chapterNumber, chapterDate);
+        }
+
+        if (chapters.Count == 0) throw new Exception("No chapters found");
+
+        await AddNewMangaSourceAndChapters(mangaId, sourceId, chapters, sourceUrl);
+    }
+
+    public async Task RegisterFromAsuraScansSource(int mangaId, int sourceId, string sourceUrl, string linkUrl,
+        string mangaName)
+    {
+        _driver.Navigate().GoToUrl(sourceUrl + linkUrl);
+
+        var name = _driver.FindElement(By.CssSelector(".entry-title")).Text;
+
+        // if (!string.Equals(name, mangaName.Replace(" ", ""), StringComparison.CurrentCultureIgnoreCase))
+        //     throw new Exception("Invalid name");
+
+        var allChapters = _driver.FindElements(By.CssSelector(".eph-num"));
+
+        var chapters = new Dictionary<string, string>();
+
+        foreach (var chapter in allChapters)
+        {
+            var chapterNumber = chapter.FindElement(By.ClassName("chapternum")).Text.Replace("Chapter", "").Trim();
+            var chapterDate = chapter.FindElement(By.ClassName("chapterdate")).Text;
 
             chapters.Add(chapterNumber, chapterDate);
         }

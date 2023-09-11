@@ -105,9 +105,17 @@ public class MangaController : BaseController
     {
         var manga = await _mangaService.GetById(mangaId);
         var source = await _sourceService.GetById(sourceId);
-
-        await _registerSourceService.RegisterFromMangaLivreSource(mangaId, sourceId, source!.BaseUrl, mangaUrl,
-            manga!.Name);
+        
+        if (source.Name == "MangaLivre")
+        {
+            await _registerSourceService.RegisterFromMangaLivreSource(mangaId, sourceId, source!.BaseUrl, mangaUrl,
+                manga!.Name);
+        }
+        else
+        {
+            await _registerSourceService.RegisterFromAsuraScansSource(mangaId, sourceId, source!.BaseUrl, mangaUrl,
+                manga!.Name);
+        }
 
         return Ok();
     }
