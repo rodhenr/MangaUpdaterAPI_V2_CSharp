@@ -20,6 +20,7 @@ public static class ServicesInjection
     {
         services.AddScoped<IChapterRepository, ChapterRepository>();
         services.AddScoped<IGenreRepository, GenreRepository>();
+        services.AddScoped<IMangaGenreRepository, MangaGenreRepository>();
         services.AddScoped<IMangaRepository, MangaRepository>();
         services.AddScoped<IMangaSourceRepository, MangaSourceRepository>();
         services.AddScoped<ISourceRepository, SourceRepository>();

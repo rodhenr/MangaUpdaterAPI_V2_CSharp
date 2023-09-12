@@ -2,80 +2,51 @@
 
 namespace MangaUpdater.Application.Models;
 
-public class MyAnimeListApiResponse
+public record MyAnimeListApiResponse
 {
-    public MyAnimeListApiResponse(long malId, IEnumerable<TitleEntry> titles, ImagesSet images, string type,
-        string status, bool publishing, string synopsis, IEnumerable<MalCollection> genres,
-        IEnumerable<MalCollection> authors, IEnumerable<MalCollection> serializations)
-    {
-        MalId = malId;
-        Titles = titles;
-        Images = images;
-        Type = type;
-        Status = status;
-        Publishing = publishing;
-        Synopsis = synopsis;
-        Genres = genres;
-        Authors = authors;
-        Serializations = serializations;
-    }
+    [JsonPropertyName("mal_id")] public required long MalId { get; set; }
 
-    [JsonPropertyName("mal_id")] public long MalId { get; set; }
+    [JsonPropertyName("titles")] public required IEnumerable<TitleEntry> Titles { get; set; }
 
-    [JsonPropertyName("titles")] public IEnumerable<TitleEntry> Titles { get; set; }
+    [JsonPropertyName("images")] public required ImagesSet Images { get; set; }
 
-    [JsonPropertyName("images")] public ImagesSet Images { get; set; }
+    [JsonPropertyName("type")] public required string Type { get; set; }
 
-    [JsonPropertyName("type")] public string Type { get; set; }
+    [JsonPropertyName("status")] public required string Status { get; set; }
 
-    [JsonPropertyName("status")] public string Status { get; set; }
+    [JsonPropertyName("publishing")] public required bool Publishing { get; set; }
 
-    [JsonPropertyName("publishing")] public bool Publishing { get; set; }
+    [JsonPropertyName("synopsis")] public required string Synopsis { get; set; }
 
-    [JsonPropertyName("synopsis")] public string Synopsis { get; set; }
+    [JsonPropertyName("genres")] public required IEnumerable<MalCollection> Genres { get; set; }
 
-    [JsonPropertyName("genres")] public IEnumerable<MalCollection> Genres { get; set; }
-
-    [JsonPropertyName("authors")] public IEnumerable<MalCollection> Authors { get; set; }
-
-    [JsonPropertyName("serializations")] public IEnumerable<MalCollection> Serializations { get; set; }
+    [JsonPropertyName("authors")] public required IEnumerable<MalCollection> Authors { get; set; }
 }
 
 public class MalCollection
 {
-    [JsonPropertyName("mal_id")] public long MalId { get; set; }
+    [JsonPropertyName("mal_id")] public required long MalId { get; set; }
 
-    [JsonPropertyName("type")] public string Type { get; set; }
+    [JsonPropertyName("type")] public required string Type { get; set; }
 
-    [JsonPropertyName("url")] public string Url { get; set; }
+    [JsonPropertyName("url")] public required string Url { get; set; }
 
-    [JsonPropertyName("name")] public string Name { get; set; }
+    [JsonPropertyName("name")] public required string Name { get; set; }
 }
 
 public class ImagesSet
 {
-    [JsonPropertyName("jpg")] public Image JPG { get; set; }
-
-    [JsonPropertyName("webp")] public Image WebP { get; set; }
+    [JsonPropertyName("jpg")] public required Image JPG { get; set; }
 }
 
 public class Image
 {
-    [JsonPropertyName("image_url")] public string ImageUrl { get; set; }
-
-    [JsonPropertyName("small_image_url")] public string SmallImageUrl { get; set; }
-
-    [JsonPropertyName("medium_image_url")] public string MediumImageUrl { get; set; }
-
-    [JsonPropertyName("large_image_url")] public string LargeImageUrl { get; set; }
-
-    [JsonPropertyName("maximum_image_url")]
-    public string MaximumImageUrl { get; set; }
+    [JsonPropertyName("large_image_url")] public required string LargeImageUrl { get; set; }
 }
 
 public class TitleEntry
 {
-    [JsonPropertyName("type")] public string Type { get; set; }
+    [JsonPropertyName("type")] public required string Type { get; set; }
 
-    [JsonPropertyName("title")] public string Title { get; set; }
+    [JsonPropertyName("title")] public required string Title { get; set; }
 }

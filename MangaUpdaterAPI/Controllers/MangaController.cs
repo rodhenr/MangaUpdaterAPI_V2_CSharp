@@ -133,7 +133,7 @@ public class MangaController : BaseController
         var manga = await _mangaService.GetById(mangaId);
         var source = await _sourceService.GetById(sourceId);
 
-        var chapters = new Dictionary<string, string>();
+        Dictionary<string, string> chapters;
 
         if (source.Name == "MangaLivre")
         {

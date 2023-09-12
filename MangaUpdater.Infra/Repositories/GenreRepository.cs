@@ -17,4 +17,9 @@ public class GenreRepository : BaseRepository<Genre>, IGenreRepository
             .AsNoTracking()
             .SingleOrDefaultAsync(g => g.Id == id);
     }
+
+    public void BulkCreateAsync(IEnumerable<Genre> genres)
+    {
+        Context.Genres.AddRange(genres);
+    }
 }
