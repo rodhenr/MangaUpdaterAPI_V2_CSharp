@@ -14,25 +14,12 @@ namespace MangaUpdater.Infra.Data.Migrations
                 "VALUES('Manga Livre','https://mangalivre.net/manga/')");
 
             migrationBuilder.Sql("INSERT INTO Sources(Name,BaseUrl) " +
-                "VALUES('Asura Scans','https://asura.nacm.xyz/manga/')");
-
-            migrationBuilder.Sql("INSERT INTO Genres(Name) " +
-                "VALUES('Action')");
-
-            migrationBuilder.Sql("INSERT INTO Genres(Name) " +
-                "VALUES('Isekai')");
-
-            migrationBuilder.Sql("INSERT INTO Genres(Name) " +
-                "VALUES('Adventure')");
-
-            migrationBuilder.Sql("INSERT INTO Genres(Name) " +
-                "VALUES('Fantasy')");
+                "VALUES('Asura Scans','https://asuracomics.com/manga/')");
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.Sql("DELETE FROM Genres");
             migrationBuilder.Sql("DELETE FROM Sources");
         }
     }
