@@ -33,12 +33,13 @@ public class RegisterMangaService : IRegisterMangaService
 
         _mangaRepository.CreateAsync(mangaInfo);
         await _mangaRepository.SaveAsync();
-
+        
         var mangaGenreList =
             apiData!.Genres.Select(g => new MangaGenre() { GenreId = (int)g.MalId, MangaId = mangaInfo.Id });
 
         _mangaGenreRepository.BulkCreateAsync(mangaGenreList);
 
+        await _mangaRepository.SaveAsync();
         return mangaInfo;
     }
 }

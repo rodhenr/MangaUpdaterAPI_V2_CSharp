@@ -14,6 +14,8 @@ public sealed class Manga : Entity
 
     [JsonIgnore] public IEnumerable<Chapter>? Chapters { get; set; }
     [JsonIgnore] public IEnumerable<UserManga>? UserMangas { get; set; }
+    [JsonIgnore] public IEnumerable<MangaAuthor>? MangaAuthors { get; set; }
     [JsonIgnore] public IEnumerable<MangaGenre>? MangaGenres { get; set; }
     [JsonIgnore] public IEnumerable<MangaSource>? MangaSources { get; set; }
+    [JsonIgnore] public IEnumerable<MangaTitle>? MangaTitles { get; set; }
 }
