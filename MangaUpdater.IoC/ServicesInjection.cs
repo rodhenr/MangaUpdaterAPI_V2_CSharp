@@ -2,6 +2,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using OpenQA.Selenium.Chrome;
 using MangaUpdater.Application.Interfaces;
+using MangaUpdater.Application.Interfaces.External;
 using MangaUpdater.Application.Interfaces.Scraping;
 using MangaUpdater.Application.Mappings;
 using MangaUpdater.Application.Services;
@@ -25,6 +26,9 @@ public static class ServicesInjection
         services.AddScoped<IMangaSourceRepository, MangaSourceRepository>();
         services.AddScoped<ISourceRepository, SourceRepository>();
         services.AddScoped<IUserMangaRepository, UserMangaRepository>();
+        services.AddScoped<IMangaAuthorRepository, MangaAuthorRepository>();
+        services.AddScoped<IMangaTitleRepository, MangaTitleRepository>();
+        
         services.AddScoped<IChapterService, ChapterService>();
         services.AddScoped<IGenreService, GenreService>();
         services.AddScoped<IMangaService, MangaService>();

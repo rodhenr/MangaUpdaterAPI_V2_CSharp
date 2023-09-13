@@ -1,5 +1,5 @@
 ﻿using System.Net.Http.Json;
-using MangaUpdater.Application.Interfaces;
+using MangaUpdater.Application.Interfaces.External;
 using MangaUpdater.Application.Models;
 
 namespace MangaUpdater.Infra.Data.ExternalServices;

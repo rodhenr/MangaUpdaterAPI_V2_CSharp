@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using MangaUpdater.Application.Interfaces;
+using MangaUpdater.Application.Interfaces.External;
 using MangaUpdater.Domain.Entities;
 using MangaUpdater.Domain.Interfaces;
 
@@ -11,14 +12,19 @@ public class RegisterMangaService : IRegisterMangaService
     private readonly IMapper _mapper;
     private readonly IMangaRepository _mangaRepository;
     private readonly IMangaGenreRepository _mangaGenreRepository;
+    private readonly IMangaAuthorRepository _mangaAuthorRepository;
+    private readonly IMangaTitleRepository _mangaTitleRepository;
 
     public RegisterMangaService(IMyAnimeListApiService malApiService, IMapper mapper, IMangaRepository mangaRepository,
-        IMangaGenreRepository mangaGenreRepository)
+        IMangaGenreRepository mangaGenreRepository, IMangaAuthorRepository mangaAuthorRepository,
+        IMangaTitleRepository mangaTitleRepository)
     {
         _malApiService = malApiService;
         _mapper = mapper;
         _mangaRepository = mangaRepository;
         _mangaGenreRepository = mangaGenreRepository;
+        _mangaAuthorRepository = mangaAuthorRepository;
+        _mangaTitleRepository = mangaTitleRepository;
     }
 
     public async Task<Manga?> RegisterMangaFromMyAnimeListById(int malMangaId)
@@ -33,11 +39,17 @@ public class RegisterMangaService : IRegisterMangaService
 
         _mangaRepository.CreateAsync(mangaInfo);
         await _mangaRepository.SaveAsync();
-        
-        var mangaGenreList =
+
+        var genreList =
             apiData!.Genres.Select(g => new MangaGenre() { GenreId = (int)g.MalId, MangaId = mangaInfo.Id });
 
-        _mangaGenreRepository.BulkCreateAsync(mangaGenreList);
+        var titleList = apiData!.Titles.Select(t => new MangaTitle() { MangaId = mangaInfo.Id, Name = t.Title });
+
+        var authorList = apiData!.Authors.Select(a => new MangaAuthor() { MangaId = mangaInfo.Id, Name = a.Name });
+
+        _mangaGenreRepository.BulkCreateAsync(genreList);
+        _mangaAuthorRepository.BulkCreateAsync(authorList);
+        _mangaTitleRepository.BulkCreateAsync(titleList);
 
         await _mangaRepository.SaveAsync();
         return mangaInfo;
