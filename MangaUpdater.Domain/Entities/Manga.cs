@@ -5,9 +5,6 @@ namespace MangaUpdater.Domain.Entities;
 public sealed class Manga : Entity
 {
     public required string CoverUrl { get; set; }
-    public required string Name { get; set; }
-    public required string AlternativeName { get; set; }
-    public required string Author { get; set; }
     public required string Synopsis { get; set; }
     public required string Type { get; set; }
     public required int MyAnimeListId { get; set; }

@@ -47,3 +47,18 @@ public class ValidationExceptionHandler : IExceptionHandler
         };
     }
 }
+
+public class BadRequestExceptionHandler : IExceptionHandler
+{
+    public bool CanHandle(Exception exception) => exception is BadRequestException;
+
+    public ProblemDetails Handle(HttpContext httpContext, Exception exception)
+    {
+        return new ProblemDetails()
+        {
+            Title = "Invalid Request",
+            Status = StatusCodes.Status400BadRequest,
+            Type = "https://tools.ietf.org/html/rfc7231#section-6.5.1"
+        };
+    }
+}

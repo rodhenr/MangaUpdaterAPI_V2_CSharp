@@ -33,21 +33,30 @@ public class MangaRepository : BaseRepository<Manga>, IMangaRepository
 
         query = orderBy switch
         {
-            "alphabet" => query.OrderBy(m => m.Name),
-            "latest" => query.OrderByDescending(m => m.Id),
+            "alphabet" => query
+                .Select(q => new
+                {
+                    Manga = q,
+                    SortedMangaTitle = q.MangaTitles!.First()
+                })
+                .OrderBy(m => m.SortedMangaTitle)
+                .Select(m => m.Manga),
+            "latest" => query
+                .OrderByDescending(m => m.Id),
             _ => query
         };
 
         if (sourceIdList != null && sourceIdList.Any())
-            query = query.Where(m =>
-                m.MangaSources != null && m.MangaSources.Any(b => sourceIdList.Contains(b.SourceId)));
+            query = query
+                .Where(m => m.MangaSources != null && m.MangaSources.Any(b => sourceIdList.Contains(b.SourceId)))
+                .Include(m => m.MangaSources);
 
         if (genreIdList != null && genreIdList.Any())
-            query = query.Where(m => m.MangaGenres != null && m.MangaGenres.Any(b => genreIdList.Contains(b.GenreId)));
+            query = query.Where(m => m.MangaGenres != null && m.MangaGenres.Any(b => genreIdList.Contains(b.GenreId)))
+                .Include(m => m.MangaGenres);
 
         return await query
-            .Include(m => m.MangaSources)
-            .Include(m => m.MangaGenres)
+            .Include(q => q.MangaTitles)
             .AsNoTracking()
             .ToListAsync();
     }

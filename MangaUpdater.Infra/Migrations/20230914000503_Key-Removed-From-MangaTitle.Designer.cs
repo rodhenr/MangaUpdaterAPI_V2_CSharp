@@ -4,6 +4,7 @@ using MangaUpdater.Infra.Data.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace MangaUpdater.Infra.Data.Migrations
 {
     [DbContext(typeof(IdentityMangaUpdaterContext))]
-    partial class MangaUpdaterContextModelSnapshot : ModelSnapshot
+    [Migration("20230914000503_Key-Removed-From-MangaTitle")]
+    partial class KeyRemovedFromMangaTitle
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -72,6 +75,16 @@ namespace MangaUpdater.Infra.Data.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<string>("AlternativeName")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<string>("Author")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
                     b.Property<string>("CoverUrl")
                         .IsRequired()
                         .HasMaxLength(200)
@@ -79,6 +92,11 @@ namespace MangaUpdater.Infra.Data.Migrations
 
                     b.Property<int>("MyAnimeListId")
                         .HasColumnType("int");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
 
                     b.Property<string>("Synopsis")
                         .IsRequired()

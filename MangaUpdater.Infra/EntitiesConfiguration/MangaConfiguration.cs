@@ -13,18 +13,6 @@ public class MangaConfiguration : IEntityTypeConfiguration<Manga>
             .HasMaxLength(200);
 
         builder
-            .Property(m => m.Name)
-            .HasMaxLength(200);
-
-        builder
-            .Property(m => m.AlternativeName)
-            .HasMaxLength(200);
-
-        builder
-            .Property(m => m.Author)
-            .HasMaxLength(50);
-
-        builder
             .Property(m => m.Synopsis)
             .HasMaxLength(2000);
 

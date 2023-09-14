@@ -51,7 +51,6 @@ public class MappingProfile : Profile
         CreateMap<UserMangaGroupByManga, MangaUserLoggedDto>()
             .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Manga.Id))
             .ForMember(dest => dest.CoverUrl, opt => opt.MapFrom(src => src.Manga.CoverUrl))
-            .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.Manga.Name))
             .ForMember(dest => dest.Chapters, opt => opt.MapFrom((src, _, _, _) =>
             {
                 return src.Manga.Chapters?
@@ -69,10 +68,6 @@ public class MappingProfile : Profile
 
         CreateMap<MyAnimeListApiResponse, Manga>()
             .ForMember(dest => dest.CoverUrl, opt => opt.MapFrom(src => src.Images.JPG.LargeImageUrl))
-            .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.Titles.First().Title))
-            .ForMember(dest => dest.AlternativeName,
-                opt => opt.MapFrom(src => src.Titles.First().Title)) //TODO: Change this implementation
-            .ForMember(dest => dest.Author, opt => opt.MapFrom(src => src.Authors.First().Name))
             .ForMember(dest => dest.MyAnimeListId, opt => opt.MapFrom(src => src.MalId));
     }
 }

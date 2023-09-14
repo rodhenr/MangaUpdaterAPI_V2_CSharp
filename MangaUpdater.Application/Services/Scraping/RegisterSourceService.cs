@@ -21,7 +21,7 @@ public class RegisterSourceService : IRegisterSourceService
     }
 
     private async Task AddNewMangaSourceAndChapters(int mangaId, int sourceId, Dictionary<string, string> chapters,
-        string sourceUrl)
+        string linkUrl)
     {
         var chapterList = chapters.Select(ch =>
             new Chapter
@@ -32,26 +32,19 @@ public class RegisterSourceService : IRegisterSourceService
                 Number = float.Parse(ch.Key)
             }).ToList();
 
-        _mangaSourceService.Add(new MangaSource { MangaId = mangaId, SourceId = sourceId, Url = sourceUrl });
+        _mangaSourceService.Add(new MangaSource { MangaId = mangaId, SourceId = sourceId, Url = linkUrl });
         _chapterService.BulkCreate(chapterList);
         await _chapterService.SaveChanges();
     }
 
     public async Task RegisterFromMangaLivreSource(int mangaId, int sourceId, string sourceUrl, string linkUrl,
-        string mangaName)
+        IEnumerable<MangaTitle> mangaTitles)
     {
         _driver.Navigate().GoToUrl(sourceUrl + linkUrl);
 
-        var name = _driver.FindElement(By.CssSelector(".series-title h1")).Text;
-        var altList = _driver.FindElements(By.CssSelector("ol.series-synom li"));
+        var mangaName = _driver.FindElement(By.CssSelector(".series-title h1")).Text;
 
-        List<string> possibleNames = new();
-
-        possibleNames.Add(name);
-        possibleNames.AddRange(altList.Select(alternativeName => alternativeName.Text.Replace(" ", "")));
-
-        if (!possibleNames.Any(n =>
-                string.Equals(n, mangaName.Replace(" ", ""), StringComparison.CurrentCultureIgnoreCase)))
+        if (mangaTitles.All(mt => mt.Name != mangaName))
             throw new Exception("Invalid name");
 
         IJavaScriptExecutor js = _driver;
@@ -72,18 +65,18 @@ public class RegisterSourceService : IRegisterSourceService
 
         if (chapters.Count == 0) throw new Exception("No chapters found");
 
-        await AddNewMangaSourceAndChapters(mangaId, sourceId, chapters, sourceUrl);
+        await AddNewMangaSourceAndChapters(mangaId, sourceId, chapters, linkUrl);
     }
 
     public async Task RegisterFromAsuraScansSource(int mangaId, int sourceId, string sourceUrl, string linkUrl,
-        string mangaName)
+        IEnumerable<MangaTitle> mangaTitles)
     {
         _driver.Navigate().GoToUrl(sourceUrl + linkUrl);
 
-        var name = _driver.FindElement(By.CssSelector(".entry-title")).Text;
+        var mangaName = _driver.FindElement(By.CssSelector(".entry-title")).Text;
 
-        // if (!string.Equals(name, mangaName.Replace(" ", ""), StringComparison.CurrentCultureIgnoreCase))
-        //     throw new Exception("Invalid name");
+        if (mangaTitles.All(mt => mt.Name != mangaName))
+            throw new Exception("Invalid name");
 
         var allChapters = _driver.FindElements(By.CssSelector(".eph-num"));
 

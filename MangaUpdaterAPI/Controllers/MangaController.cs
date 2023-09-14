@@ -15,7 +15,7 @@ public class MangaController : BaseController
     private string? UserId => User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
     private readonly IMangaService _mangaService;
     private readonly ISourceService _sourceService;
-    private readonly IMangaSourceService _mangaSourceService;
+    private readonly IMangaTitleService _mangaTitleService;
     private readonly IUserSourceService _userSourceService;
     private readonly IChapterService _chapterService;
     private readonly IRegisterMangaService _registerMangaService;
@@ -25,7 +25,7 @@ public class MangaController : BaseController
     public MangaController(IMangaService mangaService,
         IUserSourceService userSourceService, IRegisterMangaService registerMangaService,
         IUpdateChaptersService updateChaptersService, IRegisterSourceService registerSourceService,
-        ISourceService sourceService, IMangaSourceService mangaSourceService, IChapterService chapterService)
+        ISourceService sourceService, IMangaTitleService mangaTitleService, IChapterService chapterService)
     {
         _mangaService = mangaService;
         _userSourceService = userSourceService;
@@ -33,7 +33,7 @@ public class MangaController : BaseController
         _updateChaptersService = updateChaptersService;
         _registerSourceService = registerSourceService;
         _sourceService = sourceService;
-        _mangaSourceService = mangaSourceService;
+        _mangaTitleService = mangaTitleService;
         _chapterService = chapterService;
     }
 
@@ -105,16 +105,17 @@ public class MangaController : BaseController
     {
         var manga = await _mangaService.GetById(mangaId);
         var source = await _sourceService.GetById(sourceId);
+        var mangaTitles = await _mangaTitleService.GetAllByMangaId(mangaId);
         
-        if (source.Name == "MangaLivre")
+        if (source.Name == "Manga Livre")
         {
             await _registerSourceService.RegisterFromMangaLivreSource(mangaId, sourceId, source!.BaseUrl, mangaUrl,
-                manga!.Name);
+                mangaTitles);
         }
         else
         {
             await _registerSourceService.RegisterFromAsuraScansSource(mangaId, sourceId, source!.BaseUrl, mangaUrl,
-                manga!.Name);
+                mangaTitles);
         }
 
         return Ok();
@@ -135,7 +136,7 @@ public class MangaController : BaseController
 
         Dictionary<string, string> chapters;
 
-        if (source.Name == "MangaLivre")
+        if (source.Name == "Manga Livre")
         {
             chapters = _updateChaptersService.UpdateChaptersFromMangaLivreSource(source.BaseUrl,
                 manga.MangaSources.First(ms => ms.SourceId == sourceId).Url);

@@ -37,6 +37,8 @@ public static class ServicesInjection
         services.AddScoped<IUserMangaService, UserMangaService>();
         services.AddScoped<IUserSourceService, UserSourceService>();
         services.AddScoped<IUserMangaChapterService, UserMangaChapterService>();
+        services.AddScoped<IMangaTitleService, MangaTitleService>();
+        
         services.AddScoped<IMyAnimeListApiService, MyAnimeListApiService>();
         services.AddScoped<IRegisterMangaService, RegisterMangaService>();
         services.AddScoped<IAuthenticationService, AuthenticationService>();
