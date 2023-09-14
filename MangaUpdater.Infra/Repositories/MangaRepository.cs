@@ -26,9 +26,10 @@ public class MangaRepository : BaseRepository<Manga>, IMangaRepository
             .SingleOrDefaultAsync(m => m.MyAnimeListId == malId);
     }
 
-    public async Task<IEnumerable<Manga>> GetWithFiltersAsync(string? orderBy, List<int>? sourceIdList,
+    public async Task<IEnumerable<Manga>> GetWithFiltersAsync(int page, string? orderBy, List<int>? sourceIdList,
         List<int>? genreIdList)
     {
+        const int pageSize = 20;
         var query = Get();
 
         query = orderBy switch
@@ -56,7 +57,9 @@ public class MangaRepository : BaseRepository<Manga>, IMangaRepository
                 .Include(m => m.MangaGenres);
 
         return await query
-            .Include(q => q.MangaTitles)
+            .Include(q => q.MangaTitles!)
+            .Skip((page - 1) * pageSize)
+            .Take(pageSize)
             .AsNoTracking()
             .ToListAsync();
     }

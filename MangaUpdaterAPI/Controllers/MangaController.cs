@@ -44,10 +44,11 @@ public class MangaController : BaseController
     /// <response code="200">Returns all existing manga, if any.</response>
     [SwaggerOperation("Get all manga")]
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<MangaUserDto>>> GetMangas([FromQuery] string? orderBy = null,
+    public async Task<ActionResult<IEnumerable<MangaUserDto>>> GetMangas([FromQuery] int page = 1,
+        [SwaggerParameter("Empty (no ordering), alphabet or latest")][FromQuery] string? orderBy = null,
         [FromQuery] List<int>? sourceId = null, [FromQuery] List<int>? genreId = null)
     {
-        return Ok(await _mangaService.GetWithFilter(orderBy, sourceId, genreId));
+        return Ok(await _mangaService.GetWithFilter(page, orderBy, sourceId, genreId));
     }
 
     /// <summary>
@@ -106,7 +107,7 @@ public class MangaController : BaseController
         var manga = await _mangaService.GetById(mangaId);
         var source = await _sourceService.GetById(sourceId);
         var mangaTitles = await _mangaTitleService.GetAllByMangaId(mangaId);
-        
+
         if (source.Name == "Manga Livre")
         {
             await _registerSourceService.RegisterFromMangaLivreSource(mangaId, sourceId, source!.BaseUrl, mangaUrl,

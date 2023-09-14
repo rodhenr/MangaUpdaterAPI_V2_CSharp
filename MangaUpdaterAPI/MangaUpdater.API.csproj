@@ -20,4 +20,8 @@
 
 
 
+  <ItemGroup>
+    <None Remove="Anot.txt" />
+  </ItemGroup>
+
 </Project>

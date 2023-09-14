@@ -37,12 +37,15 @@ public class MangaService : IMangaService
         return manga;
     }
 
-    public async Task<IEnumerable<MangaUserDto>> GetWithFilter(string? orderBy, List<int>? sourceIdList,
+    public async Task<IEnumerable<MangaUserDto>> GetWithFilter(int page, string? orderBy, List<int>? sourceIdList,
         List<int>? genreIdList)
     {
-        var mangas = await _mangaRepository.GetWithFiltersAsync(orderBy, sourceIdList, genreIdList);
+        var mangas = await _mangaRepository.GetWithFiltersAsync(page, orderBy, sourceIdList, genreIdList);
 
-        return _mapper.Map<IEnumerable<MangaUserDto>>(mangas);
+        var mangaUserDtoList = mangas
+            .Select(manga => new MangaUserDto(manga.Id, manga.CoverUrl, manga.MangaTitles!.First().Name))
+            .ToList();
+        return mangaUserDtoList;
     }
 
     public async Task<MangaDto> GetByIdNotLogged(int id)
@@ -57,7 +60,7 @@ public class MangaService : IMangaService
     {
         var manga = await _mangaRepository.GetByIdAndUserIdOrderedDescAsync(id, userId);
         ValidationHelper.ValidateEntity(manga);
-        
+
         return _mapper.Map<MangaDto>(manga);
     }
 }
