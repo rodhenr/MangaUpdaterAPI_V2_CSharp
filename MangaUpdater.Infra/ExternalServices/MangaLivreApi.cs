@@ -6,24 +6,18 @@ namespace MangaUpdater.Infra.Data.ExternalServices;
 public class MangaLivreApi
 {
     private readonly IHttpClientFactory _clientFactory;
-    private readonly string _baseUrl = "https://mangalivre.net/series/chapters_list.json?page=8&id_serie=7178";
+    private readonly List<MangaLivreChapters> _chapters = new();
 
     public MangaLivreApi(IHttpClientFactory httpClientFactory)
     {
         _clientFactory = httpClientFactory;
     }
 
-    public async Task GetAllChaptersToRegisterSource()
-    {
-    }
-
-    public async Task<List<MangaLivreChapters>> GetChaptersToUpdateSource(int mlSerieId)
+    public async Task<List<MangaLivreChapters>> GetChaptersAsync(int mlSerieId, float lastChapterId = 0)
     {
         var httpClient = _clientFactory.CreateClient();
         httpClient.DefaultRequestHeaders.Add("X-Requested-With", "XMLHttpRequest");
         var page = 1;
-
-        var result = new List<MangaLivreChapters>();
 
         while (true)
         {
@@ -33,15 +27,49 @@ public class MangaLivreApi
             if (!response.IsSuccessStatusCode)
                 throw new Exception($"Invalid serie id {mlSerieId}");
 
-            var content = await response.Content.ReadFromJsonAsync<MangaLivreChaptersData>();
+            var content = await response.Content.TryToReadJsonAsync<MangaLivreChaptersData>();
 
             if (content?.Chapters is null) break;
 
-            result.AddRange(content.Chapters);
+            SaveChapters(content.Chapters, lastChapterId);
 
             page += 1;
         }
 
-        return result;
+        return _chapters;
+    }
+
+    private void SaveChapters(List<MangaLivreChapters> chapters, float lastChapterId)
+    {
+        if (lastChapterId == 0)
+        {
+            _chapters.AddRange(chapters);
+            return;
+        }
+
+        foreach (var chapter in chapters)
+        {
+            if (float.Parse(chapter.ChapterNumber) <= lastChapterId) return;
+            _chapters.Add(chapter);
+        }
+    }
+}
+
+public static class ExtensionJson
+{
+    public static async Task<T?> TryToReadJsonAsync<T>(this HttpContent httpContent) where T : class =>
+        await Handle<T>(httpContent);
+
+    private static async Task<T?> Handle<T>(HttpContent httpContent) where T : class
+    {
+        try
+        {
+            var jsonRead = await httpContent.ReadFromJsonAsync<T>();
+            return jsonRead;
+        }
+        catch (Exception ex)
+        {
+            return null;
+        }
     }
 }

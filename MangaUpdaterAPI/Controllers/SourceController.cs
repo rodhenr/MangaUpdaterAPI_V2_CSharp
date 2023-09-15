@@ -47,7 +47,7 @@ public class SourceController : BaseController
     [HttpPost("test")]
     public async Task<ActionResult<List<MangaLivreChapters>>> GetChaptersML(int serieId)
     {
-        var mltest = await _mangaLivreApiService.GetChaptersToUpdateSource(serieId);
+        var mltest = await _mangaLivreApiService.GetChaptersAsync(serieId, 32);
 
         return mltest;
     }
