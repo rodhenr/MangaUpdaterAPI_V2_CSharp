@@ -23,7 +23,6 @@ public class MyAnimeListApiService : IMyAnimeListApiService
         if (!response.IsSuccessStatusCode)
             throw new Exception($"Invalid id {malMangaId}");
 
-
         var content = await response.Content.ReadFromJsonAsync<MyAnimeListApiData>();
 
         return content?.Data;

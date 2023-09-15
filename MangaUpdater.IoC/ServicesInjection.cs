@@ -44,6 +44,8 @@ public static class ServicesInjection
         services.AddScoped<IAuthenticationService, AuthenticationService>();
         services.AddScoped<IUpdateChaptersService, UpdateChaptersService>();
         services.AddScoped<IRegisterSourceService, RegisterSourceService>();
+
+        services.AddScoped<MangaLivreApi>();
         
         services.AddScoped<ChromeDriver>(provider =>
         {

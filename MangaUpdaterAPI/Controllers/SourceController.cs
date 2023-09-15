@@ -3,16 +3,20 @@ using Swashbuckle.AspNetCore.Annotations;
 using MangaUpdater.Application.Interfaces;
 using MangaUpdater.Domain.Entities;
 using MangaUpdater.API.Controllers.Shared;
+using MangaUpdater.Application.Models;
+using MangaUpdater.Infra.Data.ExternalServices;
 
 namespace MangaUpdater.API.Controllers;
 
 public class SourceController : BaseController
 {
     private readonly ISourceService _sourceService;
+    private readonly MangaLivreApi _mangaLivreApiService;
 
-    public SourceController(ISourceService sourceService)
+    public SourceController(ISourceService sourceService, MangaLivreApi mangaLivreApiService)
     {
         _sourceService = sourceService;
+        _mangaLivreApiService = mangaLivreApiService;
     }
 
     /// <summary>
@@ -38,5 +42,13 @@ public class SourceController : BaseController
     public async Task<ActionResult<Source>> GetSourceById(int sourceId)
     {
         return Ok(await _sourceService.GetById(sourceId));
+    }
+
+    [HttpPost("test")]
+    public async Task<ActionResult<List<MangaLivreChapters>>> GetChaptersML(int serieId)
+    {
+        var mltest = await _mangaLivreApiService.GetChaptersToUpdateSource(serieId);
+
+        return mltest;
     }
 }
