@@ -16,7 +16,7 @@ public class MangaSourceService : IMangaSourceService
 
     public void Add(MangaSource mangaSource)
     {
-        _mangaSourceRepository.CreateAsync(mangaSource);
+        _mangaSourceRepository.Create(mangaSource);
     }
 
     public async Task<ICollection<MangaSource>> GetAllByMangaId(int mangaId)

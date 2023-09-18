@@ -4,7 +4,7 @@ namespace MangaUpdater.Domain.Interfaces;
 
 public interface IChapterRepository : IBaseRepository<Chapter>
 {
-    void BulkCreateAsync(IEnumerable<Chapter> chapters);
+    void BulkCreate(IEnumerable<Chapter> chapters);
     Task<IEnumerable<Chapter>> GetByMangaIdAsync(int mangaId, int max = 0);
     Task<Chapter?> GetSmallestChapterByMangaIdAsync(int mangaId, int sourceId);
     Task<IEnumerable<Chapter>> GetThreeLastByMangaIdAndSourceListAsync(int mangaId, List<int> sourceList);

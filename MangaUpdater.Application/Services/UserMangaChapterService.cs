@@ -30,7 +30,7 @@ public class UserMangaChapterService : IUserMangaChapterService
         {
             var chapter = await _chapterRepository.GetSmallestChapterByMangaIdAsync(mangaId, sourceId);
 
-            _userMangaRepository.CreateAsync(new UserManga
+            _userMangaRepository.Create(new UserManga
                 { UserId = userId, MangaId = mangaId, SourceId = sourceId, CurrentChapterId = chapter?.Id });
             await _userMangaRepository.SaveAsync();
         }
@@ -50,7 +50,7 @@ public class UserMangaChapterService : IUserMangaChapterService
             var userManga = new UserManga
                 { UserId = userId, MangaId = mangaId, SourceId = sourceId, CurrentChapterId = lastChapter.Id };
 
-            _userMangaRepository.CreateAsync(userManga);
+            _userMangaRepository.Create(userManga);
             await _userMangaRepository.SaveAsync();
         }
     }
@@ -92,7 +92,7 @@ public class UserMangaChapterService : IUserMangaChapterService
 
         if (userManga != null)
         {
-            _userMangaRepository.RemoveAsync(userManga);
+            _userMangaRepository.Remove(userManga);
             await _userMangaRepository.SaveAsync();
         }
     }

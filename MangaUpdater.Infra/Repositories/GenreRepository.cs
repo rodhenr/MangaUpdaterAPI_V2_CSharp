@@ -10,16 +10,16 @@ public class GenreRepository : BaseRepository<Genre>, IGenreRepository
     public GenreRepository(IdentityMangaUpdaterContext context) : base(context)
     {
     }
+    
+    public void BulkCreate(IEnumerable<Genre> genres)
+    {
+        Context.Genres.AddRange(genres);
+    }
 
     public override async Task<Genre?> GetByIdAsync(int id)
     {
         return await Get()
             .AsNoTracking()
             .SingleOrDefaultAsync(g => g.Id == id);
-    }
-
-    public void BulkCreateAsync(IEnumerable<Genre> genres)
-    {
-        Context.Genres.AddRange(genres);
     }
 }

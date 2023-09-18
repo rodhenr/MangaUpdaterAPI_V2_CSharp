@@ -37,7 +37,7 @@ public class RegisterMangaService : IRegisterMangaService
 
         var mangaInfo = _mapper.Map<Manga>(apiData);
 
-        _mangaRepository.CreateAsync(mangaInfo);
+        _mangaRepository.Create(mangaInfo);
         await _mangaRepository.SaveAsync();
 
         var genreList =
@@ -50,9 +50,9 @@ public class RegisterMangaService : IRegisterMangaService
         var authorList = apiData.Authors
             .Select(a => new MangaAuthor() { MangaId = mangaInfo.Id, Name = a.Name });
 
-        _mangaGenreRepository.BulkCreateAsync(genreList);
-        _mangaAuthorRepository.BulkCreateAsync(authorList);
-        _mangaTitleRepository.BulkCreateAsync(titleList);
+        _mangaGenreRepository.BulkCreate(genreList);
+        _mangaAuthorRepository.BulkCreate(authorList);
+        _mangaTitleRepository.BulkCreate(titleList);
 
         await _mangaRepository.SaveAsync();
         return mangaInfo;

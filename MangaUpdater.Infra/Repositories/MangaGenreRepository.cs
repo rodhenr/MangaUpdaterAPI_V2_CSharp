@@ -10,7 +10,7 @@ public class MangaGenreRepository : BaseRepository<MangaGenre>, IMangaGenreRepos
     {
     }
 
-    public void BulkCreateAsync(IEnumerable<MangaGenre> mangaGenres)
+    public void BulkCreate(IEnumerable<MangaGenre> mangaGenres)
     {
         Context.MangaGenres.AddRange(mangaGenres);
     }

@@ -20,7 +20,7 @@ public class MangaService : IMangaService
 
     public async Task Add(Manga manga)
     {
-        _mangaRepository.CreateAsync(manga);
+        _mangaRepository.Create(manga);
         await _mangaRepository.SaveAsync();
     }
 

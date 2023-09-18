@@ -14,7 +14,7 @@ public abstract class BaseRepository<TEntity> : IBaseRepository<TEntity> where T
         Context = context;
     }
 
-    public virtual void CreateAsync(TEntity entity)
+    public virtual void Create(TEntity entity)
     {
         Context.Add(entity);
     }
@@ -37,12 +37,12 @@ public abstract class BaseRepository<TEntity> : IBaseRepository<TEntity> where T
             .SingleOrDefaultAsync(t => t.Id == id);
     }
 
-    public virtual void UpdateAsync(TEntity entity)
+    public virtual void Update(TEntity entity)
     {
         Context.Update(entity);
     }
 
-    public virtual void RemoveAsync(TEntity entity)
+    public virtual void Remove(TEntity entity)
     {
         Context.Remove(entity);
     }

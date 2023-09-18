@@ -10,7 +10,7 @@ public class MangaAuthorRepository : BaseRepository<MangaAuthor>, IMangaAuthorRe
     {
     }
 
-    public void BulkCreateAsync(IEnumerable<MangaAuthor> mangaAuthors)
+    public void BulkCreate(IEnumerable<MangaAuthor> mangaAuthors)
     {
         Context.MangaAuthors.AddRange(mangaAuthors);
     }

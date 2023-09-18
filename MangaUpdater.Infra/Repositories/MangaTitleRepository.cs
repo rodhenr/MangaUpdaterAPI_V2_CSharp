@@ -11,7 +11,7 @@ public class MangaTitleRepository : BaseRepository<MangaTitle>, IMangaTitleRepos
     {
     }
 
-    public void BulkCreateAsync(IEnumerable<MangaTitle> mangaTitles)
+    public void BulkCreate(IEnumerable<MangaTitle> mangaTitles)
     {
         Context.MangaTitles.AddRange(mangaTitles);
     }

@@ -7,6 +7,7 @@ using MangaUpdater.Application.Interfaces;
 using MangaUpdater.Application.Interfaces.Scraping;
 using MangaUpdater.Domain.Entities;
 using MangaUpdater.API.Controllers.Shared;
+using MangaUpdater.Application.Interfaces.External;
 
 namespace MangaUpdater.API.Controllers;
 
@@ -21,11 +22,12 @@ public class MangaController : BaseController
     private readonly IRegisterMangaService _registerMangaService;
     private readonly IUpdateChaptersService _updateChaptersService;
     private readonly IRegisterSourceService _registerSourceService;
+    private readonly IMangaLivreService _mangaLivreService;
 
     public MangaController(IMangaService mangaService,
         IUserSourceService userSourceService, IRegisterMangaService registerMangaService,
         IUpdateChaptersService updateChaptersService, IRegisterSourceService registerSourceService,
-        ISourceService sourceService, IMangaTitleService mangaTitleService, IChapterService chapterService)
+        ISourceService sourceService, IMangaTitleService mangaTitleService, IChapterService chapterService, IMangaLivreService mangaLivreService)
     {
         _mangaService = mangaService;
         _userSourceService = userSourceService;
@@ -35,6 +37,7 @@ public class MangaController : BaseController
         _sourceService = sourceService;
         _mangaTitleService = mangaTitleService;
         _chapterService = chapterService;
+        _mangaLivreService = mangaLivreService;
     }
 
     /// <summary>
@@ -104,14 +107,13 @@ public class MangaController : BaseController
     [Authorize]
     public async Task<ActionResult> RegisterFromScraping(int mangaId, int sourceId, string mangaUrl)
     {
-        var manga = await _mangaService.GetById(mangaId);
+        //TODO: Remove these
         var source = await _sourceService.GetById(sourceId);
         var mangaTitles = await _mangaTitleService.GetAllByMangaId(mangaId);
 
         if (source.Name == "Manga Livre")
         {
-            await _registerSourceService.RegisterFromMangaLivreSource(mangaId, sourceId, source!.BaseUrl, mangaUrl,
-                mangaTitles);
+            await _mangaLivreService.RegisterSourceAndChapters(mangaId, sourceId, mangaUrl);
         }
         else
         {

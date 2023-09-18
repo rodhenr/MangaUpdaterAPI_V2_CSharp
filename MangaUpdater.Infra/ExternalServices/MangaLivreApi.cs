@@ -1,9 +1,10 @@
 ﻿using System.Net.Http.Json;
+using MangaUpdater.Application.Interfaces.External;
 using MangaUpdater.Application.Models;
 
 namespace MangaUpdater.Infra.Data.ExternalServices;
 
-public class MangaLivreApi
+public class MangaLivreApi: IMangaLivreApi
 {
     private readonly IHttpClientFactory _clientFactory;
     private readonly List<MangaLivreChapters> _chapters = new();
@@ -15,6 +16,8 @@ public class MangaLivreApi
 
     public async Task<List<MangaLivreChapters>> GetChaptersAsync(int mlSerieId, float lastChapterId = 0)
     {
+        //TODO: Implement manga name check before get chapters
+        
         var httpClient = _clientFactory.CreateClient();
         httpClient.DefaultRequestHeaders.Add("X-Requested-With", "XMLHttpRequest");
         var page = 1;

@@ -4,5 +4,5 @@ namespace MangaUpdater.Domain.Interfaces;
 
 public interface IMangaAuthorRepository: IBaseRepository<MangaAuthor>
 {
-    void BulkCreateAsync(IEnumerable<MangaAuthor> mangaAuthors);
+    void BulkCreate(IEnumerable<MangaAuthor> mangaAuthors);
 }

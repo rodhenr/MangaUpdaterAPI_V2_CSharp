@@ -11,7 +11,7 @@ public class ChapterRepository : BaseRepository<Chapter>, IChapterRepository
     {
     }
 
-    public void BulkCreateAsync(IEnumerable<Chapter> chapters)
+    public void BulkCreate(IEnumerable<Chapter> chapters)
     {
         Context.Chapters.AddRange(chapters);
     }

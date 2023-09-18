@@ -16,12 +16,12 @@ public class ChapterService : IChapterService
 
     public void Add(Chapter chapter)
     {
-        _chapterRepository.CreateAsync(chapter);
+        _chapterRepository.Create(chapter);
     }
 
     public void BulkCreate(IEnumerable<Chapter> chapters)
     {
-        _chapterRepository.BulkCreateAsync(chapters);
+        _chapterRepository.BulkCreate(chapters);
     }
 
     public async Task<Chapter> GetById(int id)
@@ -52,7 +52,7 @@ public class ChapterService : IChapterService
                 Number = float.Parse(chapter.Key)
             }).ToList();
 
-        _chapterRepository.BulkCreateAsync(chaptersToUpdate);
+        _chapterRepository.BulkCreate(chaptersToUpdate);
         await _chapterRepository.SaveAsync();
     }
 
