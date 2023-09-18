@@ -28,26 +28,28 @@ public static class ServicesInjection
         services.AddScoped<IUserMangaRepository, UserMangaRepository>();
         services.AddScoped<IMangaAuthorRepository, MangaAuthorRepository>();
         services.AddScoped<IMangaTitleRepository, MangaTitleRepository>();
-        
+
         services.AddScoped<IChapterService, ChapterService>();
         services.AddScoped<IGenreService, GenreService>();
+        services.AddScoped<IMangaGenreService, MangaGenreService>();
         services.AddScoped<IMangaService, MangaService>();
         services.AddScoped<IMangaSourceService, MangaSourceService>();
         services.AddScoped<ISourceService, SourceService>();
         services.AddScoped<IUserMangaService, UserMangaService>();
         services.AddScoped<IUserSourceService, UserSourceService>();
         services.AddScoped<IUserMangaChapterService, UserMangaChapterService>();
+        services.AddScoped<IMangaAuthorService, MangaAuthorService>();
         services.AddScoped<IMangaTitleService, MangaTitleService>();
-        
+
         services.AddScoped<IMyAnimeListApiService, MyAnimeListApiService>();
-        services.AddScoped<IRegisterMangaService, RegisterMangaService>();
+        services.AddScoped<IRegisterMangaFromMyAnimeListService, RegisterMangaFromMyAnimeListService>();
         services.AddScoped<IAuthenticationService, AuthenticationService>();
         services.AddScoped<IUpdateChaptersService, UpdateChaptersService>();
         services.AddScoped<IRegisterSourceService, RegisterSourceService>();
 
-        services.AddScoped<IMangaLivreApi, MangaLivreApi>();
+        services.AddScoped<IMangaLivreApi, MangaLivreApiService>();
         services.AddScoped<IMangaLivreService, MangaLivreService>();
-        
+
         services.AddScoped<ChromeDriver>(provider =>
         {
             var driverOptions = new ChromeOptions()

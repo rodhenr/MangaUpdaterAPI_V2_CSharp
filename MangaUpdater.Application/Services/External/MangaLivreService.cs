@@ -23,7 +23,7 @@ public class MangaLivreService : IMangaLivreService
         _mangaSourceService.Add(new MangaSource() { MangaId = mangaId, SourceId = sourceId, Url = url });
         await UpdateChapters(mangaId, sourceId, 0, url);
 
-        await _chapterService.SaveChanges();
+        await _mangaSourceService.SaveChanges();
     }
 
     public async Task UpdateChapters(int mangaId, int sourceId, float lastChapterId, string url)

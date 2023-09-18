@@ -4,5 +4,5 @@ namespace MangaUpdater.Application.Interfaces.External;
 
 public interface IMyAnimeListApiService
 {
-    Task<MyAnimeListApiResponse?> GetMangaByIdAsync(int malMangaId);
+    Task<MyAnimeListApiResponse?> GetMangaFromMyAnimeListByIdAsync(int malMangaId);
 }

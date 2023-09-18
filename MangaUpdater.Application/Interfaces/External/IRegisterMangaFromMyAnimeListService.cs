@@ -2,7 +2,7 @@
 
 namespace MangaUpdater.Application.Interfaces;
 
-public interface IRegisterMangaService
+public interface IRegisterMangaFromMyAnimeListService
 {
     Task<Manga?> RegisterMangaFromMyAnimeListById(int malMangaId);
 }

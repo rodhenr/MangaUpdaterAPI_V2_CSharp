@@ -15,29 +15,22 @@ public class MangaController : BaseController
 {
     private string? UserId => User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
     private readonly IMangaService _mangaService;
-    private readonly ISourceService _sourceService;
-    private readonly IMangaTitleService _mangaTitleService;
     private readonly IUserSourceService _userSourceService;
-    private readonly IChapterService _chapterService;
-    private readonly IRegisterMangaService _registerMangaService;
-    private readonly IUpdateChaptersService _updateChaptersService;
-    private readonly IRegisterSourceService _registerSourceService;
+    private readonly IRegisterMangaFromMyAnimeListService _registerMangaFromMyAnimeListService;
     private readonly IMangaLivreService _mangaLivreService;
+    private readonly IMangaSourceService _mangaSourceService;
+    private readonly IChapterService _chapterService;
 
-    public MangaController(IMangaService mangaService,
-        IUserSourceService userSourceService, IRegisterMangaService registerMangaService,
-        IUpdateChaptersService updateChaptersService, IRegisterSourceService registerSourceService,
-        ISourceService sourceService, IMangaTitleService mangaTitleService, IChapterService chapterService, IMangaLivreService mangaLivreService)
+    public MangaController(IMangaService mangaService, IUserSourceService userSourceService,
+        IRegisterMangaFromMyAnimeListService registerMangaFromMyAnimeListService, IMangaLivreService mangaLivreService,
+        IMangaSourceService mangaSourceService, IChapterService chapterService)
     {
         _mangaService = mangaService;
         _userSourceService = userSourceService;
-        _registerMangaService = registerMangaService;
-        _updateChaptersService = updateChaptersService;
-        _registerSourceService = registerSourceService;
-        _sourceService = sourceService;
-        _mangaTitleService = mangaTitleService;
-        _chapterService = chapterService;
+        _registerMangaFromMyAnimeListService = registerMangaFromMyAnimeListService;
         _mangaLivreService = mangaLivreService;
+        _mangaSourceService = mangaSourceService;
+        _chapterService = chapterService;
     }
 
     /// <summary>
@@ -48,7 +41,8 @@ public class MangaController : BaseController
     [SwaggerOperation("Get all manga")]
     [HttpGet]
     public async Task<ActionResult<IEnumerable<MangaUserDto>>> GetMangas([FromQuery] int page = 1,
-        [SwaggerParameter("Empty (no ordering), alphabet or latest")][FromQuery] string? orderBy = null,
+        [SwaggerParameter("Empty (no ordering), alphabet or latest")] [FromQuery]
+        string? orderBy = null,
         [FromQuery] List<int>? sourceId = null, [FromQuery] List<int>? genreId = null)
     {
         return Ok(await _mangaService.GetWithFilter(page, orderBy, sourceId, genreId));
@@ -65,7 +59,7 @@ public class MangaController : BaseController
     [Authorize]
     public async Task<ActionResult<Manga>> RegisterManga(int malId)
     {
-        return Ok(await _registerMangaService.RegisterMangaFromMyAnimeListById(malId));
+        return Ok(await _registerMangaFromMyAnimeListService.RegisterMangaFromMyAnimeListById(malId));
     }
 
     /// <summary>
@@ -98,28 +92,24 @@ public class MangaController : BaseController
     }
 
     /// <summary>
-    /// Register a new manga from scraping a source.
+    /// Register a new source for a manga.
     /// </summary>
     /// <response code="200">Success.</response>
     /// <response code="400">Error.</response>
-    [SwaggerOperation("Register a new manga from scraping a source.")]
-    [HttpPost("/{mangaId:int}/source/{sourceId:int}/scraping")]
+    [SwaggerOperation("Register a new source for a manga.")]
+    [HttpPost("/{mangaId:int}/source/{sourceId:int}")]
     [Authorize]
-    public async Task<ActionResult> RegisterFromScraping(int mangaId, int sourceId, string mangaUrl)
+    public async Task<ActionResult> AddSourceToMangaAndGetData(int mangaId, int sourceId, string mangaUrl)
     {
-        //TODO: Remove these
-        var source = await _sourceService.GetById(sourceId);
-        var mangaTitles = await _mangaTitleService.GetAllByMangaId(mangaId);
-
-        if (source.Name == "Manga Livre")
+        if (sourceId == 1)
         {
             await _mangaLivreService.RegisterSourceAndChapters(mangaId, sourceId, mangaUrl);
         }
-        else
-        {
-            await _registerSourceService.RegisterFromAsuraScansSource(mangaId, sourceId, source!.BaseUrl, mangaUrl,
-                mangaTitles);
-        }
+        // else
+        // {
+        //     await _registerSourceService.RegisterFromAsuraScansSource(mangaId, sourceId, source!.BaseUrl, mangaUrl,
+        //         mangaTitles);
+        // }
 
         return Ok();
     }
@@ -132,25 +122,20 @@ public class MangaController : BaseController
     [SwaggerOperation("Update chapters from a combination of manga and source.")]
     [HttpPost("/{mangaId:int}/source/{sourceId:int}/chapters")]
     [Authorize]
-    public async Task<ActionResult> UpdateChapterForMangaSource(int mangaId, int sourceId)
+    public async Task<ActionResult> UpdateChaptersFromSource(int mangaId, int sourceId)
     {
-        var manga = await _mangaService.GetById(mangaId);
-        var source = await _sourceService.GetById(sourceId);
+        var mangaSource = await _mangaSourceService.GetByMangaIdAndSourceId(mangaId, sourceId);
+        var lastChapter = await _chapterService.GetLastByMangaIdAndSourceId(mangaId, sourceId);
 
-        Dictionary<string, string> chapters;
-
-        if (source.Name == "Manga Livre")
+        if (sourceId == 1)
         {
-            chapters = _updateChaptersService.UpdateChaptersFromMangaLivreSource(source.BaseUrl,
-                manga.MangaSources.First(ms => ms.SourceId == sourceId).Url);
+            await _mangaLivreService.UpdateChapters(mangaId, sourceId, lastChapter?.Id ?? 0, mangaSource.Url);
         }
-        else
-        {
-            chapters = _updateChaptersService.UpdateChaptersFromAsuraScansSource(source.BaseUrl,
-                manga.MangaSources.First(ms => ms.SourceId == sourceId).Url);
-        }
-
-        await _chapterService.CreateOrUpdateByMangaSource(mangaId, sourceId, chapters);
+        // else
+        // {
+        //     chapters = _updateChaptersService.UpdateChaptersFromAsuraScansSource(source.BaseUrl,
+        //         manga.MangaSources.First(ms => ms.SourceId == sourceId).Url);
+        // }
 
         return Ok();
     }

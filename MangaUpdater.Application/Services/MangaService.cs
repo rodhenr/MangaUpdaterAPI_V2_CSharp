@@ -37,6 +37,13 @@ public class MangaService : IMangaService
         return manga;
     }
 
+    public async Task<bool> CheckIfMangaIsRegistered(int myAnimeListId)
+    {
+        var manga = await _mangaRepository.GetByMalIdAsync(myAnimeListId);
+
+        return manga is not null;
+    }
+
     public async Task<IEnumerable<MangaUserDto>> GetWithFilter(int page, string? orderBy, List<int>? sourceIdList,
         List<int>? genreIdList)
     {

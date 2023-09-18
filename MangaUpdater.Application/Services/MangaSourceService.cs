@@ -29,7 +29,7 @@ public class MangaSourceService : IMangaSourceService
         var mangaSource = await _mangaSourceRepository.GetByMangaIdAndSourceIdAsync(mangaId, sourceId);
         ValidationHelper.ValidateEntity(mangaSource);
 
-        return mangaSource;
+        return mangaSource!;
     }
 
     public async Task SaveChanges()

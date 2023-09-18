@@ -11,12 +11,12 @@ namespace MangaUpdater.API.Controllers;
 public class SourceController : BaseController
 {
     private readonly ISourceService _sourceService;
-    private readonly MangaLivreApi _mangaLivreApiService;
+    private readonly MangaLivreApiService _mangaLivreApiServiceService;
 
-    public SourceController(ISourceService sourceService, MangaLivreApi mangaLivreApiService)
+    public SourceController(ISourceService sourceService, MangaLivreApiService mangaLivreApiServiceService)
     {
         _sourceService = sourceService;
-        _mangaLivreApiService = mangaLivreApiService;
+        _mangaLivreApiServiceService = mangaLivreApiServiceService;
     }
 
     /// <summary>
@@ -47,7 +47,7 @@ public class SourceController : BaseController
     [HttpPost("test")]
     public async Task<ActionResult<List<MangaLivreChapters>>> GetChaptersML(int serieId)
     {
-        var mltest = await _mangaLivreApiService.GetChaptersAsync(serieId, 32);
+        var mltest = await _mangaLivreApiServiceService.GetChaptersAsync(serieId, 32);
 
         return mltest;
     }

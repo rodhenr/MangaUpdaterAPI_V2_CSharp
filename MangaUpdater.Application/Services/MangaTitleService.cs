@@ -12,6 +12,11 @@ public class MangaTitleService : IMangaTitleService
     {
         _mangaTitleRepository = mangaTitleRepository;
     }
+    
+    public void BulkCreate(IEnumerable<MangaTitle> mangaTitles)
+    {
+        _mangaTitleRepository.BulkCreate(mangaTitles);
+    }
 
     public async Task<IEnumerable<MangaTitle>> GetAllByMangaId(int mangaId)
     {

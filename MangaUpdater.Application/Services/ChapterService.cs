@@ -28,7 +28,7 @@ public class ChapterService : IChapterService
     {
         var chapter = await _chapterRepository.GetByIdAsync(id);
         ValidationHelper.ValidateEntity(chapter);
-        
+
         return chapter;
     }
 
@@ -54,6 +54,11 @@ public class ChapterService : IChapterService
 
         _chapterRepository.BulkCreate(chaptersToUpdate);
         await _chapterRepository.SaveAsync();
+    }
+
+    public async Task<Chapter?> GetLastByMangaIdAndSourceId(int mangaId, int sourceId)
+    {
+        return await _chapterRepository.GetLastChapterByMangaIdAndSourceIdAsync(mangaId, sourceId);
     }
 
     public async Task SaveChanges()

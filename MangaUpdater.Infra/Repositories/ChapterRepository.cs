@@ -39,6 +39,16 @@ public class ChapterRepository : BaseRepository<Chapter>, IChapterRepository
             .ToListAsync();
     }
 
+    public async Task<Chapter?> GetLastChapterByMangaIdAndSourceIdAsync(int mangaId, int sourceId)
+    {
+        return await Get()
+            .Where(ch => ch.MangaId == mangaId && ch.SourceId == sourceId)
+            .OrderBy(ch => ch.Number)
+            .OrderDescending()
+            .AsNoTracking()
+            .FirstOrDefaultAsync();
+    }
+
     public async Task<IEnumerable<Chapter>> GetThreeLastByMangaIdAndSourceListAsync(int mangaId, List<int> sourceList)
     {
         return await Get()
