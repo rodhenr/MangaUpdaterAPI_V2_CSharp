@@ -4,8 +4,9 @@ using System.IdentityModel.Tokens.Jwt;
 using Microsoft.Extensions.Options;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
-using MangaUpdater.Application.Models;
-using MangaUpdater.Application.Interfaces;
+using MangaUpdater.Application.Interfaces.Authentication;
+using MangaUpdater.Application.Models.Login;
+using MangaUpdater.Application.Models.Register;
 using MangaUpdater.Domain.Exceptions;
 
 namespace MangaUpdater.Infra.Data.Identity;
@@ -43,7 +44,7 @@ public class AuthenticationService : IAuthenticationService
         if (result.Succeeded || !result.Errors.Any()) return userResponse;
         
         userResponse.AddErrors(result.Errors.Select(r => r.Description));
-        throw new Exception(userResponse.ToString());
+        throw new ValidationException(userResponse.ToString());
     }
 
     public async Task<UserAuthenticateResponse> Authenticate(UserAuthenticate userAuthenticate)

@@ -1,6 +1,6 @@
 using System.Text.Json.Serialization;
-using MangaUpdater.API;
 using Microsoft.OpenApi.Models;
+using MangaUpdater.API;
 using MangaUpdater.API.Exceptions;
 using MangaUpdater.Infra.IoC;
 

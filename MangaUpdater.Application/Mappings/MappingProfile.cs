@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using MangaUpdater.Application.DTOs;
 using MangaUpdater.Application.Models;
+using MangaUpdater.Application.Models.External.MyAnimeList;
 using MangaUpdater.Domain.Entities;
 
 namespace MangaUpdater.Application.Mappings;
@@ -47,7 +48,7 @@ public class MappingProfile : Profile
                     });
             }));
         
-        CreateMap<UserMangaGroupByManga, MangaUserLoggedDto>()
+        CreateMap<UserMangaGroupByMangaDto, MangaUserLoggedDto>()
             .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Manga.Id))
             .ForMember(dest => dest.CoverUrl, opt => opt.MapFrom(src => src.Manga.CoverUrl))
             .ForMember(dest => dest.Chapters, opt => opt.MapFrom((src, _, _, _) =>

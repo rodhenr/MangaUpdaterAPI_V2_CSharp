@@ -4,10 +4,11 @@ using Microsoft.AspNetCore.Authorization;
 using Swashbuckle.AspNetCore.Annotations;
 using MangaUpdater.Application.DTOs;
 using MangaUpdater.Application.Interfaces;
-using MangaUpdater.Application.Interfaces.Scraping;
 using MangaUpdater.Domain.Entities;
 using MangaUpdater.API.Controllers.Shared;
 using MangaUpdater.Application.Interfaces.External;
+using MangaUpdater.Application.Interfaces.External.MangaLivre;
+using MangaUpdater.Application.Interfaces.External.MyAnimeList;
 
 namespace MangaUpdater.API.Controllers;
 

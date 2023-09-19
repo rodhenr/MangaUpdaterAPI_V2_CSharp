@@ -25,7 +25,10 @@
 
   <ItemGroup>
     <ProjectReference Include="..\MangaUpdater.Application\MangaUpdater.Application.csproj" />
+
   </ItemGroup>
+
+
 
 
 </Project>

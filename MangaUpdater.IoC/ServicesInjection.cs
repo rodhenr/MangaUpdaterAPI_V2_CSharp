@@ -1,15 +1,17 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using OpenQA.Selenium.Chrome;
 using MangaUpdater.Application.Interfaces;
-using MangaUpdater.Application.Interfaces.External;
-using MangaUpdater.Application.Interfaces.Scraping;
+using MangaUpdater.Application.Interfaces.Authentication;
+using MangaUpdater.Application.Interfaces.External.MangaLivre;
+using MangaUpdater.Application.Interfaces.External.MyAnimeList;
 using MangaUpdater.Application.Mappings;
 using MangaUpdater.Application.Services;
-using MangaUpdater.Application.Services.External;
-using MangaUpdater.Application.Services.Scraping;
+using MangaUpdater.Application.Services.External.MangaLivre;
+using MangaUpdater.Application.Services.External.MyAnimeList;
 using MangaUpdater.Domain.Interfaces;
 using MangaUpdater.Infra.Data.ExternalServices;
+using MangaUpdater.Infra.Data.ExternalServices.MangaLivre;
+using MangaUpdater.Infra.Data.ExternalServices.MyAnimeList;
 using MangaUpdater.Infra.Data.Identity;
 using MangaUpdater.Infra.Data.Repositories;
 
@@ -44,23 +46,9 @@ public static class ServicesInjection
         services.AddScoped<IMyAnimeListApiService, MyAnimeListApiService>();
         services.AddScoped<IRegisterMangaFromMyAnimeListService, RegisterMangaFromMyAnimeListService>();
         services.AddScoped<IAuthenticationService, AuthenticationService>();
-        services.AddScoped<IUpdateChaptersService, UpdateChaptersService>();
-        services.AddScoped<IRegisterSourceService, RegisterSourceService>();
 
         services.AddScoped<IMangaLivreApi, MangaLivreApiService>();
         services.AddScoped<IMangaLivreService, MangaLivreService>();
-
-        services.AddScoped<ChromeDriver>(provider =>
-        {
-            var driverOptions = new ChromeOptions()
-            {
-                BinaryLocation = @"C:\Program Files\Google\Chrome\Application\chrome.exe"
-            };
-
-            driverOptions.AddArguments(new List<string>() { "headless", "disable-gpu" });
-
-            return new ChromeDriver(driverOptions);
-        });
 
         services.AddAutoMapper(typeof(MappingProfile));
     }

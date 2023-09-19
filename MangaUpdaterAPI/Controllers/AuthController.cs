@@ -3,6 +3,9 @@ using Swashbuckle.AspNetCore.Annotations;
 using MangaUpdater.Application.Interfaces;
 using MangaUpdater.Application.Models;
 using MangaUpdater.API.Controllers.Shared;
+using MangaUpdater.Application.Interfaces.Authentication;
+using MangaUpdater.Application.Models.Login;
+using MangaUpdater.Application.Models.Register;
 
 namespace MangaUpdater.API.Controllers;
 

@@ -4,7 +4,9 @@ using MangaUpdater.Application.Interfaces;
 using MangaUpdater.Domain.Entities;
 using MangaUpdater.API.Controllers.Shared;
 using MangaUpdater.Application.Models;
+using MangaUpdater.Application.Models.External.MangaLivre;
 using MangaUpdater.Infra.Data.ExternalServices;
+using MangaUpdater.Infra.Data.ExternalServices.MangaLivre;
 
 namespace MangaUpdater.API.Controllers;
 
