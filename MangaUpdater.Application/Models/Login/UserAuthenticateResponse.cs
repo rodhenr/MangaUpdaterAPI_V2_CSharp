@@ -9,21 +9,20 @@ public class UserAuthenticateResponse
         ErrorList = new List<string>();
     }
 
-    public UserAuthenticateResponse(DateTime? expirationDate, string? token) : this()
+    public UserAuthenticateResponse(string? accessToken, string? refreshToken) : this()
     {
-        ExpirationDate = expirationDate;
-        Token = token;
+        AccessToken = accessToken;
+        RefreshToken = refreshToken;
     }
+    
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public string? AccessToken { get; private set; }
 
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public DateTime? ExpirationDate { get; private set; }
-
-    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public string? Token { get; private set; }
+    public string? RefreshToken { get; private set; }
 
     public bool IsSuccess => ErrorList.Count == 0;
-
-    public List<string> ErrorList { get; }
+    public List<string> ErrorList { get; } //TODO: JsonIgnore when its empty
 
     public void AddError(string error) => ErrorList.Add(error);
 

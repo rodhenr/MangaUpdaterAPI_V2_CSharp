@@ -1,11 +1,13 @@
 ﻿using System.Globalization;
 using System.Security.Claims;
 using System.IdentityModel.Tokens.Jwt;
+using System.Security.Authentication;
 using Microsoft.Extensions.Options;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
 using MangaUpdater.Application.Interfaces.Authentication;
 using MangaUpdater.Application.Models.Login;
+using MangaUpdater.Application.Models.RefreshToken;
 using MangaUpdater.Application.Models.Register;
 using MangaUpdater.Domain.Exceptions;
 
@@ -42,7 +44,7 @@ public class AuthenticationService : IAuthenticationService
         var userResponse = new UserRegisterResponse(result.Succeeded);
 
         if (result.Succeeded || !result.Errors.Any()) return userResponse;
-        
+
         userResponse.AddErrors(result.Errors.Select(r => r.Description));
         throw new ValidationException(userResponse.ToString());
     }
@@ -53,7 +55,7 @@ public class AuthenticationService : IAuthenticationService
             await _signInManager.PasswordSignInAsync(userAuthenticate.Email, userAuthenticate.Password, false, false);
 
         if (result.Succeeded)
-            return await GenerateToken(userAuthenticate.Email);
+            return await GenerateCredentials(userAuthenticate.Email);
 
         var authResponse = new UserAuthenticateResponse();
 
@@ -71,33 +73,60 @@ public class AuthenticationService : IAuthenticationService
         return authResponse;
     }
 
-    private async Task<UserAuthenticateResponse> GenerateToken(string email)
+    public async Task<UserAuthenticateResponse> RefreshToken(string userId)
     {
-        var user = await _userManager.FindByEmailAsync(email) ?? throw new AuthorizationException("User not found");
-        var tokenClaims = await GetClaims(user);
-        var tokenExpirationDate = DateTime.Now.AddSeconds(_jwtOptions.Expiration);
+        var authenticationResponse = new UserAuthenticateResponse();
 
-        var tokenHandler = new JwtSecurityTokenHandler();
+        var user = await _userManager.FindByIdAsync(userId);
 
+        if (user?.Email is null) throw new AuthenticationException("User not found");
+
+        if (await _userManager.IsLockedOutAsync(user)) authenticationResponse.AddError("This account is blocked");
+
+        if (authenticationResponse.IsSuccess) return await GenerateCredentials(user.Email);
+
+        return authenticationResponse;
+    }
+
+    private async Task<UserAuthenticateResponse> GenerateCredentials(string userEmail)
+    {
+        var user = await _userManager.FindByEmailAsync(userEmail);
+
+        if (user?.Email is null) throw new AuthenticationException("User not found");
+
+        var accessTokenClaims = await GetClaims(user, addUserClaims: true);
+        var refreshTokenClaims = await GetClaims(user, addUserClaims: false);
+
+        var accessTokenExpirationData = DateTime.Now.AddSeconds(_jwtOptions.AccessTokenExpiration);
+        var refreshTokenExpirationData = DateTime.Now.AddSeconds(_jwtOptions.RefreshTokenExpiration);
+
+        var accessToken = GenerateToken(accessTokenClaims, accessTokenExpirationData);
+        var refreshToken = GenerateToken(refreshTokenClaims, refreshTokenExpirationData);
+
+        return new UserAuthenticateResponse(accessToken, refreshToken);
+    }
+
+    private string GenerateToken(IEnumerable<Claim> claims, DateTime expirationDate)
+    {
         var jwt = new SecurityTokenDescriptor
         {
             Issuer = _jwtOptions.Issuer,
             Audience = _jwtOptions.Audience,
-            Subject = new ClaimsIdentity(tokenClaims),
+            Subject = new ClaimsIdentity(claims),
             NotBefore = DateTime.Now,
-            Expires = tokenExpirationDate,
+            Expires = expirationDate,
             SigningCredentials = _jwtOptions.SigningCredentials
         };
 
+        var tokenHandler = new JwtSecurityTokenHandler();
         var token = tokenHandler.CreateToken(jwt);
 
-        return new UserAuthenticateResponse(tokenExpirationDate, tokenHandler.WriteToken(token));
+        return tokenHandler.WriteToken(token);
     }
 
-    private async Task<IList<Claim>> GetClaims(IdentityUser user)
+    private async Task<IList<Claim>> GetClaims(IdentityUser user, bool addUserClaims)
     {
-        var claims = await _userManager.GetClaimsAsync(user);
-        var roles = await _userManager.GetRolesAsync(user);
+        var claims = new List<Claim>();
         var usCulture = new CultureInfo("en-US");
 
         claims.Add(new Claim(JwtRegisteredClaimNames.NameId, user.Id));
@@ -106,8 +135,14 @@ public class AuthenticationService : IAuthenticationService
         claims.Add(new Claim(JwtRegisteredClaimNames.Nbf, DateTime.Now.ToString(usCulture)));
         claims.Add(new Claim(JwtRegisteredClaimNames.Iat, DateTime.Now.ToString(usCulture)));
 
-        foreach (var role in roles)
-            claims.Add(new Claim("role", role));
+        if (!addUserClaims) return claims;
+
+        var userClaims = await _userManager.GetClaimsAsync(user);
+        var roles = await _userManager.GetRolesAsync(user);
+
+        claims.AddRange(userClaims);
+
+        claims.AddRange(roles.Select(role => new Claim("role", role)));
 
         return claims;
     }
