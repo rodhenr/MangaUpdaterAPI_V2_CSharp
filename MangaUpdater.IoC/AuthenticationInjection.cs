@@ -21,8 +21,10 @@ public static class AuthenticationInjection
             options.Issuer = jwtAppSettingsOptions[nameof(JwtOptions.Issuer)]!;
             options.Audience = jwtAppSettingsOptions[nameof(JwtOptions.Audience)]!;
             options.SigningCredentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha512);
-            options.AccessTokenExpiration = int.Parse(jwtAppSettingsOptions[nameof(JwtOptions.AccessTokenExpiration)] ?? "0");
-            options.RefreshTokenExpiration = int.Parse(jwtAppSettingsOptions[nameof(JwtOptions.RefreshTokenExpiration)] ?? "0");
+            options.AccessTokenExpiration =
+                int.Parse(jwtAppSettingsOptions[nameof(JwtOptions.AccessTokenExpiration)] ?? "0");
+            options.RefreshTokenExpiration =
+                int.Parse(jwtAppSettingsOptions[nameof(JwtOptions.RefreshTokenExpiration)] ?? "0");
         });
 
         var tokenValidationParameters = new TokenValidationParameters
@@ -43,5 +45,10 @@ public static class AuthenticationInjection
             options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
             options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
         }).AddJwtBearer(options => { options.TokenValidationParameters = tokenValidationParameters; });
+
+        services.AddAuthorization(options =>
+        {
+            options.AddPolicy("RefreshToken", policy => policy.RequireClaim("typ", "refresh-token"));
+        });
     }
 }

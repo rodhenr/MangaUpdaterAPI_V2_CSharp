@@ -135,12 +135,17 @@ public class AuthenticationService : IAuthenticationService
         claims.Add(new Claim(JwtRegisteredClaimNames.Nbf, DateTime.Now.ToString(usCulture)));
         claims.Add(new Claim(JwtRegisteredClaimNames.Iat, DateTime.Now.ToString(usCulture)));
 
-        if (!addUserClaims) return claims;
+        if (!addUserClaims)
+        {
+            claims.Add(new Claim(JwtRegisteredClaimNames.Typ, "refresh-token"));
+            return claims;
+        }
 
         var userClaims = await _userManager.GetClaimsAsync(user);
         var roles = await _userManager.GetRolesAsync(user);
 
         claims.AddRange(userClaims);
+        claims.Add(new Claim(JwtRegisteredClaimNames.Typ, "access-token"));
 
         claims.AddRange(roles.Select(role => new Claim("role", role)));
 
