@@ -39,6 +39,7 @@ public class MangaController : BaseController
     /// </summary>
     /// <returns>All manga, if any.</returns>
     /// <response code="200">Returns all existing manga, if any.</response>
+    [AllowAnonymous]
     [SwaggerOperation("Get all manga")]
     [HttpGet]
     public async Task<ActionResult<IEnumerable<MangaUserDto>>> GetMangas([FromQuery] int page = 1,
@@ -57,7 +58,6 @@ public class MangaController : BaseController
     /// <response code="400">Error.</response>
     [SwaggerOperation("Register a new manga using a MyAnimeList id")]
     [HttpPost]
-    [Authorize]
     public async Task<ActionResult<Manga>> RegisterManga(int malId)
     {
         return Ok(await _registerMangaFromMyAnimeListService.RegisterMangaFromMyAnimeListById(malId));
@@ -69,6 +69,7 @@ public class MangaController : BaseController
     /// <returns>Manga data, if success.</returns>
     /// <response code="200">Returns the manga data.</response>
     /// <response code="400">Error.</response>
+    [AllowAnonymous]
     [SwaggerOperation("Get manga data by id")]
     [HttpGet("{mangaId:int}")]
     public async Task<ActionResult<MangaDto>> GetManga(int mangaId)
@@ -86,7 +87,6 @@ public class MangaController : BaseController
     /// <response code="400">Error.</response>
     [SwaggerOperation("Get all sources from a manga with following info for a logged-in user")]
     [HttpGet("{mangaId:int}/sources")]
-    [Authorize]
     public async Task<ActionResult<IEnumerable<UserSourceDto>>> GetUserSources(int mangaId)
     {
         return Ok(await _userSourceService.GetUserSourcesByMangaId(mangaId, UserId!));
@@ -99,7 +99,6 @@ public class MangaController : BaseController
     /// <response code="400">Error.</response>
     [SwaggerOperation("Register a new source for a manga.")]
     [HttpPost("/{mangaId:int}/source/{sourceId:int}")]
-    [Authorize]
     public async Task<ActionResult> AddSourceToMangaAndGetData(int mangaId, int sourceId, string mangaUrl)
     {
         if (sourceId == 1)
@@ -122,7 +121,6 @@ public class MangaController : BaseController
     /// <response code="400">Error.</response>
     [SwaggerOperation("Update chapters from a combination of manga and source.")]
     [HttpPost("/{mangaId:int}/source/{sourceId:int}/chapters")]
-    [Authorize]
     public async Task<ActionResult> UpdateChaptersFromSource(int mangaId, int sourceId)
     {
         var mangaSource = await _mangaSourceService.GetByMangaIdAndSourceId(mangaId, sourceId);

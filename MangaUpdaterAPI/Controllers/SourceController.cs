@@ -7,6 +7,7 @@ using MangaUpdater.Application.Models;
 using MangaUpdater.Application.Models.External.MangaLivre;
 using MangaUpdater.Infra.Data.ExternalServices;
 using MangaUpdater.Infra.Data.ExternalServices.MangaLivre;
+using Microsoft.AspNetCore.Authorization;
 
 namespace MangaUpdater.API.Controllers;
 
@@ -26,6 +27,7 @@ public class SourceController : BaseController
     /// </summary>
     /// <returns>All sources, if any.</returns>
     /// <response code="200">Returns all existing sources, if any.</response>
+    [AllowAnonymous]
     [SwaggerOperation("Get all sources")]
     [HttpGet]
     public async Task<ActionResult<IEnumerable<Source>>> GetSources()
@@ -39,18 +41,11 @@ public class SourceController : BaseController
     /// <returns>A source, if exists.</returns>
     /// <response code="200">Returns a source, if exist.</response>
     /// <response code="400">If doesn't exist.</response>
+    [AllowAnonymous]
     [SwaggerOperation("Get a source by id")]
     [HttpGet("{sourceId:int}")]
     public async Task<ActionResult<Source>> GetSourceById(int sourceId)
     {
         return Ok(await _sourceService.GetById(sourceId));
-    }
-
-    [HttpPost("test")]
-    public async Task<ActionResult<List<MangaLivreChapters>>> GetChaptersML(int serieId)
-    {
-        var mltest = await _mangaLivreApiServiceService.GetChaptersAsync(serieId, 32);
-
-        return mltest;
     }
 }

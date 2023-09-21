@@ -24,6 +24,7 @@ public class AuthController : BaseController
     /// <param name="userRegister">Data to register an user.</param>
     /// <response code="200">Returns success.</response>
     /// <response code="400">Returns all validation errors.</response>
+    [AllowAnonymous]
     [SwaggerOperation("Register an user")]
     [HttpPost("register")]
     public async Task<ActionResult<UserRegisterResponse>> UserRegister(UserRegister userRegister) =>
@@ -35,6 +36,7 @@ public class AuthController : BaseController
     /// <param name="userAuthenticate">Data to authenticate an user.</param>
     /// <response code="200">Returns token.</response>
     /// <response code="400">Returns all validation errors.</response>
+    [AllowAnonymous]
     [SwaggerOperation("Authenticate an user")]
     [HttpPost("login")]
     public async Task<ActionResult<UserAuthenticateResponse>> UserLogin(UserAuthenticate userAuthenticate) =>

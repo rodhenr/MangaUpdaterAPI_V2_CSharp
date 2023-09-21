@@ -32,7 +32,6 @@ public class UserController : BaseController
     [SwaggerOperation(
         "Get all followed manga for a logged-in user with 3 last released chapters from the sources followed")]
     [HttpGet("mangas")]
-    [Authorize]
     public async Task<ActionResult<IEnumerable<MangaUserLoggedDto>>> GetLoggedUserMangas()
     {
         return Ok(await _userMangaChapterService.GetUserMangasWithThreeLastChapterByUserId(UserId!));
@@ -46,7 +45,6 @@ public class UserController : BaseController
     /// <response code="400">Error.</response>
     [SwaggerOperation("Get all followed manga for a logged-in user")]
     [HttpGet("mangas/list")]
-    [Authorize]
     public async Task<ActionResult<IEnumerable<MangaUserDto>>> GetUserMangasList()
     {
         return Ok(await _userMangaService.GetMangasByUserId(UserId!));
@@ -72,7 +70,6 @@ public class UserController : BaseController
     /// <response code="400">Error.</response>
     [SwaggerOperation("A logged-in user starts following a manga")]
     [HttpPost("mangas/{mangaId:int}")]
-    [Authorize]
     public async Task<ActionResult> FollowManga(int mangaId, IEnumerable<int> sourceIdList)
     {
         var userSources = await _userSourceService.GetUserSourcesByMangaId(mangaId, UserId!);
@@ -88,7 +85,6 @@ public class UserController : BaseController
     /// <response code="400">Error.</response>
     [SwaggerOperation("A logged-in user no longer follows a manga")]
     [HttpDelete("mangas/{mangaId:int}")]
-    [Authorize]
     public async Task<ActionResult> UnfollowManga(int mangaId)
     {
         await _userMangaChapterService.DeleteUserMangasByMangaId(mangaId, UserId!);
@@ -102,7 +98,6 @@ public class UserController : BaseController
     /// <response code="400">Error.</response>
     [SwaggerOperation("A logged-in user starts following a source from a manga")]
     [HttpPost("mangas/{mangaId:int}/sources/{sourceId:int}")]
-    [Authorize]
     public async Task<ActionResult> AddUserManga(int mangaId, int sourceId)
     {
         await _userMangaChapterService.AddUserManga(mangaId, UserId!, sourceId);
@@ -116,7 +111,6 @@ public class UserController : BaseController
     /// <response code="400">Error.</response>
     [SwaggerOperation("A logged-in user no longer follows a source from a manga")]
     [HttpDelete("mangas/{mangaId:int}/sources/{sourceId:int}")]
-    [Authorize]
     public async Task<ActionResult> DeleteUserManga(int mangaId, int sourceId)
     {
         await _userMangaChapterService.DeleteUserManga(mangaId, UserId!, sourceId);
@@ -130,7 +124,6 @@ public class UserController : BaseController
     /// <response code="400">Error.</response>
     [SwaggerOperation("A logged-in user changes its last chapter read from a combination of manga and source")]
     [HttpPatch("mangas/{mangaId:int}/sources/{sourceId:int}")]
-    [Authorize]
     public async Task<ActionResult> UpdateManga(int mangaId, int sourceId, int chapterId)
     {
         var userManga = await _userMangaService.GetByMangaIdUserIdAndSourceId(mangaId, UserId!, sourceId);

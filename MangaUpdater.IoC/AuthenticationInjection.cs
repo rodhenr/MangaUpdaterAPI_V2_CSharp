@@ -4,6 +4,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using MangaUpdater.Infra.Data.Identity;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 
 namespace MangaUpdater.Infra.IoC;
 
@@ -48,7 +50,11 @@ public static class AuthenticationInjection
 
         services.AddAuthorization(options =>
         {
-            options.AddPolicy("RefreshToken", policy => policy.RequireClaim("typ", "refresh-token"));
+            options.FallbackPolicy = new AuthorizationPolicyBuilder()
+                .RequireAuthenticatedUser()
+                .RequireClaim("Typ", "Bearer")
+                .Build();
+            options.AddPolicy("RefreshToken", policy => policy.RequireClaim("typ", "Refresh"));
         });
     }
 }

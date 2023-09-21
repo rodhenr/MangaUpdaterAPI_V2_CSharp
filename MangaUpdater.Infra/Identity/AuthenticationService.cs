@@ -137,7 +137,7 @@ public class AuthenticationService : IAuthenticationService
 
         if (!addUserClaims)
         {
-            claims.Add(new Claim(JwtRegisteredClaimNames.Typ, "refresh-token"));
+            claims.Add(new Claim(JwtRegisteredClaimNames.Typ, "Refresh"));
             return claims;
         }
 
@@ -145,7 +145,7 @@ public class AuthenticationService : IAuthenticationService
         var roles = await _userManager.GetRolesAsync(user);
 
         claims.AddRange(userClaims);
-        claims.Add(new Claim(JwtRegisteredClaimNames.Typ, "access-token"));
+        claims.Add(new Claim(JwtRegisteredClaimNames.Typ, "Bearer"));
 
         claims.AddRange(roles.Select(role => new Claim("role", role)));
 
