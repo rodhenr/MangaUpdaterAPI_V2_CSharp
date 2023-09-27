@@ -54,7 +54,7 @@ builder.Services.AddSwaggerGen(options =>
 });
 
 builder.Services.AddJwtAuthentication(builder.Configuration);
-builder.Services.AddInfrastructure(builder.Configuration);
+builder.Services.AddInfrastructure();
 builder.Services.AddIdentity(builder.Configuration);
 
 builder.Services.AddControllers()

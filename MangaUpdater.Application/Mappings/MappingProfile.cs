@@ -1,6 +1,5 @@
 ﻿using AutoMapper;
 using MangaUpdater.Application.DTOs;
-using MangaUpdater.Application.Models;
 using MangaUpdater.Application.Models.External.MyAnimeList;
 using MangaUpdater.Domain.Entities;
 

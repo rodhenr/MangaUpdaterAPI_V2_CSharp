@@ -9,7 +9,6 @@ using MangaUpdater.Application.Services;
 using MangaUpdater.Application.Services.External.MangaLivre;
 using MangaUpdater.Application.Services.External.MyAnimeList;
 using MangaUpdater.Domain.Interfaces;
-using MangaUpdater.Infra.Data.ExternalServices;
 using MangaUpdater.Infra.Data.ExternalServices.MangaLivre;
 using MangaUpdater.Infra.Data.ExternalServices.MyAnimeList;
 using MangaUpdater.Infra.Data.Identity;
@@ -19,7 +18,7 @@ namespace MangaUpdater.Infra.IoC;
 
 public static class ServicesInjection
 {
-    public static void AddInfrastructure(this IServiceCollection services, IConfiguration configuration)
+    public static void AddInfrastructure(this IServiceCollection services)
     {
         services.AddScoped<IChapterRepository, ChapterRepository>();
         services.AddScoped<IGenreRepository, GenreRepository>();

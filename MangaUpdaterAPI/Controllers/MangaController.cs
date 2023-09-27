@@ -105,11 +105,6 @@ public class MangaController : BaseController
         {
             await _mangaLivreService.RegisterSourceAndChapters(mangaId, sourceId, mangaUrl);
         }
-        // else
-        // {
-        //     await _registerSourceService.RegisterFromAsuraScansSource(mangaId, sourceId, source!.BaseUrl, mangaUrl,
-        //         mangaTitles);
-        // }
 
         return Ok();
     }
@@ -130,11 +125,6 @@ public class MangaController : BaseController
         {
             await _mangaLivreService.UpdateChapters(mangaId, sourceId, lastChapter?.Id ?? 0, mangaSource.Url);
         }
-        // else
-        // {
-        //     chapters = _updateChaptersService.UpdateChaptersFromAsuraScansSource(source.BaseUrl,
-        //         manga.MangaSources.First(ms => ms.SourceId == sourceId).Url);
-        // }
 
         return Ok();
     }
