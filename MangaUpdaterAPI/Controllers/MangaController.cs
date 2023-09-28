@@ -6,7 +6,6 @@ using MangaUpdater.Application.DTOs;
 using MangaUpdater.Application.Interfaces;
 using MangaUpdater.Domain.Entities;
 using MangaUpdater.API.Controllers.Shared;
-using MangaUpdater.Application.Interfaces.External;
 using MangaUpdater.Application.Interfaces.External.MangaLivre;
 using MangaUpdater.Application.Interfaces.External.MyAnimeList;
 

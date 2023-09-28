@@ -12,19 +12,9 @@ public class MangaAuthorService : IMangaAuthorService
     {
         _mangaAuthorRepository = mangaAuthorRepository;
     }
-
-    public void Add(MangaAuthor mangaAuthor)
-    {
-        _mangaAuthorRepository.Create(mangaAuthor);
-    }
-
+    
     public void BulkCreate(IEnumerable<MangaAuthor> mangaAuthors)
     {
         _mangaAuthorRepository.BulkCreate(mangaAuthors);
-    }
-
-    public async Task SaveChanges()
-    {
-        await _mangaAuthorRepository.SaveAsync();
     }
 }

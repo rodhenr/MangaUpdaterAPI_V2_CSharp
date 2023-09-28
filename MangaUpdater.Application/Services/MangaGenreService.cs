@@ -12,12 +12,7 @@ public class MangaGenreService : IMangaGenreService
     {
         _mangaGenreRepository = mangaGenreRepository;
     }
-
-    public void Add(MangaGenre mangaGenre)
-    {
-        _mangaGenreRepository.Create(mangaGenre);
-    }
-
+    
     public void BulkCreate(IEnumerable<MangaGenre> mangaGenres)
     {
         _mangaGenreRepository.BulkCreate(mangaGenres);
