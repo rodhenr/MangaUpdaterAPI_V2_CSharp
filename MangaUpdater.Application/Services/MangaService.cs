@@ -24,19 +24,6 @@ public class MangaService : IMangaService
         await _mangaRepository.SaveAsync();
     }
 
-    public async Task<IEnumerable<Manga>> Get()
-    {
-        return await _mangaRepository.GetAsync();
-    }
-
-    public async Task<Manga> GetById(int id)
-    {
-        var manga = await _mangaRepository.GetByIdOrderedDescAsync(id);
-        ValidationHelper.ValidateEntity(manga);
-
-        return manga;
-    }
-
     public async Task<bool> CheckIfMangaIsRegistered(int myAnimeListId)
     {
         var manga = await _mangaRepository.GetByMalIdAsync(myAnimeListId);

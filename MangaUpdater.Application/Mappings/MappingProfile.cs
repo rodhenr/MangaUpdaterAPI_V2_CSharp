@@ -10,6 +10,11 @@ public class MappingProfile : Profile
     public MappingProfile()
     {
         CreateMap<Manga, MangaDto>()
+            .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.MangaTitles!.First().Name))
+            .ForMember(dest => dest.AlternativeName,
+                opt => opt.MapFrom(src =>
+                    src.MangaTitles!.Count() > 1 ? src.MangaTitles!.ElementAt(1).Name : src.MangaTitles!.First().Name))
+            .ForMember(dest => dest.Author, opt => opt.MapFrom(src => src.MangaAuthors!.First().Name))
             .ForMember(dest => dest.IsUserFollowing,
                 opt => opt.MapFrom(src => src.UserMangas != null && src.UserMangas.Any()))
             .ForMember(dest => dest.Sources,
@@ -46,7 +51,7 @@ public class MappingProfile : Profile
                         };
                     });
             }));
-        
+
         CreateMap<UserMangaGroupByMangaDto, MangaUserLoggedDto>()
             .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Manga.Id))
             .ForMember(dest => dest.CoverUrl, opt => opt.MapFrom(src => src.Manga.CoverUrl))

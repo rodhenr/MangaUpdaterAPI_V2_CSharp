@@ -22,7 +22,7 @@ public class MangaAuthorServiceTests
         var mangaAuthors = new List<MangaAuthor>
         {
             new() { Id = 1, MangaId = 1, Name = "Author1" },
-            new() { Id = 2, MangaId = 1, Name = "Author1" },
+            new() { Id = 2, MangaId = 1, Name = "Author1" },  
             new() { Id = 3, MangaId = 2, Name = "Author1" }
         };
 

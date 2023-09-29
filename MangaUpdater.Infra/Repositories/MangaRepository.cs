@@ -67,11 +67,11 @@ public class MangaRepository : BaseRepository<Manga>, IMangaRepository
     public async Task<Manga?> GetByIdOrderedDescAsync(int id)
     {
         return await Get()
-            .Include(m => m.MangaGenres)
+            .Include(m => m.MangaGenres)!
             .ThenInclude(mg => mg.Genre)
-            .Include(m => m.MangaSources)
+            .Include(m => m.MangaSources)!
             .ThenInclude(ms => ms.Source)
-            .Include(m => m.Chapters.OrderByDescending(ch => ch.Date))
+            .Include(m => (m.Chapters ?? Array.Empty<Chapter>()).OrderByDescending(ch => ch.Date))
             .AsNoTracking()
             .SingleOrDefaultAsync(m => m.Id == id);
     }
@@ -84,7 +84,7 @@ public class MangaRepository : BaseRepository<Manga>, IMangaRepository
             .ThenInclude(m => m.Genre)
             .Include(m => m.MangaSources)
             .ThenInclude(ms => ms.Source)
-            .Include(m => m.Chapters.OrderByDescending(ch => ch.Date))
+            .Include(m => (m.Chapters ?? Array.Empty<Chapter>()).OrderByDescending(ch => ch.Date))
             .ThenInclude(ms => ms.Source)
             .AsNoTracking()
             .SingleOrDefaultAsync(m => m.Id == id);
