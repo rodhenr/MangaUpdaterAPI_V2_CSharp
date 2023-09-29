@@ -17,14 +17,4 @@ public class MangaTitleService : IMangaTitleService
     {
         _mangaTitleRepository.BulkCreate(mangaTitles);
     }
-
-    public async Task<IEnumerable<MangaTitle>> GetAllByMangaId(int mangaId)
-    {
-        return await _mangaTitleRepository.GetByMangaIdAsync(mangaId);
-    }
-
-    public async Task SaveChanges()
-    {
-        await _mangaTitleRepository.SaveAsync();
-    }
 }

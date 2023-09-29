@@ -1,27 +1,24 @@
-﻿using System.Globalization;
-using AutoMapper;
+﻿using AutoMapper;
 using MangaUpdater.Application.DTOs;
 using MangaUpdater.Application.Mappings;
 using MangaUpdater.Application.Services;
 using MangaUpdater.Domain.Entities;
 using MangaUpdater.Domain.Exceptions;
 using MangaUpdater.Domain.Interfaces;
-using Xunit.Abstractions;
 
 namespace MangaUpdater.Application.Tests;
 
 public class MangaServiceTests
 {
-    private readonly ITestOutputHelper _testOutputHelper;
     private readonly Mock<IMangaRepository> _repository;
     private readonly MangaService _service;
 
-    public MangaServiceTests(ITestOutputHelper testOutputHelper)
+    public MangaServiceTests()
     {
-        _testOutputHelper = testOutputHelper;
         var profile = new MappingProfile();
         var configuration = new MapperConfiguration(cfg => cfg.AddProfile(profile));
         var mapper = new Mapper(configuration);
+        
         _repository = new Mock<IMangaRepository>();
         _service = new MangaService(_repository.Object, mapper);
     }

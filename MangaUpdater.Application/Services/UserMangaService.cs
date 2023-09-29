@@ -18,16 +18,6 @@ public class UserMangaService : IUserMangaService
         _mapper = mapper;
     }
 
-    public async Task<IEnumerable<UserManga>> GetByMangaId(int mangaId)
-    {
-        return await _userMangaRepository.GetAllByMangaIdAsync(mangaId);
-    }
-
-    public async Task<IEnumerable<UserManga>> GetByMangaIdAndUserId(int mangaId, string userId)
-    {
-        return await _userMangaRepository.GetAllByMangaIdAndUserIdAsync(mangaId, userId);
-    }
-
     public async Task<IEnumerable<MangaUserDto>> GetMangasByUserId(string userId)
     {
         var mangas = await _userMangaRepository.GetAllByUserIdAsync(userId);
