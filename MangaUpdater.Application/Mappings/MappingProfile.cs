@@ -74,5 +74,10 @@ public class MappingProfile : Profile
         CreateMap<MyAnimeListApiResponse, Manga>()
             .ForMember(dest => dest.CoverUrl, opt => opt.MapFrom(src => src.Images.JPG.LargeImageUrl))
             .ForMember(dest => dest.MyAnimeListId, opt => opt.MapFrom(src => src.MalId));
+
+        CreateMap<Manga, MangaUserDto>()
+            .ForCtorParam("MangaId", opt => opt.MapFrom(src => src.Id))
+            .ForCtorParam("CoverUrl", opt => opt.MapFrom(src => src.CoverUrl))
+            .ForCtorParam("MangaName", opt => opt.MapFrom(src => src.MangaTitles!.First().Name));
     }
 }

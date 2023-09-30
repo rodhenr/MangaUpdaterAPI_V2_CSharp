@@ -16,7 +16,8 @@ public class RegisterMangaFromMyAnimeListService : IRegisterMangaFromMyAnimeList
     private readonly IMangaAuthorService _mangaAuthorService;
     private readonly IMangaTitleService _mangaTitleService;
 
-    public RegisterMangaFromMyAnimeListService(IMyAnimeListApiService malApiService, IMapper mapper, IMangaService mangaService,
+    public RegisterMangaFromMyAnimeListService(IMyAnimeListApiService malApiService, IMapper mapper,
+        IMangaService mangaService,
         IMangaGenreService mangaGenreService, IMangaAuthorService mangaAuthorService,
         IMangaTitleService mangaTitleService)
     {
@@ -37,22 +38,22 @@ public class RegisterMangaFromMyAnimeListService : IRegisterMangaFromMyAnimeList
         var manga = _mapper.Map<Manga>(apiData);
         await _mangaService.Add(manga); //TODO: Create a single transaction
 
-        await CreateAditionalMangaData(apiData!, manga);
+        await CreateAditionalMangaData(apiData!, manga.Id);
 
         return manga;
     }
 
-    private async Task CreateAditionalMangaData(MyAnimeListApiResponse apiData, Manga manga)
+    private async Task CreateAditionalMangaData(MyAnimeListApiResponse apiData, int mangaId)
     {
         var genreList =
             apiData!.Genres
-                .Select(g => new MangaGenre() { GenreId = (int)g.MalId, MangaId = manga.Id });
+                .Select(g => new MangaGenre() { GenreId = (int)g.MalId, MangaId = mangaId });
 
         var titleList = apiData.Titles
-            .Select(t => new MangaTitle() { MangaId = manga.Id, Name = t.Title });
+            .Select(t => new MangaTitle() { MangaId = mangaId, Name = t.Title });
 
         var authorList = apiData.Authors
-            .Select(a => new MangaAuthor() { MangaId = manga.Id, Name = a.Name });
+            .Select(a => new MangaAuthor() { MangaId = mangaId, Name = a.Name });
 
         _mangaGenreService.BulkCreate(genreList);
         _mangaAuthorService.BulkCreate(authorList);

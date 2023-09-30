@@ -18,7 +18,7 @@ public class MangaServiceTests
         var profile = new MappingProfile();
         var configuration = new MapperConfiguration(cfg => cfg.AddProfile(profile));
         var mapper = new Mapper(configuration);
-        
+
         _repository = new Mock<IMangaRepository>();
         _service = new MangaService(_repository.Object, mapper);
     }
@@ -166,9 +166,9 @@ public class MangaServiceTests
         var resultList = result.ToList();
 
         Assert.Equal(sampleMangas.Count, resultList.Count);
-        Assert.Equal(sampleMangas[0].Id, resultList[0].Id);
+        Assert.Equal(sampleMangas[0].Id, resultList[0].MangaId);
         Assert.Equal(sampleMangas[0].CoverUrl, resultList[0].CoverUrl);
-        Assert.Equal(sampleMangas[0].MangaTitles!.First().Name, resultList[0].Name);
+        Assert.Equal(sampleMangas[0].MangaTitles!.First().Name, resultList[0].MangaName);
     }
 
     [Fact]
@@ -179,7 +179,7 @@ public class MangaServiceTests
         const string orderBy = "Name";
         var sourceIdList = new List<int> { 1, 2 };
         var genreIdList = new List<int> { 3, 4 };
-        var sampleMangas = new List<Manga>();
+        var sampleMangas = Enumerable.Empty<Manga>();
         _repository
             .Setup(repo => repo.GetWithFiltersAsync(page, orderBy, sourceIdList, genreIdList))
             .ReturnsAsync(sampleMangas);
@@ -394,5 +394,74 @@ public class MangaServiceTests
 
         // Act and Assert
         await Assert.ThrowsAsync<ValidationException>(() => _service.GetByIdAndUserId(1, "1"));
+    }
+
+    [Fact]
+    public async Task GetByIdAndUserId_Should_Return_Empty_MangaDto()
+    {
+        // Arrange
+        var sampleManga = new Manga
+        {
+            CoverUrl = "url",
+            Synopsis = "synopsis",
+            Type = "Manga",
+            MyAnimeListId = 1,
+            Chapters = null,
+            MangaTitles = new List<MangaTitle>()
+            {
+                new() { Id = 1, MangaId = 1, Name = "Manga1", },
+                new() { Id = 1, MangaId = 1, Name = "AltManga1" }
+            },
+            MangaAuthors = new List<MangaAuthor>()
+            {
+                new() { Id = 1, MangaId = 1, Name = "Author1" }
+            },
+            UserMangas = Enumerable.Empty<UserManga>(),
+            MangaGenres = new List<MangaGenre>()
+            {
+                new() { Id = 1, MangaId = 1, GenreId = 1, Genre = new Genre() { Id = 1, Name = "Genre1" } }
+            },
+            MangaSources = new List<MangaSource>()
+            {
+                new()
+                {
+                    Id = 1, MangaId = 1, SourceId = 1, Url = "http",
+                    Source = new Source() { Id = 1, Name = "Source1", BaseUrl = "base" }
+                }
+            }
+        };
+        var expectedMangaDto = new MangaDto
+        {
+            CoverUrl = "url",
+            Name = "Manga1",
+            AlternativeName = "AltManga1",
+            Author = "Author1",
+            Synopsis = "synopsis",
+            Type = "Manga",
+            MyAnimeListId = 1,
+            IsUserFollowing = false,
+            Sources = new List<SourceDto>()
+            {
+                new(1, "Source1", "base")
+            },
+            Genres = new List<string>()
+            {
+                "Genre1"
+            },
+            Chapters = Enumerable.Empty<ChapterDto>()
+        };
+
+        _repository
+            .Setup(repo => repo.GetByIdAndUserIdOrderedDescAsync(1, "1"))
+            .ReturnsAsync(sampleManga);
+
+        // Act
+        var result = await _service.GetByIdAndUserId(1, "1");
+
+        // Assert
+        Assert.NotNull(result);
+        Assert.IsType<MangaDto>(result);
+        _repository.Verify(repo => repo.GetByIdAndUserIdOrderedDescAsync(1, "1"), Times.Once);
+        result.Should().BeEquivalentTo(expectedMangaDto);
     }
 }

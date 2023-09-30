@@ -30,7 +30,7 @@ public class UserMangaService : IUserMangaService
         var userManga = await _userMangaRepository.GetByMangaIdUserIdAndSourceIdAsync(mangaId, userId, sourceId);
         ValidationHelper.ValidateEntity(userManga);
 
-        return userManga;
+        return userManga!;
     }
 
     public async Task Update(UserManga userManga)

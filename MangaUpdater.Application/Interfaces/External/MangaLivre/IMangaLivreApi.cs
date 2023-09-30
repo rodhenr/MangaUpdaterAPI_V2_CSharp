@@ -1,5 +1,4 @@
-﻿using MangaUpdater.Application.Models;
-using MangaUpdater.Application.Models.External.MangaLivre;
+﻿using MangaUpdater.Application.Models.External.MangaLivre;
 
 namespace MangaUpdater.Application.Interfaces.External.MangaLivre;
 

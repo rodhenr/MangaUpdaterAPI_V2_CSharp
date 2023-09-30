@@ -39,6 +39,7 @@ public class MangaService : IMangaService
         var mangaUserDtoList = mangas
             .Select(manga => new MangaUserDto(manga.Id, manga.CoverUrl, manga.MangaTitles!.First().Name))
             .ToList();
+        
         return mangaUserDtoList;
     }
 
