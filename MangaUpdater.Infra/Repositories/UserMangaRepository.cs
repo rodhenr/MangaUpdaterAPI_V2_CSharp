@@ -24,6 +24,7 @@ public class UserMangaRepository : BaseRepository<UserManga>, IUserMangaReposito
         return await Get()
             .Where(um => um.UserId == userId)
             .Include(um => um.Manga)
+            .ThenInclude(m => m!.MangaTitles!.Where(mt => mt.MangaId == m.Id))
             .Include(um => um.Source)
             .GroupBy(um => um.MangaId)
             .Select(group => group.First())
@@ -46,10 +47,21 @@ public class UserMangaRepository : BaseRepository<UserManga>, IUserMangaReposito
             .SingleOrDefaultAsync(um => um.UserId == userId && um.MangaId == mangaId && um.SourceId == sourceId);
     }
 
-    public async Task DeleteAllByMangaIdAndUserIdAsync(int mangaId, string userId)
+    public async Task DeleteAsync(int mangaId, string userId)
     {
         var userMangas = await Get()
             .Where(um => um.MangaId == mangaId && um.UserId == userId)
+            .AsNoTracking()
+            .ToListAsync();
+
+        Context.UserMangas.RemoveRange(userMangas);
+        await Context.SaveChangesAsync();
+    }
+
+    public async Task DeleteAsync(int mangaId, int sourceId, string userId)
+    {
+        var userMangas = await Get()
+            .Where(um => um.MangaId == mangaId && um.SourceId == sourceId && um.UserId == userId)
             .AsNoTracking()
             .ToListAsync();
 

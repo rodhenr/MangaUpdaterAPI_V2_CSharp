@@ -64,16 +64,15 @@ public class UserController : BaseController
     }
 
     /// <summary>
-    /// A logged-in user starts following a manga.
+    /// A logged-in user starts following sources from a manga.
     /// </summary>
     /// <response code="200">Success.</response>
     /// <response code="400">Error.</response>
-    [SwaggerOperation("A logged-in user starts following a manga")]
+    [SwaggerOperation("A logged-in user starts following sources from a manga")]
     [HttpPost("mangas/{mangaId:int}")]
-    public async Task<ActionResult> FollowManga(int mangaId, IEnumerable<int> sourceIdList)
+    public async Task<ActionResult> FollowSourcesFromManga(int mangaId, IEnumerable<int> sourceIdList)
     {
-        var userSources = await _userSourceService.GetUserSourcesByMangaId(mangaId, UserId!);
-        await _userMangaChapterService.AddUserMangaBySourceIdList(mangaId, UserId!, sourceIdList, userSources);
+        await _userMangaChapterService.AddUserMangaBySourceIdList(mangaId, UserId!, sourceIdList);
 
         return Ok();
     }
@@ -92,19 +91,6 @@ public class UserController : BaseController
     }
 
     /// <summary>
-    /// A logged-in user starts following a source from a manga.
-    /// </summary>
-    /// <response code="200">Success.</response>
-    /// <response code="400">Error.</response>
-    [SwaggerOperation("A logged-in user starts following a source from a manga")]
-    [HttpPost("mangas/{mangaId:int}/sources/{sourceId:int}")]
-    public async Task<ActionResult> AddUserManga(int mangaId, int sourceId)
-    {
-        await _userMangaChapterService.AddUserManga(mangaId, UserId!, sourceId);
-        return Ok();
-    }
-
-    /// <summary>
     /// A logged-in user no longer follows a source from a manga.
     /// </summary>
     /// <response code="200">Success.</response>
@@ -113,7 +99,7 @@ public class UserController : BaseController
     [HttpDelete("mangas/{mangaId:int}/sources/{sourceId:int}")]
     public async Task<ActionResult> DeleteUserManga(int mangaId, int sourceId)
     {
-        await _userMangaChapterService.DeleteUserManga(mangaId, UserId!, sourceId);
+        await _userMangaChapterService.DeleteUserMangaByMangaIdAndSourceId(mangaId, sourceId, UserId!);
         return Ok();
     }
 

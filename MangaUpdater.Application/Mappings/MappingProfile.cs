@@ -55,6 +55,7 @@ public class MappingProfile : Profile
         CreateMap<UserMangaGroupByMangaDto, MangaUserLoggedDto>()
             .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Manga.Id))
             .ForMember(dest => dest.CoverUrl, opt => opt.MapFrom(src => src.Manga.CoverUrl))
+            .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.Manga!.MangaTitles!.First().Name))
             .ForMember(dest => dest.Chapters, opt => opt.MapFrom((src, _, _, _) =>
             {
                 return src.Manga.Chapters?

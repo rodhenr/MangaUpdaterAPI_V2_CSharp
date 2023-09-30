@@ -20,9 +20,9 @@ public class UserSourceService : IUserSourceService
         var mangaSources = await _mangaSourceRepository.GetAllByMangaIdAsync(mangaId);
         var userMangas = await _userMangaRepository.GetAllByMangaIdAndUserIdAsync(mangaId, userId);
 
-        var userSources = mangaSources.Select(a =>
-            new UserSourceDto(a.SourceId, a.Source!.Name, userMangas.Any(b => b.SourceId == a.SourceId))).ToList();
-
-        return userSources;
+        return mangaSources
+            .Select(ms =>
+                new UserSourceDto(ms.SourceId, ms.Source!.Name, userMangas.Any(b => b.SourceId == ms.SourceId)))
+            .ToList();
     }
 }

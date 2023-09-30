@@ -1,7 +1,6 @@
 ﻿using AutoMapper;
 using MangaUpdater.Application.DTOs;
 using MangaUpdater.Application.Interfaces;
-using MangaUpdater.Application.Models;
 using MangaUpdater.Domain.Entities;
 using MangaUpdater.Domain.Interfaces;
 
@@ -11,48 +10,35 @@ public class UserMangaChapterService : IUserMangaChapterService
 {
     private readonly IUserMangaRepository _userMangaRepository;
     private readonly IChapterRepository _chapterRepository;
+    private readonly IUserSourceService _userSourceService;
     private readonly IMapper _mapper;
 
     public UserMangaChapterService(IUserMangaRepository userMangaRepository,
         IChapterRepository chapterRepository,
-        IMapper mapper)
+        IUserSourceService userSourceService, IMapper mapper)
     {
         _userMangaRepository = userMangaRepository;
         _chapterRepository = chapterRepository;
+        _userSourceService = userSourceService;
         _mapper = mapper;
     }
 
-    public async Task AddUserManga(int mangaId, string userId, int sourceId)
+    public async Task AddUserMangaBySourceIdList(int mangaId, string userId, IEnumerable<int> sourceIdList)
     {
-        var userManga = await _userMangaRepository.GetAllByMangaIdAndUserIdAsync(mangaId, userId);
+        var userSources = await _userSourceService.GetUserSourcesByMangaId(mangaId, userId);
+        var sourceIdListToAdd = userSources?
+            .Where(us => !us.IsFollowing && sourceIdList.Contains(us.SourceId))
+            .Select(us => us.SourceId)
+            .ToList();
 
-        if (userManga.Any())
+        if (sourceIdListToAdd is null || !sourceIdListToAdd.Any()) return;
+
+        foreach (var sourceId in sourceIdListToAdd)
         {
-            var chapter = await _chapterRepository.GetSmallestChapterByMangaIdAsync(mangaId, sourceId);
-
-            _userMangaRepository.Create(new UserManga
-                { UserId = userId, MangaId = mangaId, SourceId = sourceId, CurrentChapterId = chapter?.Id });
-            await _userMangaRepository.SaveAsync();
+            await CreateUserManga(mangaId, sourceId, userId);
         }
-    }
 
-    public async Task AddUserMangaBySourceIdList(int mangaId, string userId, IEnumerable<int> sourceIdList,
-        IEnumerable<UserSourceDto>? userSources)
-    {
-        foreach (var sourceId in sourceIdList)
-        {
-            if (!userSources.Any(a => a.SourceId == sourceId && !a.IsFollowing)) continue;
-
-            var lastChapter = await _chapterRepository.GetSmallestChapterByMangaIdAsync(mangaId, sourceId);
-
-            if (lastChapter == null) continue;
-
-            var userManga = new UserManga
-                { UserId = userId, MangaId = mangaId, SourceId = sourceId, CurrentChapterId = lastChapter.Id };
-
-            _userMangaRepository.Create(userManga);
-            await _userMangaRepository.SaveAsync();
-        }
+        await _userMangaRepository.SaveAsync();
     }
 
     public async Task<IEnumerable<MangaUserLoggedDto>> GetUserMangasWithThreeLastChapterByUserId(string userId)
@@ -78,22 +64,24 @@ public class UserMangaChapterService : IUserMangaChapterService
             userManga.Manga.Chapters = chapters;
         }
 
-        return _mapper.Map<IEnumerable<MangaUserLoggedDto>>(userMangasByMangaId);
+        return _mapper.Map<List<MangaUserLoggedDto>>(userMangasByMangaId);
     }
 
     public async Task DeleteUserMangasByMangaId(int mangaId, string userId)
     {
-        await _userMangaRepository.DeleteAllByMangaIdAndUserIdAsync(mangaId, userId);
+        await _userMangaRepository.DeleteAsync(mangaId, userId);
     }
 
-    public async Task DeleteUserManga(int mangaId, string userId, int sourceId)
+    public async Task DeleteUserMangaByMangaIdAndSourceId(int mangaId, int sourceId, string userId)
     {
-        var userManga = await _userMangaRepository.GetByMangaIdUserIdAndSourceIdAsync(mangaId, userId, sourceId);
+        await _userMangaRepository.DeleteAsync(mangaId, sourceId, userId);
+    }
 
-        if (userManga != null)
-        {
-            _userMangaRepository.Remove(userManga);
-            await _userMangaRepository.SaveAsync();
-        }
+    private async Task CreateUserManga(int mangaId, int sourceId, string userId)
+    {
+        var lastChapter = await _chapterRepository.GetSmallestChapterByMangaIdAsync(mangaId, sourceId);
+
+        _userMangaRepository.Create(new UserManga
+            { UserId = userId, MangaId = mangaId, SourceId = sourceId, CurrentChapterId = lastChapter?.Id });
     }
 }
