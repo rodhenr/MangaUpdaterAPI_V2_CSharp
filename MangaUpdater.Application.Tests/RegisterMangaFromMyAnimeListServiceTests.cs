@@ -5,6 +5,7 @@ using MangaUpdater.Application.Mappings;
 using MangaUpdater.Application.Models.External.MyAnimeList;
 using MangaUpdater.Application.Services.External.MyAnimeList;
 using MangaUpdater.Domain.Entities;
+using MangaUpdater.Domain.Exceptions;
 
 namespace MangaUpdater.Application.Tests;
 
@@ -31,6 +32,17 @@ public class RegisterMangaFromMyAnimeListServiceTests
 
         _service = new RegisterMangaFromMyAnimeListService(_malApiService.Object, mapper, _mangaService.Object,
             _mangaGenreService.Object, _mangaAuthorService.Object, _mangaTitleService.Object);
+    }
+
+    [Fact]
+    public async Task RegisterMangaFromMyAnimeListById_ShouldThrowBadRequestException_IfMangaIsAlreadyRegistered()
+    {
+        // Arrange
+        const int malMangaId = 1;
+        _mangaService.Setup(s => s.CheckIfMangaIsRegistered(malMangaId)).ReturnsAsync(true);
+
+        // Act and Assert
+        await Assert.ThrowsAsync<BadRequestException>(() => _service.RegisterMangaFromMyAnimeListById(malMangaId));
     }
 
     [Fact]
@@ -70,6 +82,9 @@ public class RegisterMangaFromMyAnimeListServiceTests
         // Assert
         _mangaService.Verify(service => service.CheckIfMangaIsRegistered(malMangaId), Times.Once);
         _malApiService.Verify(service => service.GetMangaFromMyAnimeListByIdAsync(malMangaId), Times.Once);
+        _mangaGenreService.Verify(mock => mock.BulkCreate(It.IsAny<IEnumerable<MangaGenre>>()), Times.Once);
+        _mangaAuthorService.Verify(mock => mock.BulkCreate(It.IsAny<IEnumerable<MangaAuthor>>()), Times.Once);
+        _mangaTitleService.Verify(mock => mock.BulkCreate(It.IsAny<IEnumerable<MangaTitle>>()), Times.Once);
         _mangaService.Verify(service => service.Add(It.IsAny<Manga>()), Times.Once);
 
         result.Should().BeEquivalentTo(expectedManga);
