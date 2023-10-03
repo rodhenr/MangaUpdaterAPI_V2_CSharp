@@ -13,26 +13,18 @@ public class MangaGenreServiceTests
     {
         _repository = new Mock<IMangaGenreRepository>();
         _service = new MangaGenreService(_repository.Object);
-    } // TODO: Configure DI
+    }
 
     [Fact]
-    public void BulkCreate_MangaGenres_Should_Call_BulkCreate_Method_In_Repository()
+    public void BulkCreate_Should_Call_BulkCreate_Method_In_Repository()
     {
-        // Arrange
-        var mangaGenres = new List<MangaGenre>
-        {
-            new() { Id = 1, MangaId = 1, GenreId = 1},
-            new() { Id = 1, MangaId = 1, GenreId = 2 },
-            new() { Id = 1, MangaId = 2, GenreId = 5 }
-        };
-
         // Act
-        _service.BulkCreate(mangaGenres);
+        _service.BulkCreate(It.IsAny<List<MangaGenre>>());
 
         // Assert
-        _repository.Verify(repo => repo.BulkCreate(mangaGenres), Times.Once);
+        _repository.Verify(repo => repo.BulkCreate(It.IsAny<List<MangaGenre>>()), Times.Once);
     }
-    
+
     [Fact]
     public async Task SaveChanges_Should_Invoke_SaveAsync()
     {

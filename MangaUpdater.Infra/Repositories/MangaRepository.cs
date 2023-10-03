@@ -15,6 +15,9 @@ public class MangaRepository : BaseRepository<Manga>, IMangaRepository
     {
         return await Get()
             .Include(m => m.MangaSources)
+            .Include(m => m.MangaAuthors)
+            .Include(m => m.MangaGenres)
+            .Include(m => m.MangaTitles)
             .AsNoTracking()
             .SingleOrDefaultAsync(m => m.Id == id);
     }
@@ -71,7 +74,7 @@ public class MangaRepository : BaseRepository<Manga>, IMangaRepository
             .ThenInclude(mg => mg.Genre)
             .Include(m => m.MangaSources)!
             .ThenInclude(ms => ms.Source)
-            .Include(m => (m.Chapters ?? Array.Empty<Chapter>()).OrderByDescending(ch => ch.Date))
+            .Include(m => m.Chapters!.OrderByDescending(ch => ch.Date))
             .AsNoTracking()
             .SingleOrDefaultAsync(m => m.Id == id);
     }
@@ -80,12 +83,14 @@ public class MangaRepository : BaseRepository<Manga>, IMangaRepository
     {
         return await Get()
             .Include(m => m.UserMangas!.Where(um => um.UserId == userId))
-            .Include(m => m.MangaGenres ?? Array.Empty<MangaGenre>())
+            .Include(m => m.MangaGenres)!
             .ThenInclude(m => m.Genre)
-            .Include(m => m.MangaSources ?? Array.Empty<MangaSource>())
+            .Include(m => m.MangaSources)!
             .ThenInclude(ms => ms.Source)
-            .Include(m => (m.Chapters ?? Array.Empty<Chapter>()).OrderByDescending(ch => ch.Date))
+            .Include(m => m.Chapters!.OrderByDescending(ch => ch.Date))
             .ThenInclude(ms => ms.Source)
+            .Include(m => m.MangaAuthors)
+            .Include(m => m.MangaTitles)
             .AsNoTracking()
             .SingleOrDefaultAsync(m => m.Id == id);
     }

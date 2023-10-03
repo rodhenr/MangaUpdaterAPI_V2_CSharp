@@ -9,5 +9,5 @@ public interface IChapterRepository : IBaseRepository<Chapter>
     Task<Chapter?> GetSmallestChapterByMangaIdAsync(int mangaId, int sourceId);
     Task<Chapter?> GetLastChapterByMangaIdAndSourceIdAsync(int mangaId, int sourceId);
     Task<IEnumerable<Chapter>> GetThreeLastByMangaIdAndSourceListAsync(int mangaId, List<int> sourceList);
-    Task<IEnumerable<float>> GetChaptersNumberByMangaIdAndSourceIdAsync(int mangaId, int sourceId);
+    Task<IEnumerable<string>> GetChaptersNumberByMangaIdAndSourceIdAsync(int mangaId, int sourceId);
 }

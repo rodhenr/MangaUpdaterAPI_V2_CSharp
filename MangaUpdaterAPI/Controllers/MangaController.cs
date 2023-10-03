@@ -128,3 +128,6 @@ public class MangaController : BaseController
         return Ok();
     }
 }
+
+// Comparar strings para saber qual o último capítulo
+// Mudar ordenação de consultas no repositório

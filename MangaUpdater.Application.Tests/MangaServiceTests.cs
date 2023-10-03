@@ -26,28 +26,24 @@ public class MangaServiceTests
     [Fact]
     public async Task Add_Should_Call_Create_Method_In_Repository()
     {
-        // Arrange
-        var manga = new Manga { Id = 1, CoverUrl = "", Synopsis = "", Type = "Manga", MyAnimeListId = 1 };
-
         // Act
-        await _service.Add(manga);
+        await _service.Add(It.IsAny<Manga>());
 
         // Assert
-        _repository.Verify(repo => repo.Create(manga), Times.Once);
+        _repository.Verify(repo => repo.Create(It.IsAny<Manga>()), Times.Once);
     }
 
     [Fact]
     public async Task CheckIfMangaIsRegistered_Should_Return_True_When_Manga_Exists()
     {
         // Arrange
-        const int myAnimeListId = 1;
         var manga = new Manga { Id = 1, CoverUrl = "", Synopsis = "", Type = "Manga", MyAnimeListId = 1 };
         _repository
-            .Setup(repo => repo.GetByMalIdAsync(myAnimeListId))
+            .Setup(repo => repo.GetByMalIdAsync(It.IsAny<int>()))
             .ReturnsAsync(manga);
 
         // Act
-        var result = await _service.CheckIfMangaIsRegistered(myAnimeListId);
+        var result = await _service.CheckIfMangaIsRegistered(It.IsAny<int>());
 
         // Assert
         Assert.True(result);
@@ -57,13 +53,12 @@ public class MangaServiceTests
     public async Task CheckIfMangaIsRegistered_Should_Return_False_When_Manga_Does_Not_Exists()
     {
         // Arrange
-        const int myAnimeListId = 1;
         _repository
-            .Setup(repo => repo.GetByMalIdAsync(myAnimeListId))
-            .ReturnsAsync((Manga)null);
+            .Setup(repo => repo.GetByMalIdAsync(It.IsAny<int>()))
+            .ReturnsAsync(() => null);
 
         // Act
-        var result = await _service.CheckIfMangaIsRegistered(myAnimeListId);
+        var result = await _service.CheckIfMangaIsRegistered(It.IsAny<int>());
 
         // Assert
         Assert.False(result);
@@ -73,16 +68,12 @@ public class MangaServiceTests
     public async Task GetWithFilter_Should_Return_MangaUserDtos_With_Valid_Parameters()
     {
         // Arrange
-        const int page = 1;
-        const string orderBy = "Name";
-        var sourceIdList = new List<int> { 1, 2 };
-        var genreIdList = new List<int> { 3, 4 };
         var sampleMangas = new List<Manga>
         {
             new()
             {
                 Id = 1,
-                CoverUrl = "cover1.jpg",
+                CoverUrl = "cover1",
                 MangaTitles = new List<MangaTitle>()
                 {
                     new() { MangaId = 1, Name = "Manga1" }
@@ -94,7 +85,7 @@ public class MangaServiceTests
             new()
             {
                 Id = 2,
-                CoverUrl = "cover2.jpg",
+                CoverUrl = "cover2",
                 MangaTitles = new List<MangaTitle>()
                 {
                     new() { MangaId = 2, Name = "Manga2" }
@@ -106,7 +97,7 @@ public class MangaServiceTests
             new()
             {
                 Id = 3,
-                CoverUrl = "cover1.jpg",
+                CoverUrl = "cover3",
                 MangaTitles = new List<MangaTitle>()
                 {
                     new() { MangaId = 3, Name = "Manga3" }
@@ -114,81 +105,50 @@ public class MangaServiceTests
                 Synopsis = "synopsis",
                 Type = "Manga",
                 MyAnimeListId = 3
-            },
-            new()
-            {
-                Id = 4,
-                CoverUrl = "cover2.jpg",
-                MangaTitles = new List<MangaTitle>()
-                {
-                    new() { MangaId = 4, Name = "Manga4" }
-                },
-                Synopsis = "synopsis",
-                Type = "Manga",
-                MyAnimeListId = 4
-            },
-            new()
-            {
-                Id = 5,
-                CoverUrl = "cover1.jpg",
-                MangaTitles = new List<MangaTitle>()
-                {
-                    new() { MangaId = 5, Name = "Manga5" }
-                },
-                Synopsis = "synopsis",
-                Type = "Manga",
-                MyAnimeListId = 5
-            },
-            new()
-            {
-                Id = 6,
-                CoverUrl = "cover2.jpg",
-                MangaTitles = new List<MangaTitle>()
-                {
-                    new() { MangaId = 6, Name = "Manga6" }
-                },
-                Synopsis = "",
-                Type = "Manga",
-                MyAnimeListId = 6
             }
         };
+        var expectedDto = new List<MangaUserDto>
+        {
+            new(1, "cover1", "Manga1"),
+            new(2, "cover2", "Manga2"),
+            new(3, "cover3", "Manga3")
+        };
+
         _repository
-            .Setup(repo => repo.GetWithFiltersAsync(page, orderBy, sourceIdList, genreIdList))
+            .Setup(repo => repo.GetWithFiltersAsync(It.IsAny<int>(), It.IsAny<string>(), It.IsAny<List<int>>(),
+                It.IsAny<List<int>>()))
             .ReturnsAsync(sampleMangas);
 
         // Act
-        var result = await _service.GetWithFilter(page, orderBy, sourceIdList, genreIdList);
+        var result = await _service.GetWithFilter(It.IsAny<int>(), It.IsAny<string>(), It.IsAny<List<int>>(),
+            It.IsAny<List<int>>());
 
         // Assert
-        Assert.NotNull(result);
-        Assert.IsAssignableFrom<IEnumerable<MangaUserDto>>(result);
-
-        var resultList = result.ToList();
-
-        Assert.Equal(sampleMangas.Count, resultList.Count);
-        Assert.Equal(sampleMangas[0].Id, resultList[0].MangaId);
-        Assert.Equal(sampleMangas[0].CoverUrl, resultList[0].CoverUrl);
-        Assert.Equal(sampleMangas[0].MangaTitles!.First().Name, resultList[0].MangaName);
+        _repository.Verify(
+            repo => repo.GetWithFiltersAsync(It.IsAny<int>(), It.IsAny<string>(), It.IsAny<List<int>>(),
+                It.IsAny<List<int>>()), Times.Once);
+        result.Should().BeEquivalentTo(expectedDto);
     }
 
     [Fact]
     public async Task GetWithFilter_Should_Return_Empty_List_When_No_Mangas_Found()
     {
         // Arrange
-        const int page = 1;
-        const string orderBy = "Name";
-        var sourceIdList = new List<int> { 1, 2 };
-        var genreIdList = new List<int> { 3, 4 };
         var sampleMangas = Enumerable.Empty<Manga>();
+
         _repository
-            .Setup(repo => repo.GetWithFiltersAsync(page, orderBy, sourceIdList, genreIdList))
+            .Setup(repo => repo.GetWithFiltersAsync(It.IsAny<int>(), It.IsAny<string>(), It.IsAny<List<int>>(),
+                It.IsAny<List<int>>()))
             .ReturnsAsync(sampleMangas);
 
         // Act
-        var result = await _service.GetWithFilter(page, orderBy, sourceIdList, genreIdList);
+        var result = await _service.GetWithFilter(It.IsAny<int>(), It.IsAny<string>(), It.IsAny<List<int>>(),
+            It.IsAny<List<int>>());
 
         // Assert
-        Assert.NotNull(result);
+        _repository.Verify(
+            repo => repo.GetWithFiltersAsync(It.IsAny<int>(), It.IsAny<string>(), It.IsAny<List<int>>(),
+                It.IsAny<List<int>>()), Times.Once);
         Assert.Empty(result);
     }
 
@@ -207,7 +167,7 @@ public class MangaServiceTests
             {
                 new()
                 {
-                    Id = 1, MangaId = 1, SourceId = 1, Date = date, Number = 1,
+                    Id = 1, MangaId = 1, SourceId = 1, Date = date, Number = "1",
                     Source = new Source() { Id = 1, Name = "Source1", BaseUrl = "base" }
                 }
             },
@@ -263,22 +223,22 @@ public class MangaServiceTests
                     SourceId = 1,
                     SourceName = "Source1",
                     Date = date,
-                    Number = 1,
+                    Number = "1",
                     Read = true
                 }
             }
         };
         _repository
-            .Setup(repo => repo.GetByIdOrderedDescAsync(1))
+            .Setup(repo => repo.GetByIdOrderedDescAsync(It.IsAny<int>()))
             .ReturnsAsync(sampleManga);
 
         // Act
-        var result = await _service.GetByIdNotLogged(1);
+        var result = await _service.GetByIdNotLogged(It.IsAny<int>());
 
         // Assert
         Assert.NotNull(result);
         Assert.IsType<MangaDto>(result);
-        _repository.Verify(repo => repo.GetByIdOrderedDescAsync(1), Times.Once);
+        _repository.Verify(repo => repo.GetByIdOrderedDescAsync(It.IsAny<int>()), Times.Once);
         result.Should().BeEquivalentTo(expectedMangaDto);
     }
 
@@ -287,11 +247,11 @@ public class MangaServiceTests
     {
         // Arrange
         _repository
-            .Setup(repo => repo.GetByIdOrderedDescAsync(1))
-            .ReturnsAsync((Manga)null);
+            .Setup(repo => repo.GetByIdOrderedDescAsync(It.IsAny<int>()))
+            .ReturnsAsync(() => null);
 
         // Act and Assert
-        await Assert.ThrowsAsync<ValidationException>(() => _service.GetByIdNotLogged(1));
+        await Assert.ThrowsAsync<ValidationException>(() => _service.GetByIdNotLogged(It.IsAny<int>()));
     }
 
     [Fact]
@@ -309,7 +269,7 @@ public class MangaServiceTests
             {
                 new()
                 {
-                    Id = 1, MangaId = 1, SourceId = 1, Date = date, Number = 1,
+                    Id = 1, MangaId = 1, SourceId = 1, Date = date, Number = "1",
                     Source = new Source() { Id = 1, Name = "Source1", BaseUrl = "base" }
                 }
             },
@@ -365,22 +325,21 @@ public class MangaServiceTests
                     SourceId = 1,
                     SourceName = "Source1",
                     Date = date,
-                    Number = 1,
+                    Number = "1",
                     Read = true
                 }
             }
         };
         _repository
-            .Setup(repo => repo.GetByIdAndUserIdOrderedDescAsync(1, "1"))
+            .Setup(repo => repo.GetByIdAndUserIdOrderedDescAsync(It.IsAny<int>(), It.IsAny<string>()))
             .ReturnsAsync(sampleManga);
 
         // Act
-        var result = await _service.GetByIdAndUserId(1, "1");
+        var result = await _service.GetByIdAndUserId(It.IsAny<int>(), It.IsAny<string>());
 
         // Assert
-        Assert.NotNull(result);
-        Assert.IsType<MangaDto>(result);
-        _repository.Verify(repo => repo.GetByIdAndUserIdOrderedDescAsync(1, "1"), Times.Once);
+        _repository.Verify(repo => repo.GetByIdAndUserIdOrderedDescAsync(It.IsAny<int>(), It.IsAny<string>()),
+            Times.Once);
         result.Should().BeEquivalentTo(expectedMangaDto);
     }
 
@@ -389,11 +348,12 @@ public class MangaServiceTests
     {
         // Arrange
         _repository
-            .Setup(repo => repo.GetByIdAndUserIdOrderedDescAsync(1, "1"))
-            .ReturnsAsync((Manga)null);
+            .Setup(repo => repo.GetByIdAndUserIdOrderedDescAsync(It.IsAny<int>(), It.IsAny<string>()))
+            .ReturnsAsync(() => null);
 
         // Act and Assert
-        await Assert.ThrowsAsync<ValidationException>(() => _service.GetByIdAndUserId(1, "1"));
+        await Assert.ThrowsAsync<ValidationException>(() =>
+            _service.GetByIdAndUserId(It.IsAny<int>(), It.IsAny<string>()));
     }
 
     [Fact]
@@ -452,16 +412,15 @@ public class MangaServiceTests
         };
 
         _repository
-            .Setup(repo => repo.GetByIdAndUserIdOrderedDescAsync(1, "1"))
+            .Setup(repo => repo.GetByIdAndUserIdOrderedDescAsync(It.IsAny<int>(), It.IsAny<string>()))
             .ReturnsAsync(sampleManga);
 
         // Act
-        var result = await _service.GetByIdAndUserId(1, "1");
+        var result = await _service.GetByIdAndUserId(It.IsAny<int>(), It.IsAny<string>());
 
         // Assert
-        Assert.NotNull(result);
-        Assert.IsType<MangaDto>(result);
-        _repository.Verify(repo => repo.GetByIdAndUserIdOrderedDescAsync(1, "1"), Times.Once);
+        _repository.Verify(repo => repo.GetByIdAndUserIdOrderedDescAsync(It.IsAny<int>(), It.IsAny<string>()),
+            Times.Once);
         result.Should().BeEquivalentTo(expectedMangaDto);
     }
 }

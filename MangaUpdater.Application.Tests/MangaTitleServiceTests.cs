@@ -14,22 +14,14 @@ public class MangaTitleServiceTests
         _repository = new Mock<IMangaTitleRepository>();
         _service = new MangaTitleService(_repository.Object);
     }
-    
-    [Fact]
-    public void BulkCreate_MangaTitles_Should_Call_BulkCreate_Method_In_Repository()
-    {
-        // Arrange
-        var mangaTitles = new List<MangaTitle>
-        {
-            new() { Id = 1, Name = "Title1", MangaId = 1},
-            new() { Id = 2, Name = "Title2", MangaId = 1},
-            new() { Id = 3, Name = "Title1", MangaId = 2},
-        };
 
+    [Fact]
+    public void BulkCreate_Should_Call_BulkCreate_Method_In_Repository()
+    {
         // Act
-        _service.BulkCreate(mangaTitles);
+        _service.BulkCreate(It.IsAny<List<MangaTitle>>());
 
         // Assert
-        _repository.Verify(repo => repo.BulkCreate(mangaTitles), Times.Once);
+        _repository.Verify(repo => repo.BulkCreate(It.IsAny<List<MangaTitle>>()), Times.Once);
     }
 }

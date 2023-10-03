@@ -3,10 +3,6 @@ using Swashbuckle.AspNetCore.Annotations;
 using MangaUpdater.Application.Interfaces;
 using MangaUpdater.Domain.Entities;
 using MangaUpdater.API.Controllers.Shared;
-using MangaUpdater.Application.Models;
-using MangaUpdater.Application.Models.External.MangaLivre;
-using MangaUpdater.Infra.Data.ExternalServices;
-using MangaUpdater.Infra.Data.ExternalServices.MangaLivre;
 using Microsoft.AspNetCore.Authorization;
 
 namespace MangaUpdater.API.Controllers;
@@ -14,12 +10,10 @@ namespace MangaUpdater.API.Controllers;
 public class SourceController : BaseController
 {
     private readonly ISourceService _sourceService;
-    private readonly MangaLivreApiService _mangaLivreApiServiceService;
 
-    public SourceController(ISourceService sourceService, MangaLivreApiService mangaLivreApiServiceService)
+    public SourceController(ISourceService sourceService)
     {
         _sourceService = sourceService;
-        _mangaLivreApiServiceService = mangaLivreApiServiceService;
     }
 
     /// <summary>

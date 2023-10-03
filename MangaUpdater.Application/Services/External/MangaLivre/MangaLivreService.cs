@@ -1,4 +1,5 @@
-﻿using MangaUpdater.Application.Interfaces;
+﻿using System.Globalization;
+using MangaUpdater.Application.Interfaces;
 using MangaUpdater.Application.Interfaces.External.MangaLivre;
 using MangaUpdater.Domain.Entities;
 
@@ -33,7 +34,7 @@ public class MangaLivreService : IMangaLivreService
             {
                 MangaId = mangaId,
                 SourceId = sourceId,
-                Number = float.Parse(ch.ChapterNumber),
+                Number = ch.ChapterNumber,
                 Date = DateTime.Parse(ch.ChapterDate)
             })
             .ToList();

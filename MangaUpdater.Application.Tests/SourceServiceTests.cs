@@ -25,7 +25,9 @@ public class SourceServiceTests
             new() { Id = 2, Name = "Source2", BaseUrl = "https" },
         };
 
-        _repository.Setup(repo => repo.GetAsync()).ReturnsAsync(sampleSources);
+        _repository
+            .Setup(repo => repo.GetAsync())
+            .ReturnsAsync(sampleSources);
 
         // Act
         var result = await _service.Get();
@@ -41,7 +43,8 @@ public class SourceServiceTests
         // Arrange
         var expectedSource = new Source { Id = 1, Name = "Source1", BaseUrl = "http" };
 
-        _repository.Setup(repo => repo.GetByIdAsync(1))
+        _repository
+            .Setup(repo => repo.GetByIdAsync(1))
             .ReturnsAsync(expectedSource);
 
         // Act

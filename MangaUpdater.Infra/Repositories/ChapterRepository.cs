@@ -43,8 +43,7 @@ public class ChapterRepository : BaseRepository<Chapter>, IChapterRepository
     {
         return await Get()
             .Where(ch => ch.MangaId == mangaId && ch.SourceId == sourceId)
-            .OrderBy(ch => ch.Number)
-            .OrderDescending()
+            .OrderByDescending(ch => ch.Number)
             .AsNoTracking()
             .FirstOrDefaultAsync();
     }
@@ -69,7 +68,7 @@ public class ChapterRepository : BaseRepository<Chapter>, IChapterRepository
             .FirstOrDefaultAsync();
     }
 
-    public async Task<IEnumerable<float>> GetChaptersNumberByMangaIdAndSourceIdAsync(int mangaId, int sourceId)
+    public async Task<IEnumerable<string>> GetChaptersNumberByMangaIdAndSourceIdAsync(int mangaId, int sourceId)
     {
         return await Get()
             .Where(ch => ch.MangaId == mangaId && ch.SourceId == sourceId)

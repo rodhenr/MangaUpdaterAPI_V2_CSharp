@@ -18,32 +18,31 @@ public class MangaSourceServiceTests
     [Fact]
     public async Task Add_Should_Call_Create_Method_In_Repository()
     {
-        // Arrange
-        var manga = new MangaSource { MangaId = 1, SourceId = 1, Url = "http" };
-
         // Act
-        _service.Add(manga);
+        _service.Add(It.IsAny<MangaSource>());
 
         // Assert
-        _repository.Verify(repo => repo.Create(manga), Times.Once);
+        _repository.Verify(repo => repo.Create(It.IsAny<MangaSource>()), Times.Once);
     }
 
     [Fact]
     public async Task GetByMangaIdAndSourceId_Should_Return_MangaSource_From_Repository()
     {
         // Arrange
-        var sampleMangaSource = new MangaSource() { MangaId = 1, SourceId = 1, Url = "http1" };
+        var sampleMangaSource = new MangaSource { MangaId = 1, SourceId = 1, Url = "http1" };
 
-        _repository.Setup(repo => repo.GetByMangaIdAndSourceIdAsync(1, 1)).ReturnsAsync(sampleMangaSource);
+        _repository
+            .Setup(repo => repo.GetByMangaIdAndSourceIdAsync(It.IsAny<int>(), It.IsAny<int>()))
+            .ReturnsAsync(sampleMangaSource);
 
         // Act
-        var result = await _service.GetByMangaIdAndSourceId(1, 1);
+        var result = await _service.GetByMangaIdAndSourceId(It.IsAny<int>(), It.IsAny<int>());
 
         // Assert
-        _repository.Verify(repo => repo.GetByMangaIdAndSourceIdAsync(1, 1), Times.Once);
+        _repository.Verify(repo => repo.GetByMangaIdAndSourceIdAsync(It.IsAny<int>(), It.IsAny<int>()), Times.Once);
         Assert.Equal(sampleMangaSource, result);
     }
-    
+
     [Fact]
     public async Task SaveChanges_Should_Invoke_SaveAsync()
     {

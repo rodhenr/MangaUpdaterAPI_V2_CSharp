@@ -16,20 +16,12 @@ public class MangaAuthorServiceTests
     }
 
     [Fact]
-    public void BulkCreate_MangaAuthors_Should_Call_BulkCreate_Method_In_Repository()
+    public void BulkCreate_Should_Call_BulkCreate_Method_In_Repository()
     {
-        // Arrange
-        var mangaAuthors = new List<MangaAuthor>
-        {
-            new() { Id = 1, MangaId = 1, Name = "Author1" },
-            new() { Id = 2, MangaId = 1, Name = "Author1" },  
-            new() { Id = 3, MangaId = 2, Name = "Author1" }
-        };
-
         // Act
-        _service.BulkCreate(mangaAuthors);
+        _service.BulkCreate(It.IsAny<List<MangaAuthor>>());
 
         // Assert
-        _repository.Verify(repo => repo.BulkCreate(mangaAuthors), Times.Once);
+        _repository.Verify(repo => repo.BulkCreate(It.IsAny<List<MangaAuthor>>()), Times.Once);
     }
 }

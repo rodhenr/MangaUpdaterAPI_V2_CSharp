@@ -7,7 +7,7 @@ public sealed class Chapter : Entity
     public required int MangaId { get; set; }
     public required int SourceId { get; set; }
     public required DateTime Date { get; set; }
-    public required float Number { get; set; }
+    public required string Number { get; set; }
 
     [JsonIgnore] public Manga? Manga { get; set; }
 

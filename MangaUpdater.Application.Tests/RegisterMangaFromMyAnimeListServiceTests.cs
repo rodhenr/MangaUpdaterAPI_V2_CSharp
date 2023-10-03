@@ -35,21 +35,21 @@ public class RegisterMangaFromMyAnimeListServiceTests
     }
 
     [Fact]
-    public async Task RegisterMangaFromMyAnimeListById_ShouldThrowBadRequestException_IfMangaIsAlreadyRegistered()
+    public async Task RegisterMangaFromMyAnimeListById_Should_Throw_BadRequestException_If_Manga_Is_Already_Registered()
     {
         // Arrange
-        const int malMangaId = 1;
-        _mangaService.Setup(s => s.CheckIfMangaIsRegistered(malMangaId)).ReturnsAsync(true);
+        _mangaService
+            .Setup(s => s.CheckIfMangaIsRegistered(It.IsAny<int>()))
+            .ReturnsAsync(true);
 
         // Act and Assert
-        await Assert.ThrowsAsync<BadRequestException>(() => _service.RegisterMangaFromMyAnimeListById(malMangaId));
+        await Assert.ThrowsAsync<BadRequestException>(() => _service.RegisterMangaFromMyAnimeListById(It.IsAny<int>()));
     }
 
     [Fact]
-    public async Task RegisterMangaFromMyAnimeListById_ShouldRegisterManga()
+    public async Task RegisterMangaFromMyAnimeListById_Should_Register_Manga()
     {
         // Arrange
-        const int malMangaId = 1;
         var sampleMyAnimeListApiResponse = new MyAnimeListApiResponse
         {
             MalId = 1,
@@ -72,16 +72,19 @@ public class RegisterMangaFromMyAnimeListServiceTests
         var expectedManga = new Manga
             { CoverUrl = "imageUrl", Synopsis = "abc", Type = "Manga", MyAnimeListId = 1 };
 
-        _mangaService.Setup(service => service.CheckIfMangaIsRegistered(malMangaId)).ReturnsAsync(false);
-        _malApiService.Setup(service => service.GetMangaFromMyAnimeListByIdAsync(malMangaId))
+        _mangaService
+            .Setup(service => service.CheckIfMangaIsRegistered(It.IsAny<int>()))
+            .ReturnsAsync(false);
+        _malApiService
+            .Setup(service => service.GetMangaFromMyAnimeListByIdAsync(It.IsAny<int>()))
             .ReturnsAsync(sampleMyAnimeListApiResponse);
 
         // Act
         var result = await _service.RegisterMangaFromMyAnimeListById(1);
 
         // Assert
-        _mangaService.Verify(service => service.CheckIfMangaIsRegistered(malMangaId), Times.Once);
-        _malApiService.Verify(service => service.GetMangaFromMyAnimeListByIdAsync(malMangaId), Times.Once);
+        _mangaService.Verify(service => service.CheckIfMangaIsRegistered(It.IsAny<int>()), Times.Once);
+        _malApiService.Verify(service => service.GetMangaFromMyAnimeListByIdAsync(It.IsAny<int>()), Times.Once);
         _mangaGenreService.Verify(mock => mock.BulkCreate(It.IsAny<IEnumerable<MangaGenre>>()), Times.Once);
         _mangaAuthorService.Verify(mock => mock.BulkCreate(It.IsAny<IEnumerable<MangaAuthor>>()), Times.Once);
         _mangaTitleService.Verify(mock => mock.BulkCreate(It.IsAny<IEnumerable<MangaTitle>>()), Times.Once);

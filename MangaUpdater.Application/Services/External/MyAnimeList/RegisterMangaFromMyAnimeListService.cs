@@ -38,9 +38,13 @@ public class RegisterMangaFromMyAnimeListService : IRegisterMangaFromMyAnimeList
         var manga = _mapper.Map<Manga>(apiData);
         await _mangaService.Add(manga); //TODO: Create a single transaction
 
-        _mangaGenreService.BulkCreate(apiData!.Genres.Select(g => new MangaGenre { GenreId = (int)g.MalId, MangaId = manga.Id }));
-        _mangaAuthorService.BulkCreate(apiData.Authors.Select(a => new MangaAuthor { MangaId = manga.Id, Name = a.Name }));
-        _mangaTitleService.BulkCreate(apiData.Titles.Select(t => new MangaTitle { MangaId = manga.Id, Name = t.Title }));
+        var genreList = apiData!.Genres.Select(g => new MangaGenre { GenreId = (int)g.MalId, MangaId = manga.Id });
+        var authorList = apiData.Authors.Select(a => new MangaAuthor { MangaId = manga.Id, Name = a.Name });
+        var titleList = apiData.Titles.Select(t => new MangaTitle { MangaId = manga.Id, Name = t.Title });
+
+        _mangaGenreService.BulkCreate(genreList);
+        _mangaAuthorService.BulkCreate(authorList);
+        _mangaTitleService.BulkCreate(titleList);
 
         await _mangaGenreService.SaveChanges();
 
