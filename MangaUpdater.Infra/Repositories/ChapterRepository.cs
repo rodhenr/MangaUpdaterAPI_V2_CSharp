@@ -15,7 +15,7 @@ public class ChapterRepository : BaseRepository<Chapter>, IChapterRepository
     {
         Context.Chapters.AddRange(chapters);
     }
-    
+
     public override async Task<Chapter?> GetByIdAsync(int id)
     {
         return await Get()
@@ -27,14 +27,17 @@ public class ChapterRepository : BaseRepository<Chapter>, IChapterRepository
     public async Task<IEnumerable<Chapter>> GetByMangaIdAsync(int mangaId, int max = 0)
     {
         if (max == 0)
+        {
             return await Get()
-                .Where(ch => ch.Id == mangaId)
+                .Where(ch => ch.MangaId == mangaId)
                 .AsNoTracking()
                 .ToListAsync();
+        }
 
         return await Get()
-            .Where(ch => ch.Id == mangaId)
-            .TakeLast(max)
+            .Where(ch => ch.MangaId == mangaId)
+            .OrderByDescending(ch => ch.Id)
+            .Take(max)
             .AsNoTracking()
             .ToListAsync();
     }
