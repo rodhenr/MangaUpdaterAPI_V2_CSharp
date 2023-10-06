@@ -71,80 +71,6 @@ public class ChapterRepositoryTests
     }
 
     [Fact]
-    public async Task GetByMangaIdAsync_Should_Return_Chapter_List()
-    {
-        // Arrange
-        var date = DateTime.Now;
-        var sampleChapter = new List<Chapter>
-        {
-            new() { Id = 1, MangaId = 1, SourceId = 1, Date = date, Number = "1" },
-            new() { Id = 2, MangaId = 1, SourceId = 1, Date = date, Number = "2" },
-            new() { Id = 3, MangaId = 1, SourceId = 1, Date = date, Number = "3" },
-            new() { Id = 4, MangaId = 2, SourceId = 1, Date = date, Number = "1" },
-            new() { Id = 5, MangaId = 1, SourceId = 1, Date = date, Number = "4" },
-            new() { Id = 6, MangaId = 3, SourceId = 1, Date = date, Number = "1" },
-            new() { Id = 7, MangaId = 2, SourceId = 1, Date = date, Number = "2" },
-        };
-
-        _context.Chapters.AddRange(sampleChapter);
-        await _context.SaveChangesAsync();
-
-        // Act
-        var result = await _repository.GetByMangaIdAsync(1);
-
-        // Assert
-        result.Should().HaveCount(4);
-    }
-    
-    [Fact]
-    public async Task GetByMangaIdAsync_Should_Return_Chapter_List_With_Maximum()
-    {
-        // Arrange
-        var date = DateTime.Now;
-        var sampleChapter = new List<Chapter>
-        {
-            new() { Id = 1, MangaId = 1, SourceId = 1, Date = date, Number = "1" },
-            new() { Id = 2, MangaId = 1, SourceId = 1, Date = date, Number = "2" },
-            new() { Id = 3, MangaId = 1, SourceId = 1, Date = date, Number = "3" },
-            new() { Id = 4, MangaId = 2, SourceId = 1, Date = date, Number = "1" },
-            new() { Id = 5, MangaId = 1, SourceId = 1, Date = date, Number = "4" },
-            new() { Id = 6, MangaId = 3, SourceId = 1, Date = date, Number = "1" },
-            new() { Id = 7, MangaId = 2, SourceId = 1, Date = date, Number = "2" },
-        };
-
-        _context.Chapters.AddRange(sampleChapter);
-        await _context.SaveChangesAsync();
-
-        // Act
-        var result = await _repository.GetByMangaIdAsync(1, 2);
-
-        // Assert
-        result.Should().HaveCount(2);
-    }
-
-    [Fact]
-    public async Task GetByMangaIdAsync_Should_Return_Empty_List_Of_Chapters()
-    {
-        // Arrange
-        var date = DateTime.Now;
-        var sampleChapter = new List<Chapter>
-        {
-            new() { Id = 1, MangaId = 1, SourceId = 1, Date = date, Number = "1" },
-            new() { Id = 2, MangaId = 2, SourceId = 1, Date = date, Number = "1" },
-            new() { Id = 3, MangaId = 3, SourceId = 1, Date = date, Number = "1" },
-        };
-
-        _context.Chapters.AddRange(sampleChapter);
-        await _context.SaveChangesAsync();
-
-        // Act
-        var result = await _repository.GetByMangaIdAsync(4);
-
-        // Assert
-        result.Should().BeEmpty();
-    }
-
-    [Fact]
     public async Task GetLastChapterByMangaIdAndSourceIdAsync_Should_Return_Chapter()
     {
         // Arrange
@@ -293,33 +219,5 @@ public class ChapterRepositoryTests
 
         // Assert
         Assert.Null(result);
-    }
-
-    [Fact]
-    public async Task GetChaptersNumberByMangaIdAndSourceIdAsync_Should_Return_List_Strings()
-    {
-        // Arrange
-        var date = DateTime.Now;
-        var source1 = new Source { Id = 1, Name = "Source1", BaseUrl = "url", Chapters = null };
-        var source2 = new Source { Id = 2, Name = "Source2", BaseUrl = "url", Chapters = null };
-        var expectedResult = new List<string> { "1", "2", "3", "4" };
-        var sampleChapter = new List<Chapter>
-        {
-            new() { Id = 1, MangaId = 1, SourceId = 1, Date = date, Number = "1", Source = source1 },
-            new() { Id = 2, MangaId = 1, SourceId = 1, Date = date, Number = "2", Source = source1 },
-            new() { Id = 3, MangaId = 1, SourceId = 1, Date = date, Number = "3", Source = source1 },
-            new() { Id = 4, MangaId = 1, SourceId = 1, Date = date, Number = "4", Source = source1 },
-            new() { Id = 5, MangaId = 1, SourceId = 2, Date = date, Number = "1", Source = source2 }
-        };
-
-        _context.Chapters.AddRange(sampleChapter);
-        await _context.SaveChangesAsync();
-
-        // Act
-        var result = await _repository.GetChaptersNumberByMangaIdAndSourceIdAsync(1, 1);
-
-        // Assert
-        result.Should().HaveCount(4);
-        result.Should().BeEquivalentTo(expectedResult);
     }
 }

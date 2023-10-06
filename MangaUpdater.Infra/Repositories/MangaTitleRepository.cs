@@ -15,11 +15,4 @@ public class MangaTitleRepository : BaseRepository<MangaTitle>, IMangaTitleRepos
     {
         Context.MangaTitles.AddRange(mangaTitles);
     }
-
-    public async Task<IEnumerable<MangaTitle>> GetByMangaIdAsync(int mangaId)
-    {
-        return await Get()
-            .Where(mt => mt.MangaId == mangaId)
-            .ToListAsync();
-    }
 }
