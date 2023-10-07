@@ -39,4 +39,50 @@ public class MangaAuthorRepositoryTests
         var addMangaAuthors = _context.MangaAuthors.ToList();
         Assert.Equal(4, addMangaAuthors.Count);
     }
+
+    [Fact]
+    public async Task GetByIdAsync_Should_Return_MangaAuthor()
+    {
+        // Arrange
+        var expectedMangaAuthor = new MangaAuthor { Id = 1, MangaId = 1, Name = "Author1" };
+        var sampleMangaAuthor = new List<MangaAuthor>
+        {
+            expectedMangaAuthor,
+            new() { Id = 2, MangaId = 2, Name = "Author1" },
+            new() { Id = 3, MangaId = 3, Name = "Author1" },
+            new() { Id = 4, MangaId = 4, Name = "Author1" },
+        };
+
+        _context.MangaAuthors.AddRange(sampleMangaAuthor);
+        await _context.SaveChangesAsync();
+
+        // Act
+        var result = await _repository.GetByIdAsync(1);
+
+        // Assert
+        Assert.NotNull(result);
+        result.Should().BeEquivalentTo(expectedMangaAuthor);
+    }
+
+    [Fact]
+    public async Task GetByIdAsync_Should_Return_Null()
+    {
+        // Arrange
+        var sampleMangaAuthor = new List<MangaAuthor>
+        {
+            new() { Id = 1, MangaId = 1, Name = "Author1" },
+            new() { Id = 2, MangaId = 2, Name = "Author1" },
+            new() { Id = 3, MangaId = 3, Name = "Author1" },
+            new() { Id = 4, MangaId = 4, Name = "Author1" },
+        };
+
+        _context.MangaAuthors.AddRange(sampleMangaAuthor);
+        await _context.SaveChangesAsync();
+
+        // Act
+        var result = await _repository.GetByIdAsync(5);
+
+        // Assert
+        Assert.Null(result);
+    }
 }

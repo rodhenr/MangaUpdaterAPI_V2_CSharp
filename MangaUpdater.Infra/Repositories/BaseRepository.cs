@@ -42,11 +42,6 @@ public abstract class BaseRepository<TEntity> : IBaseRepository<TEntity> where T
         Context.Update(entity);
     }
 
-    public virtual void Remove(TEntity entity)
-    {
-        Context.Remove(entity);
-    }
-
     public async Task SaveAsync()
     {
         await Context.SaveChangesAsync();

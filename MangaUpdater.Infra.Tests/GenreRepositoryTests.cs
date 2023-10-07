@@ -52,7 +52,7 @@ public class GenreRepositoryTests
         // Arrange
         var sampleGenre = new List<Genre>
         {
-            new() { Id = 1, Name = "Genre1"}
+            new() { Id = 1, Name = "Genre1" }
         };
 
         _context.Genres.AddRange(sampleGenre);
@@ -63,5 +63,68 @@ public class GenreRepositoryTests
 
         // Assert
         Assert.Null(result);
+    }
+
+    [Fact]
+    public async Task Create_Should_Return_Create_Genre()
+    {
+        // Arrange
+        var sampleGenre = new Genre { Id = 1, Name = "Genre1" };
+
+        // Act
+        _repository.Create(sampleGenre);
+        await _context.SaveChangesAsync();
+
+        // Assert
+        var genreList = _context.Genres.ToList();
+        genreList.Should().HaveCount(1);
+    }
+
+    [Fact]
+    public async Task GetAsync_Should_Return_List_Genre()
+    {
+        // Arrange
+        var sampleGenre = new List<Genre>
+        {
+            new() { Id = 1, Name = "Genre1" },
+            new() { Id = 2, Name = "Genre2" },
+            new() { Id = 3, Name = "Genre3" },
+            new() { Id = 4, Name = "Genre4" },
+        };
+
+        _context.Genres.AddRange(sampleGenre);
+        await _repository.SaveAsync();
+
+        // Act
+        var result = await _repository.GetAsync();
+
+        // Assert
+        result.Should().HaveCount(4);
+    }
+
+    [Fact]
+    public async Task Update_Should_Update_Genre()
+    {
+        // Arrange
+        var expectedGenre = new Genre{ Id = 1, Name = "ModifiedGenre1" };
+        var sampleGenre = new List<Genre>
+        {
+            new() { Id = 1, Name = "Genre1" },
+            new() { Id = 2, Name = "Genre2" },
+            new() { Id = 3, Name = "Genre3" }
+        };
+
+        _context.Genres.AddRange(sampleGenre);
+        await _context.SaveChangesAsync();
+
+        sampleGenre.Where(g => g.Id == 1)!.First().Name = "ModifiedGenre1";
+
+        // Act
+        _repository.Update(sampleGenre.Where(g => g.Id == 1)!.First());
+        await _context.SaveChangesAsync();
+
+        // Assert
+        var firstGenre = _context.Genres.ToList().Where(g => g.Id == 1)!.First();
+        firstGenre.Should().BeEquivalentTo(expectedGenre);
     }
 }
