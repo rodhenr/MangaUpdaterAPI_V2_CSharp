@@ -149,6 +149,116 @@ public class MangaRepositoryTests
     }
 
     [Fact]
+    public async Task GetWithFiltersAsync_Should_Return_List_Manga()
+    {
+        // Arrange
+        var sampleMangaTitles = new List<MangaTitle>
+        {
+            new() { Id = 1, MangaId = 1, Name = "Title1" },
+            new() { Id = 2, MangaId = 2, Name = "Title2" },
+            new() { Id = 3, MangaId = 3, Name = "Title3" },
+            new() { Id = 4, MangaId = 4, Name = "Title4" }
+        };
+        var sampleManga = new List<Manga>
+        {
+            new() { Id = 1, Synopsis = "", Type = "Manga", CoverUrl = "url", MyAnimeListId = 1 },
+            new() { Id = 2, Synopsis = "", Type = "Manga", CoverUrl = "url", MyAnimeListId = 2 },
+            new() { Id = 3, Synopsis = "", Type = "Manga", CoverUrl = "url", MyAnimeListId = 3 },
+            new() { Id = 4, Synopsis = "", Type = "Manga", CoverUrl = "url", MyAnimeListId = 4 }
+        };
+
+        _context.Mangas.AddRange(sampleManga);
+        _context.MangaTitles.AddRange(sampleMangaTitles);
+        await _context.SaveChangesAsync();
+
+        // Act
+        var result = await _repository.GetWithFiltersAsync(1, null, null, null);
+
+        // Assert
+        result.Should().HaveCount(4);
+    }
+
+    [Fact]
+    public async Task GetWithFiltersAsync_Ordering_By_Alphabet_Should_Return_List_Manga()
+    {
+        // Arrange
+        var sampleMangaTitles = new List<MangaTitle>
+        {
+            new() { Id = 1, MangaId = 1, Name = "Title1" },
+            new() { Id = 2, MangaId = 2, Name = "Title2" },
+            new() { Id = 3, MangaId = 3, Name = "Title3" },
+            new() { Id = 4, MangaId = 4, Name = "Title4" }
+        };
+        var sampleManga = new List<Manga>
+        {
+            new() { Id = 1, Synopsis = "", Type = "Manga", CoverUrl = "url", MyAnimeListId = 1 },
+            new() { Id = 2, Synopsis = "", Type = "Manga", CoverUrl = "url", MyAnimeListId = 2 },
+            new() { Id = 3, Synopsis = "", Type = "Manga", CoverUrl = "url", MyAnimeListId = 3 },
+            new() { Id = 4, Synopsis = "", Type = "Manga", CoverUrl = "url", MyAnimeListId = 4 }
+        };
+
+        _context.Mangas.AddRange(sampleManga);
+        _context.MangaTitles.AddRange(sampleMangaTitles);
+        await _context.SaveChangesAsync();
+
+        // Act
+        var result = await _repository.GetWithFiltersAsync(1, "alphabet", null, null);
+
+        // Assert
+        result.Should().HaveCount(4);
+    }
+
+    [Fact]
+    public async Task GetWithFiltersAsync_Ordering_By_Latest_Should_Return_List_Manga()
+    {
+        // Arrange
+        var sampleMangaSources = new List<MangaSource>
+        {
+            new() { Id = 1, MangaId = 1, SourceId = 1, Url = "" },
+            new() { Id = 2, MangaId = 2, SourceId = 1, Url = "" },
+            new() { Id = 3, MangaId = 3, SourceId = 1, Url = "" },
+            new() { Id = 4, MangaId = 4, SourceId = 1, Url = "" },
+        };
+        var sampleMangaGenres = new List<MangaGenre>
+        {
+            new() { Id = 1, MangaId = 1, GenreId = 1 },
+            new() { Id = 2, MangaId = 1, GenreId = 2 },
+            new() { Id = 3, MangaId = 2, GenreId = 1 },
+            new() { Id = 4, MangaId = 2, GenreId = 4 },
+            new() { Id = 5, MangaId = 3, GenreId = 1 },
+            new() { Id = 6, MangaId = 3, GenreId = 3 },
+            new() { Id = 7, MangaId = 4, GenreId = 4 },
+            new() { Id = 8, MangaId = 5, GenreId = 3 },
+        };
+        var sampleMangaTitles = new List<MangaTitle>
+        {
+            new() { Id = 1, MangaId = 1, Name = "Title1" },
+            new() { Id = 2, MangaId = 2, Name = "Title2" },
+            new() { Id = 3, MangaId = 3, Name = "Title3" },
+            new() { Id = 4, MangaId = 4, Name = "Title4" }
+        };
+        var sampleManga = new List<Manga>
+        {
+            new() { Id = 1, Synopsis = "", Type = "Manga", CoverUrl = "url", MyAnimeListId = 1 },
+            new() { Id = 2, Synopsis = "", Type = "Manga", CoverUrl = "url", MyAnimeListId = 2 },
+            new() { Id = 3, Synopsis = "", Type = "Manga", CoverUrl = "url", MyAnimeListId = 3 },
+            new() { Id = 4, Synopsis = "", Type = "Manga", CoverUrl = "url", MyAnimeListId = 4 }
+        };
+
+        _context.Mangas.AddRange(sampleManga);
+        _context.MangaTitles.AddRange(sampleMangaTitles);
+        _context.MangaSources.AddRange(sampleMangaSources);
+        _context.MangaGenres.AddRange(sampleMangaGenres);
+        await _context.SaveChangesAsync();
+
+        // Act
+        var result = await _repository.GetWithFiltersAsync(1, "latest", new List<int> { 1 }, new List<int> { 1, 2 });
+
+        // Assert
+        result.Should().HaveCount(3);
+    }
+
+    [Fact]
     public async Task GetByIdAndUserIdOrderedDescAsync_Should_Return_Manga_If_Found()
     {
         // Arrange
