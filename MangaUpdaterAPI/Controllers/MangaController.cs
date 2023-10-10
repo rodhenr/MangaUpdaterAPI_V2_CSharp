@@ -44,10 +44,9 @@ public class MangaController : BaseController
     public async Task<ActionResult<IEnumerable<MangaUserDto>>> GetMangas([FromQuery] int page = 1,
         [SwaggerParameter("Empty (no ordering), alphabet or latest")] [FromQuery]
         string? orderBy = null,
-        [FromQuery] List<int>? sourceId = null, [FromQuery] List<int>? genreId = null)
-    {
-        return Ok(await _mangaService.GetWithFilter(page, orderBy, sourceId, genreId));
-    }
+        [FromQuery] List<int>? sourceId = null, [FromQuery] List<int>? genreId = null) =>
+        Ok(await _mangaService.GetWithFilter(page, orderBy, sourceId, genreId));
+
 
     /// <summary>
     /// Register a new manga using a MyAnimeList id.
@@ -86,10 +85,8 @@ public class MangaController : BaseController
     /// <response code="400">Error.</response>
     [SwaggerOperation("Get all sources from a manga with following info for a logged-in user")]
     [HttpGet("{mangaId:int}/sources")]
-    public async Task<ActionResult<IEnumerable<UserSourceDto>>> GetUserSources(int mangaId)
-    {
-        return Ok(await _userSourceService.GetUserSourcesByMangaId(mangaId, UserId!));
-    }
+    public async Task<ActionResult<IEnumerable<UserSourceDto>>> GetUserSources(int mangaId) =>
+        Ok(await _userSourceService.GetUserSourcesByMangaId(mangaId, UserId!));
 
     /// <summary>
     /// Register a new source for a manga.

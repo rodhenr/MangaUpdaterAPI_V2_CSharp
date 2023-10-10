@@ -1,10 +1,10 @@
 ﻿using System.Security.Claims;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Http;
 using MangaUpdater.API.Controllers;
 using MangaUpdater.Application.Interfaces.Authentication;
 using MangaUpdater.Application.Models.Login;
 using MangaUpdater.Application.Models.Register;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
 
 namespace MangaUpdater.API.Tests;
 
