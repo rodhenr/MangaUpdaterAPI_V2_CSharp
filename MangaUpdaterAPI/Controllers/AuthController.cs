@@ -11,6 +11,7 @@ namespace MangaUpdater.API.Controllers;
 
 public class AuthController : BaseController
 {
+    private string? UserId => User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
     private readonly IAuthenticationService _identityService;
 
     public AuthController(IAuthenticationService identityService)
@@ -52,8 +53,7 @@ public class AuthController : BaseController
     [HttpPost("refresh")]
     public async Task<ActionResult<UserAuthenticateResponse>> RefreshToken()
     {
-        var user = User.FindFirst(ClaimTypes.NameIdentifier)?.Value!;
-        var tokensData = await _identityService.RefreshToken(user);
+        var tokensData = await _identityService.RefreshToken(UserId!);
 
         if (tokensData.IsSuccess) return Ok(tokensData);
 

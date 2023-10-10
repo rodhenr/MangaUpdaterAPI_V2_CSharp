@@ -1,6 +1,4 @@
-﻿using MangaUpdater.Application.Models;
-using MangaUpdater.Application.Models.Login;
-using MangaUpdater.Application.Models.RefreshToken;
+﻿using MangaUpdater.Application.Models.Login;
 using MangaUpdater.Application.Models.Register;
 
 namespace MangaUpdater.Application.Interfaces.Authentication;
