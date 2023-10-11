@@ -32,10 +32,8 @@ public class UserController : BaseController
     [SwaggerOperation(
         "Get all followed manga for a logged-in user with 3 last released chapters from the sources followed")]
     [HttpGet("mangas")]
-    public async Task<ActionResult<IEnumerable<MangaUserLoggedDto>>> GetLoggedUserMangas()
-    {
-        return Ok(await _userMangaChapterService.GetUserMangasWithThreeLastChapterByUserId(UserId!));
-    }
+    public async Task<ActionResult<IEnumerable<MangaUserLoggedDto>>> GetLoggedUserMangas() =>
+        Ok(await _userMangaChapterService.GetUserMangasWithThreeLastChapterByUserId(UserId!));
 
     /// <summary>
     /// Get all followed manga for a logged-in user.
@@ -45,10 +43,8 @@ public class UserController : BaseController
     /// <response code="400">Error.</response>
     [SwaggerOperation("Get all followed manga for a logged-in user")]
     [HttpGet("mangas/list")]
-    public async Task<ActionResult<IEnumerable<MangaUserDto>>> GetUserMangasList()
-    {
-        return Ok(await _userMangaService.GetMangasByUserId(UserId!));
-    }
+    public async Task<ActionResult<IEnumerable<MangaUserDto>>> GetUserMangasList() =>
+        Ok(await _userMangaService.GetMangasByUserId(UserId!));
 
     /// <summary>
     /// Get all followed manga by an user.
@@ -58,10 +54,8 @@ public class UserController : BaseController
     /// <response code="400">Error.</response>
     [SwaggerOperation("Get all followed manga by a user")]
     [HttpGet("{userId}/mangas")]
-    public async Task<ActionResult<IEnumerable<MangaUserDto>>> GetUserManga(string userId)
-    {
-        return Ok(await _userMangaService.GetMangasByUserId(userId));
-    }
+    public async Task<ActionResult<IEnumerable<MangaUserDto>>> GetUserMangas(string userId) =>
+        Ok(await _userMangaService.GetMangasByUserId(userId));
 
     /// <summary>
     /// A logged-in user starts following sources from a manga.
@@ -73,7 +67,6 @@ public class UserController : BaseController
     public async Task<ActionResult> FollowSourcesFromManga(int mangaId, IEnumerable<int> sourceIdList)
     {
         await _userMangaChapterService.AddUserMangaBySourceIdList(mangaId, UserId!, sourceIdList);
-
         return Ok();
     }
 

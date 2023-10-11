@@ -24,10 +24,8 @@ public class SourceController : BaseController
     [AllowAnonymous]
     [SwaggerOperation("Get all sources")]
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<Source>>> GetSources()
-    {
-        return Ok(await _sourceService.Get());
-    }
+    public async Task<ActionResult<IEnumerable<Source>>> GetSources() => Ok(await _sourceService.Get());
+
 
     /// <summary>
     /// Get a source by id.
@@ -38,8 +36,5 @@ public class SourceController : BaseController
     [AllowAnonymous]
     [SwaggerOperation("Get a source by id")]
     [HttpGet("{sourceId:int}")]
-    public async Task<ActionResult<Source>> GetSourceById(int sourceId)
-    {
-        return Ok(await _sourceService.GetById(sourceId));
-    }
+    public async Task<ActionResult<Source>> GetSourceById(int sourceId) => Ok(await _sourceService.GetById(sourceId));
 }

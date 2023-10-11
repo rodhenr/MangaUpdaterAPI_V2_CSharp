@@ -2,11 +2,8 @@
 using MangaUpdater.API.Controllers;
 using MangaUpdater.Application.DTOs;
 using MangaUpdater.Application.Interfaces;
-using MangaUpdater.Application.Interfaces.Authentication;
 using MangaUpdater.Application.Interfaces.External.MangaLivre;
 using MangaUpdater.Application.Interfaces.External.MyAnimeList;
-using MangaUpdater.Application.Models.Login;
-using MangaUpdater.Application.Models.Register;
 using MangaUpdater.Domain.Entities;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
