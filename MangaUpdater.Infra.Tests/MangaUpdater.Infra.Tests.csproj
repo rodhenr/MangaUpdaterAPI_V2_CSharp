@@ -17,6 +17,7 @@
     <ItemGroup>
       <ProjectReference Include="..\MangaUpdater.Domain\MangaUpdater.Domain.csproj" />
       <ProjectReference Include="..\MangaUpdater.Infra\MangaUpdater.Infra.Data.csproj" />
+      <ProjectReference Include="..\MangaUpdaterAPI\MangaUpdater.API.csproj" />
     </ItemGroup>
 
 </Project>

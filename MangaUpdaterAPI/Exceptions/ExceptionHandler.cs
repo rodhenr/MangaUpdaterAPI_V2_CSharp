@@ -9,7 +9,7 @@ public class AuthExceptionHandler : IExceptionHandler
 
     public ProblemDetails Handle(HttpContext httpContext, Exception exception)
     {
-        return new ProblemDetails()
+        return new ProblemDetails
         {
             Title = "Unauthorized",
             Status = StatusCodes.Status401Unauthorized,
@@ -24,7 +24,7 @@ public class NotFoundExceptionHandler : IExceptionHandler
 
     public ProblemDetails Handle(HttpContext httpContext, Exception exception)
     {
-        return new ProblemDetails()
+        return new ProblemDetails
         {
             Title = "Not Found",
             Status = StatusCodes.Status404NotFound,
@@ -39,7 +39,7 @@ public class ValidationExceptionHandler : IExceptionHandler
 
     public ProblemDetails Handle(HttpContext httpContext, Exception exception)
     {
-        return new ProblemDetails()
+        return new ProblemDetails
         {
             Title = "Validations errors occured",
             Status = StatusCodes.Status400BadRequest,
@@ -54,7 +54,7 @@ public class BadRequestExceptionHandler : IExceptionHandler
 
     public ProblemDetails Handle(HttpContext httpContext, Exception exception)
     {
-        return new ProblemDetails()
+        return new ProblemDetails
         {
             Title = "Invalid Request",
             Status = StatusCodes.Status400BadRequest,
