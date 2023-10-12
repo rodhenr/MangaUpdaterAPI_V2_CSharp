@@ -68,9 +68,7 @@ public class AuthenticationService : IAuthenticationService
         else
             authResponse.AddError("Invalid user/password");
 
-        if (authResponse.ErrorList.Count > 0) throw new AuthorizationException(authResponse.ToString());
-
-        return authResponse;
+        throw new AuthorizationException(authResponse.ToString());
     }
 
     public async Task<UserAuthenticateResponse> RefreshToken(string userId)
@@ -79,13 +77,10 @@ public class AuthenticationService : IAuthenticationService
 
         var user = await _userManager.FindByIdAsync(userId);
 
-        if (user?.Email is null) throw new AuthenticationException("User not found");
+        if (user?.Email is null || !authenticationResponse.IsSuccess)
+            throw new AuthenticationException("User not found");
 
-        if (await _userManager.IsLockedOutAsync(user)) authenticationResponse.AddError("This account is blocked");
-
-        if (authenticationResponse.IsSuccess) return await GenerateCredentials(user.Email);
-
-        return authenticationResponse;
+        return await GenerateCredentials(user.Email);
     }
 
     private async Task<UserAuthenticateResponse> GenerateCredentials(string userEmail)
