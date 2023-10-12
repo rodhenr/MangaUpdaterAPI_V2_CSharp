@@ -83,7 +83,7 @@ public class MangaLivreApiServiceTests
         Assert.NotEmpty(result);
         result.Should().HaveCount(2);
     }
-    
+
     [Fact]
     public async Task GetChaptersAsync_With_LastSavecChapter_Valid_Response_Returns_Chapters()
     {
@@ -187,5 +187,4 @@ public class MangaLivreApiServiceTests
             await mangaLivreApiService.GetChaptersAsync(mangaLivreSerieId);
         });
     }
-
 }
