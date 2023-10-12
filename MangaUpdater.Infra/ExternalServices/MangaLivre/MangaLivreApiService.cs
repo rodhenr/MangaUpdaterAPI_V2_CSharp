@@ -17,8 +17,6 @@ public class MangaLivreApiService : IMangaLivreApi
 
     public async Task<List<MangaLivreChapters>> GetChaptersAsync(int mangaLivreSerieId, float lastSavedChapterId = 0)
     {
-        //TODO: Implement manga name check before get chapters
-
         var httpClient = _clientFactory.CreateClient();
         httpClient.DefaultRequestHeaders.Add("X-Requested-With", "XMLHttpRequest");
         var page = 1;
@@ -44,7 +42,7 @@ public class MangaLivreApiService : IMangaLivreApi
         return _apiChapters;
     }
 
-    private void SaveChapters(List<MangaLivreChapters> apiChapters, float lastSavedChapterId)
+    private void SaveChapters(IEnumerable<MangaLivreChapters> apiChapters, float lastSavedChapterId)
     {
         if (lastSavedChapterId == 0)
         {
@@ -52,10 +50,8 @@ public class MangaLivreApiService : IMangaLivreApi
             return;
         }
 
-        foreach (var chapter in apiChapters)
+        foreach (var chapter in apiChapters.Where(chapter => float.Parse(chapter.ChapterNumber) > lastSavedChapterId))
         {
-            if (float.Parse(chapter.ChapterNumber) <= lastSavedChapterId) return;
-            
             _apiChapters.Add(chapter);
         }
     }
