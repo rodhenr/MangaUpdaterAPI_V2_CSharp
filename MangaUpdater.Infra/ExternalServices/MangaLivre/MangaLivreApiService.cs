@@ -15,7 +15,8 @@ public class MangaLivreApiService : IMangaLivreApi
         _clientFactory = httpClientFactory;
     }
 
-    public async Task<List<MangaLivreChapters>> GetChaptersAsync(int mangaLivreSerieId, float lastSavedChapterId = 0)
+    public async Task<List<MangaLivreChapters>> GetChaptersAsync(int mangaLivreSerieId,
+        string lastSavedChapterNumber = "0")
     {
         var httpClient = _clientFactory.CreateClient();
         httpClient.DefaultRequestHeaders.Add("X-Requested-With", "XMLHttpRequest");
@@ -34,7 +35,7 @@ public class MangaLivreApiService : IMangaLivreApi
 
             if (content?.Chapters is null) break;
 
-            SaveChapters(content.Chapters, lastSavedChapterId);
+            SaveChapters(content.Chapters, lastSavedChapterNumber);
 
             page += 1;
         }
@@ -42,15 +43,16 @@ public class MangaLivreApiService : IMangaLivreApi
         return _apiChapters;
     }
 
-    private void SaveChapters(IEnumerable<MangaLivreChapters> apiChapters, float lastSavedChapterId)
+    private void SaveChapters(IEnumerable<MangaLivreChapters> apiChapters, string lastSavedChapterNumber)
     {
-        if (lastSavedChapterId == 0)
+        if (lastSavedChapterNumber == "0")
         {
             _apiChapters.AddRange(apiChapters);
             return;
         }
 
-        foreach (var chapter in apiChapters.Where(chapter => float.Parse(chapter.ChapterNumber) > lastSavedChapterId))
+        foreach (var chapter in apiChapters.Where(chapter =>
+                     float.Parse(chapter.ChapterNumber) > float.Parse(lastSavedChapterNumber)))
         {
             _apiChapters.Add(chapter);
         }

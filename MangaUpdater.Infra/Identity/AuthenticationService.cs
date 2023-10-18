@@ -99,7 +99,7 @@ public class AuthenticationService : IAuthenticationService
         var accessToken = GenerateToken(accessTokenClaims, accessTokenExpirationData);
         var refreshToken = GenerateToken(refreshTokenClaims, refreshTokenExpirationData);
 
-        return new UserAuthenticateResponse(user.UserName, "", accessToken, refreshToken);
+        return new UserAuthenticateResponse(user.UserName, user.Avatar, accessToken, refreshToken);
     }
 
     private string GenerateToken(IEnumerable<Claim> claims, DateTime expirationDate)

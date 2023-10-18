@@ -119,7 +119,7 @@ public class MangaController : BaseController
 
         if (sourceId == 1)
         {
-            await _mangaLivreService.UpdateChapters(mangaId, sourceId, lastChapter?.Id ?? 0, mangaSource.Url);
+            await _mangaLivreService.UpdateChapters(mangaId, sourceId, lastChapter?.Number ?? "0", mangaSource.Url);
         }
 
         return Ok();

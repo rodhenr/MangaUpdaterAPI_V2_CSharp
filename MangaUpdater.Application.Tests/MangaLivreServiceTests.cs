@@ -27,7 +27,7 @@ public class MangaLivreServiceTests
     {
         // Arrange
         _mangaLivreApi
-            .Setup(mock => mock.GetChaptersAsync(It.IsAny<int>(), 0))
+            .Setup(mock => mock.GetChaptersAsync(It.IsAny<int>(), "0"))
             .ReturnsAsync(new List<MangaLivreChapters>());
 
         // Act
@@ -35,7 +35,7 @@ public class MangaLivreServiceTests
 
         // Assert 
         _mangaSourceService.Verify(mock => mock.Add(It.IsAny<MangaSource>()), Times.Once);
-        _mangaLivreApi.Verify(mock => mock.GetChaptersAsync(It.IsAny<int>(), 0), Times.Once);
+        _mangaLivreApi.Verify(mock => mock.GetChaptersAsync(It.IsAny<int>(), "0"), Times.Once);
         _chapterService.Verify(mock => mock.BulkCreate(It.IsAny<List<Chapter>>()), Times.Once);
         _mangaSourceService.Verify(mock => mock.SaveChanges(), Times.Once);
     }
@@ -70,7 +70,7 @@ public class MangaLivreServiceTests
         };
 
         _mangaLivreApi
-            .Setup(mock => mock.GetChaptersAsync(It.IsAny<int>(), 0))
+            .Setup(mock => mock.GetChaptersAsync(It.IsAny<int>(), "0"))
             .ReturnsAsync(sampleMangaLivreChapters);
 
         _mangaSourceService
@@ -78,10 +78,10 @@ public class MangaLivreServiceTests
             .Returns(Task.CompletedTask);
 
         // Act
-        await _service.UpdateChapters(It.IsAny<int>(), It.IsAny<int>(), 0, "1");
+        await _service.UpdateChapters(It.IsAny<int>(), It.IsAny<int>(), "0", "1");
 
         // Assert
-        _mangaLivreApi.Verify(mock => mock.GetChaptersAsync(It.IsAny<int>(), 0), Times.Once);
+        _mangaLivreApi.Verify(mock => mock.GetChaptersAsync(It.IsAny<int>(), "0"), Times.Once);
         _chapterService.Verify(mock => mock.BulkCreate(It.IsAny<List<Chapter>>()), Times.Once);
         _mangaSourceService.Verify(service => service.SaveChanges(), Times.Once);
     }

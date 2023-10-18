@@ -204,7 +204,7 @@ public class MangaControllerTests
         // Arrange
         const int mangaId = 123;
         const int sourceId = 1;
-        const int lastChapterId = 456;
+        const string lastChapterId = "456";
         const string mangaSourceUrl = "https://example.com/manga-source-url";
         var sampleMangaSource = new MangaSource { Id = 1, MangaId = 1, SourceId = 1, Url = "" };
         var sampleChapter = new Chapter { Id = 1, MangaId = 1, SourceId = 1, Number = "1", Date = DateTime.Now };

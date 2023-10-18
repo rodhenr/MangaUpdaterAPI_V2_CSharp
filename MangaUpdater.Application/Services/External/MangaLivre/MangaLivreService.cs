@@ -1,5 +1,4 @@
-﻿using System.Globalization;
-using MangaUpdater.Application.Interfaces;
+﻿using MangaUpdater.Application.Interfaces;
 using MangaUpdater.Application.Interfaces.External.MangaLivre;
 using MangaUpdater.Domain.Entities;
 
@@ -22,12 +21,12 @@ public class MangaLivreService : IMangaLivreService
     public async Task RegisterSourceAndChapters(int mangaId, int sourceId, string url)
     {
         _mangaSourceService.Add(new MangaSource { MangaId = mangaId, SourceId = sourceId, Url = url });
-        await UpdateChapters(mangaId, sourceId, 0, url);
+        await UpdateChapters(mangaId, sourceId, "0", url);
     }
 
-    public async Task UpdateChapters(int mangaId, int sourceId, float lastChapterId, string url)
+    public async Task UpdateChapters(int mangaId, int sourceId, string lastSavedChapterNumber, string url)
     {
-        var chapters = await _mangaLivreApi.GetChaptersAsync(int.Parse(url), lastChapterId);
+        var chapters = await _mangaLivreApi.GetChaptersAsync(int.Parse(url), lastSavedChapterNumber);
 
         var chapterList = chapters
             .Select(ch => new Chapter()

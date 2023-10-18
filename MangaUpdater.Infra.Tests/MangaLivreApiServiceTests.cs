@@ -145,7 +145,7 @@ public class MangaLivreApiServiceTests
         var service = new MangaLivreApiService(mockHttpClientFactory.Object);
 
         // Act
-        var result = await service.GetChaptersAsync(mangaLivreSerieId, 1);
+        var result = await service.GetChaptersAsync(mangaLivreSerieId, "1");
 
         // Assert
         Assert.IsType<List<MangaLivreChapters>>(result);

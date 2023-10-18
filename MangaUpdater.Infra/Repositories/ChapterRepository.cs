@@ -1,7 +1,9 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using System.Globalization;
+using Microsoft.EntityFrameworkCore;
 using MangaUpdater.Domain.Entities;
 using MangaUpdater.Domain.Interfaces;
 using MangaUpdater.Infra.Data.Context;
+using MangaUpdater.Application.Helpers;
 
 namespace MangaUpdater.Infra.Data.Repositories;
 
@@ -26,11 +28,16 @@ public class ChapterRepository : BaseRepository<Chapter>, IChapterRepository
 
     public async Task<Chapter?> GetLastChapterByMangaIdAndSourceIdAsync(int mangaId, int sourceId)
     {
-        return await Get()
+        var chapters = await Get()
             .Where(ch => ch.MangaId == mangaId && ch.SourceId == sourceId)
-            .OrderByDescending(ch => ch.Number)
             .AsNoTracking()
-            .FirstOrDefaultAsync();
+            .ToListAsync();
+
+        chapters
+            .Sort((x, y) => float.Parse(x.Number, CultureInfo.InvariantCulture)
+                .CompareTo(float.Parse(y.Number, CultureInfo.InvariantCulture)));
+            
+        return chapters.LastOrDefault();
     }
 
     public async Task<IEnumerable<Chapter>> GetThreeLastByMangaIdAndSourceListAsync(int mangaId, List<int> sourceList)
