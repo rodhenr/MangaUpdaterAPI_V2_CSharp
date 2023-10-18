@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using MangaUpdater.Infra.Data.Context;
+using MangaUpdater.Infra.Data.Identity;
 
 namespace MangaUpdater.Infra.IoC;
 
@@ -14,7 +15,7 @@ public static class IdentityInjection
             options.UseSqlServer(configuration.GetConnectionString("DefaultConnection"
             ), b => b.MigrationsAssembly(typeof(IdentityMangaUpdaterContext).Assembly.FullName)));
 
-        services.AddDefaultIdentity<IdentityUser>()
+        services.AddDefaultIdentity<AppUser>()
             .AddRoles<IdentityRole>()
             .AddEntityFrameworkStores<IdentityMangaUpdaterContext>()
             .AddDefaultTokenProviders();

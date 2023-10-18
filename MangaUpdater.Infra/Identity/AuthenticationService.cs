@@ -15,11 +15,11 @@ namespace MangaUpdater.Infra.Data.Identity;
 
 public class AuthenticationService : IAuthenticationService
 {
-    private readonly SignInManager<IdentityUser> _signInManager;
-    private readonly UserManager<IdentityUser> _userManager;
+    private readonly SignInManager<AppUser> _signInManager;
+    private readonly UserManager<AppUser> _userManager;
     private readonly JwtOptions _jwtOptions;
 
-    public AuthenticationService(SignInManager<IdentityUser> signInManager, UserManager<IdentityUser> userManager,
+    public AuthenticationService(SignInManager<AppUser> signInManager, UserManager<AppUser> userManager,
         IOptions<JwtOptions> jwtOptions)
     {
         _signInManager = signInManager;
@@ -29,17 +29,18 @@ public class AuthenticationService : IAuthenticationService
 
     public async Task<UserRegisterResponse> Register(UserRegister userRegister)
     {
-        var identityUser = new IdentityUser
+        var appUser = new AppUser
         {
             UserName = userRegister.Email,
             Email = userRegister.Email,
-            EmailConfirmed = true
+            EmailConfirmed = true,
+            Avatar = ""
         };
 
-        var result = await _userManager.CreateAsync(identityUser, userRegister.Password);
+        var result = await _userManager.CreateAsync(appUser, userRegister.Password);
 
         if (result.Succeeded)
-            await _userManager.SetLockoutEnabledAsync(identityUser, false);
+            await _userManager.SetLockoutEnabledAsync(appUser, false);
 
         var userResponse = new UserRegisterResponse(result.Succeeded);
 
@@ -98,7 +99,7 @@ public class AuthenticationService : IAuthenticationService
         var accessToken = GenerateToken(accessTokenClaims, accessTokenExpirationData);
         var refreshToken = GenerateToken(refreshTokenClaims, refreshTokenExpirationData);
 
-        return new UserAuthenticateResponse(accessToken, refreshToken);
+        return new UserAuthenticateResponse(user.UserName, "", accessToken, refreshToken);
     }
 
     private string GenerateToken(IEnumerable<Claim> claims, DateTime expirationDate)
@@ -119,7 +120,7 @@ public class AuthenticationService : IAuthenticationService
         return tokenHandler.WriteToken(token);
     }
 
-    private async Task<IList<Claim>> GetClaims(IdentityUser user, bool addUserClaims)
+    private async Task<IList<Claim>> GetClaims(AppUser user, bool addUserClaims)
     {
         var claims = new List<Claim>();
         var usCulture = new CultureInfo("en-US");

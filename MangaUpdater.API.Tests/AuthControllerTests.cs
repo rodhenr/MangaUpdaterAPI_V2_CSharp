@@ -53,7 +53,7 @@ public class AuthControllerTests
 
         _authenticationServiceMock
             .Setup(s => s.Authenticate(userAuthenticate))
-            .ReturnsAsync(new UserAuthenticateResponse("AccessToken", "RefreshToken"));
+            .ReturnsAsync(new UserAuthenticateResponse("example", "", "AccessToken", "RefreshToken"));
 
         var result = await _authController.UserLogin(userAuthenticate);
 

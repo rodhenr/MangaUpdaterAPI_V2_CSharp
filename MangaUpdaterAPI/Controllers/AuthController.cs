@@ -6,9 +6,11 @@ using MangaUpdater.Application.Interfaces.Authentication;
 using MangaUpdater.Application.Models.Login;
 using MangaUpdater.Application.Models.Register;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Cors;
 
 namespace MangaUpdater.API.Controllers;
 
+[EnableCors]
 public class AuthController : BaseController
 {
     private string? UserId => User.FindFirst(ClaimTypes.NameIdentifier)?.Value;

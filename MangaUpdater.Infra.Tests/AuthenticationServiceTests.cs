@@ -18,8 +18,8 @@ namespace MangaUpdater.Infra.Tests;
 
 public class AuthenticationServiceTests
 {
-    private readonly Mock<SignInManager<IdentityUser>> _signInManagerMock;
-    private readonly Mock<UserManager<IdentityUser>> _userManagerMock;
+    private readonly Mock<SignInManager<AppUser>> _signInManagerMock;
+    private readonly Mock<UserManager<AppUser>> _userManagerMock;
     private readonly AuthenticationService _authenticationService;
 
     public AuthenticationServiceTests()
@@ -37,25 +37,25 @@ public class AuthenticationServiceTests
         var jwtOptionsMock = new Mock<IOptions<JwtOptions>>();
         jwtOptionsMock.Setup(j => j.Value).Returns(sampleJwt);
 
-        _userManagerMock = new Mock<UserManager<IdentityUser>>(
-            new Mock<IUserStore<IdentityUser>>().Object,
+        _userManagerMock = new Mock<UserManager<AppUser>>(
+            new Mock<IUserStore<AppUser>>().Object,
             new Mock<IOptions<IdentityOptions>>().Object,
-            new Mock<IPasswordHasher<IdentityUser>>().Object,
-            Array.Empty<IUserValidator<IdentityUser>>(),
-            Array.Empty<IPasswordValidator<IdentityUser>>(),
+            new Mock<IPasswordHasher<AppUser>>().Object,
+            Array.Empty<IUserValidator<AppUser>>(),
+            Array.Empty<IPasswordValidator<AppUser>>(),
             new Mock<ILookupNormalizer>().Object,
             new Mock<IdentityErrorDescriber>().Object,
             new Mock<IServiceProvider>().Object,
-            new Mock<ILogger<UserManager<IdentityUser>>>().Object);
+            new Mock<ILogger<UserManager<AppUser>>>().Object);
 
-        _signInManagerMock = new Mock<SignInManager<IdentityUser>>(
+        _signInManagerMock = new Mock<SignInManager<AppUser>>(
             _userManagerMock.Object,
             Mock.Of<IHttpContextAccessor>(),
-            Mock.Of<IUserClaimsPrincipalFactory<IdentityUser>>(),
+            Mock.Of<IUserClaimsPrincipalFactory<AppUser>>(),
             Options.Create(new IdentityOptions()),
-            Mock.Of<ILogger<SignInManager<IdentityUser>>>(),
+            Mock.Of<ILogger<SignInManager<AppUser>>>(),
             Mock.Of<IAuthenticationSchemeProvider>(),
-            Mock.Of<IUserConfirmation<IdentityUser>>());
+            Mock.Of<IUserConfirmation<AppUser>>());
 
         _authenticationService =
             new AuthenticationService(_signInManagerMock.Object, _userManagerMock.Object, jwtOptionsMock.Object);
@@ -68,17 +68,17 @@ public class AuthenticationServiceTests
         var userRegister = new UserRegister { Email = "test@example.com", Password = "password" };
 
         _userManagerMock
-            .Setup(userManager => userManager.CreateAsync(It.IsAny<IdentityUser>(), It.IsAny<string>()))
+            .Setup(userManager => userManager.CreateAsync(It.IsAny<AppUser>(), It.IsAny<string>()))
             .ReturnsAsync(IdentityResult.Success);
         _userManagerMock
-            .Setup(userManager => userManager.AddToRoleAsync(It.IsAny<IdentityUser>(), It.IsAny<string>()));
+            .Setup(userManager => userManager.AddToRoleAsync(It.IsAny<AppUser>(), It.IsAny<string>()));
 
         // Act
         var result = await _authenticationService.Register(userRegister);
 
         // Assert
         Assert.Empty(result.ErrorList);
-        _userManagerMock.Verify(m => m.CreateAsync(It.IsAny<IdentityUser>(), It.IsAny<string>()), Times.Once);
+        _userManagerMock.Verify(m => m.CreateAsync(It.IsAny<AppUser>(), It.IsAny<string>()), Times.Once);
     }
 
     [Fact]
@@ -89,7 +89,7 @@ public class AuthenticationServiceTests
         var identityResult = IdentityResult.Failed(new IdentityError[] { new() { Description = "Invalid Email" } });
 
         _userManagerMock
-            .Setup(userManager => userManager.CreateAsync(It.IsAny<IdentityUser>(), It.IsAny<string>()))
+            .Setup(userManager => userManager.CreateAsync(It.IsAny<AppUser>(), It.IsAny<string>()))
             .ReturnsAsync(identityResult);
 
         // Act and Assert
@@ -101,9 +101,10 @@ public class AuthenticationServiceTests
     {
         // Arrange
         var userAuthenticate = new UserAuthenticate { Email = "test@example.com", Password = "password" };
-        var identityUser = new IdentityUser(userAuthenticate.Email)
+        var appUser = new AppUser
         {
-            Email = userAuthenticate.Email
+            Email = userAuthenticate.Email,
+            Avatar = ""
         };
         var claimList = new List<Claim>()
         {
@@ -121,14 +122,14 @@ public class AuthenticationServiceTests
 
         _userManagerMock
             .Setup(userManager => userManager.FindByEmailAsync(userAuthenticate.Email))
-            .ReturnsAsync(identityUser);
+            .ReturnsAsync(appUser);
 
         _userManagerMock
-            .Setup(userManager => userManager.GetClaimsAsync(identityUser))
+            .Setup(userManager => userManager.GetClaimsAsync(appUser))
             .ReturnsAsync(claimList);
 
         _userManagerMock
-            .Setup(userManager => userManager.GetRolesAsync(identityUser))
+            .Setup(userManager => userManager.GetRolesAsync(appUser))
             .ReturnsAsync(rolesList);
 
         // Act
@@ -138,8 +139,8 @@ public class AuthenticationServiceTests
         Assert.Empty(result.ErrorList);
         _signInManagerMock.Verify(m => m.PasswordSignInAsync(It.IsAny<string>(), It.IsAny<string>(), false, false));
         _userManagerMock.Verify(m => m.FindByEmailAsync(userAuthenticate.Email));
-        _userManagerMock.Verify(m => m.GetClaimsAsync(identityUser));
-        _userManagerMock.Verify(m => m.GetRolesAsync(identityUser));
+        _userManagerMock.Verify(m => m.GetClaimsAsync(appUser));
+        _userManagerMock.Verify(m => m.GetRolesAsync(appUser));
     }
 
     [Fact]
@@ -147,7 +148,11 @@ public class AuthenticationServiceTests
     {
         // Arrange
         var userAuthenticate = new UserAuthenticate { Email = "test@example.com", Password = "password" };
-        var identityUser = new IdentityUser(userAuthenticate.Email);
+        var appUser = new AppUser
+        {
+            Email = userAuthenticate.Email,
+            Avatar = ""
+        };
 
         _signInManagerMock
             .Setup(userManager => userManager.PasswordSignInAsync(It.IsAny<string>(), It.IsAny<string>(), false, false))
@@ -155,7 +160,7 @@ public class AuthenticationServiceTests
 
         _userManagerMock
             .Setup(userManager => userManager.FindByEmailAsync(userAuthenticate.Email))
-            .ReturnsAsync(identityUser);
+            .ReturnsAsync(appUser);
 
         // Assert
         var exception = await Assert.ThrowsAsync<AuthenticationException>(async () =>
@@ -233,9 +238,10 @@ public class AuthenticationServiceTests
         // Arrange
         const string userId = "1";
         var userAuthenticate = new UserAuthenticate { Email = "test@example.com", Password = "password" };
-        var identityUser = new IdentityUser(userAuthenticate.Email)
+        var appUser = new AppUser
         {
-            Email = userAuthenticate.Email
+            Email = userAuthenticate.Email,
+            Avatar = ""
         };
         var claimList = new List<Claim>()
         {
@@ -249,18 +255,18 @@ public class AuthenticationServiceTests
 
         _userManagerMock
             .Setup(userManager => userManager.FindByIdAsync(userId))
-            .ReturnsAsync(identityUser);
+            .ReturnsAsync(appUser);
 
         _userManagerMock
             .Setup(userManager => userManager.FindByEmailAsync(userAuthenticate.Email))
-            .ReturnsAsync(identityUser);
+            .ReturnsAsync(appUser);
 
         _userManagerMock
-            .Setup(userManager => userManager.GetClaimsAsync(identityUser))
+            .Setup(userManager => userManager.GetClaimsAsync(appUser))
             .ReturnsAsync(claimList);
 
         _userManagerMock
-            .Setup(userManager => userManager.GetRolesAsync(identityUser))
+            .Setup(userManager => userManager.GetRolesAsync(appUser))
             .ReturnsAsync(rolesList);
 
         // Act
@@ -270,8 +276,8 @@ public class AuthenticationServiceTests
         Assert.Empty(result.ErrorList);
         _userManagerMock.Verify(m => m.FindByIdAsync(userId));
         _userManagerMock.Verify(m => m.FindByEmailAsync(userAuthenticate.Email));
-        _userManagerMock.Verify(m => m.GetClaimsAsync(identityUser));
-        _userManagerMock.Verify(m => m.GetRolesAsync(identityUser));
+        _userManagerMock.Verify(m => m.GetClaimsAsync(appUser));
+        _userManagerMock.Verify(m => m.GetRolesAsync(appUser));
     }
 
     [Fact]
@@ -280,11 +286,15 @@ public class AuthenticationServiceTests
         // Arrange
         const string userId = "1";
         var userAuthenticate = new UserAuthenticate { Email = "test@example.com", Password = "password" };
-        var identityUser = new IdentityUser(userAuthenticate.Email);
+        var appUser = new AppUser
+        {
+            Email = userAuthenticate.Email,
+            Avatar = ""
+        };
 
         _userManagerMock
             .Setup(userManager => userManager.FindByIdAsync(userId))
-            .ReturnsAsync(identityUser);
+            .ReturnsAsync(appUser);
 
         // Act and Assert
         var exception = await Assert.ThrowsAsync<AuthenticationException>(async () =>
