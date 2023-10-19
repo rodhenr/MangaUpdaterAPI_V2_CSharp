@@ -36,7 +36,7 @@ public class ChapterRepository : BaseRepository<Chapter>, IChapterRepository
         chapters
             .Sort((x, y) => float.Parse(x.Number, CultureInfo.InvariantCulture)
                 .CompareTo(float.Parse(y.Number, CultureInfo.InvariantCulture)));
-            
+
         return chapters.LastOrDefault();
     }
 
@@ -46,6 +46,7 @@ public class ChapterRepository : BaseRepository<Chapter>, IChapterRepository
             .Where(ch => ch.MangaId == mangaId && sourceList.Contains(ch.SourceId))
             .Include(ch => ch.Source)
             .OrderByDescending(ch => ch.Date)
+            .ThenByDescending(ch => ch.Number)
             .Take(3)
             .AsNoTracking()
             .ToListAsync();

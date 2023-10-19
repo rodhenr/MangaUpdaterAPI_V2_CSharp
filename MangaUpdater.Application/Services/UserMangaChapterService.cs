@@ -64,6 +64,15 @@ public class UserMangaChapterService : IUserMangaChapterService
             userManga.Manga.Chapters = chapters;
         }
 
+        userMangasByMangaId.Sort((x, y) =>
+        {
+            if (y.Manga.Chapters != null)
+                return x.Manga.Chapters != null
+                    ? y.Manga.Chapters.FirstOrDefault()!.Date.CompareTo(x.Manga.Chapters.FirstOrDefault()!.Date)
+                    : 1;
+            return 0;
+        });
+
         return _mapper.Map<List<MangaUserLoggedDto>>(userMangasByMangaId);
     }
 
