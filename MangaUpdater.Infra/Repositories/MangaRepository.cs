@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using System.Globalization;
+using Microsoft.EntityFrameworkCore;
 using MangaUpdater.Domain.Entities;
 using MangaUpdater.Domain.Interfaces;
 using MangaUpdater.Infra.Data.Context;
@@ -81,17 +82,23 @@ public class MangaRepository : BaseRepository<Manga>, IMangaRepository
 
     public async Task<Manga?> GetByIdAndUserIdOrderedDescAsync(int id, string userId)
     {
-        return await Get()
+        var manga = await Get()
             .Include(m => m.UserMangas!.Where(um => um.UserId == userId))
             .Include(m => m.MangaGenres)!
             .ThenInclude(m => m.Genre)
             .Include(m => m.MangaSources)!
             .ThenInclude(ms => ms.Source)
-            .Include(m => m.Chapters!.OrderByDescending(ch => ch.Date))
+            .Include(m => m.Chapters!)
             .ThenInclude(ms => ms.Source)
             .Include(m => m.MangaAuthors)
             .Include(m => m.MangaTitles)
             .AsNoTracking()
             .SingleOrDefaultAsync(m => m.Id == id);
+
+        if (manga is not null)
+            manga.Chapters =
+                manga.Chapters?.OrderByDescending(ch => float.Parse(ch.Number, CultureInfo.InvariantCulture));
+
+        return manga;
     }
 }
