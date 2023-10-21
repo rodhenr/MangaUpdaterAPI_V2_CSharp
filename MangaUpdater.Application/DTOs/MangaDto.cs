@@ -2,6 +2,7 @@
 
 public record MangaDto
 {
+    public required int MangaId { get; init; }
     public required string CoverUrl { get; init; }
     public required string Name { get; init; }
     public required string AlternativeName { get; init; }

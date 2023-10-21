@@ -10,6 +10,7 @@ public class MappingProfile : Profile
     public MappingProfile()
     {
         CreateMap<Manga, MangaDto>()
+            .ForMember(dest => dest.MangaId, opt => opt.MapFrom(src => src.Id))
             .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.MangaTitles!.First().Name))
             .ForMember(dest => dest.AlternativeName,
                 opt => opt.MapFrom(src =>
@@ -27,11 +28,11 @@ public class MappingProfile : Profile
             ))
             .ForMember(dest => dest.Chapters, opt => opt.MapFrom((src, _, _, _) =>
             {
-                if (src.UserMangas is null || src.Chapters is null)
+                if (src.Chapters is null)
                     return Enumerable.Empty<ChapterDto>();
 
                 var userSourceChapterList =
-                    src.UserMangas.Select(um => new { um.SourceId, um.CurrentChapterId }).ToList();
+                    src.UserMangas?.Select(um => new { um.SourceId, um.CurrentChapterId }).ToList();
 
                 return src.Chapters
                     .Select(ch =>
@@ -43,7 +44,8 @@ public class MappingProfile : Profile
                             SourceName = ch.Source.Name,
                             Date = ch.Date,
                             Number = ch.Number,
-                            Read = userSourceChapterList.Any(chapterList => chapterList.SourceId == ch.SourceId) &&
+                            Read = userSourceChapterList is not null &&
+                                   userSourceChapterList.Any(chapterList => chapterList.SourceId == ch.SourceId) &&
                                    ch.Id <=
                                    userSourceChapterList.First(chapterListRead =>
                                            chapterListRead.SourceId == ch.SourceId)

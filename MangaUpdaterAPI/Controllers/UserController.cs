@@ -1,5 +1,4 @@
 ﻿using System.Security.Claims;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
 using MangaUpdater.Application.DTOs;
@@ -12,14 +11,14 @@ public class UserController : BaseController
 {
     private string? UserId => User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
     private readonly IUserMangaChapterService _userMangaChapterService;
-    private readonly IUserSourceService _userSourceService;
+    private readonly IChapterService _chapterService;
     private readonly IUserMangaService _userMangaService;
 
-    public UserController(IUserMangaChapterService userMangaChapterService, IUserSourceService userSourceService,
+    public UserController(IUserMangaChapterService userMangaChapterService, IChapterService chapterService,
         IUserMangaService userMangaService)
     {
         _userMangaChapterService = userMangaChapterService;
-        _userSourceService = userSourceService;
+        _chapterService = chapterService;
         _userMangaService = userMangaService;
     }
 
@@ -103,9 +102,11 @@ public class UserController : BaseController
     /// <response code="400">Error.</response>
     [SwaggerOperation("A logged-in user changes its last chapter read from a combination of manga and source")]
     [HttpPatch("mangas/{mangaId:int}/sources/{sourceId:int}")]
-    public async Task<ActionResult> UpdateManga(int mangaId, int sourceId, int chapterId)
+    public async Task<ActionResult> UpdateManga(int mangaId, int sourceId, [FromQuery] int chapterId)
     {
         var userManga = await _userMangaService.GetByMangaIdUserIdAndSourceId(mangaId, UserId!, sourceId);
+        var chapter = await _chapterService.GetByIdAndMangaId(mangaId, chapterId);
+
         userManga.CurrentChapterId = chapterId;
 
         await _userMangaService.Update(userManga);

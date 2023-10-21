@@ -15,7 +15,7 @@ public class UserControllerTests
 {
     private readonly UserController _userController;
     private readonly Mock<IUserMangaChapterService> _userMangaChapterService;
-    private readonly Mock<IUserSourceService> _userSourceService;
+    private readonly Mock<IChapterService> _chapterService;
     private readonly Mock<IUserMangaService> _userMangaService;
 
     public UserControllerTests()
@@ -24,10 +24,10 @@ public class UserControllerTests
         var user = new ClaimsPrincipal(new ClaimsIdentity(claims, "test"));
 
         _userMangaChapterService = new Mock<IUserMangaChapterService>();
-        _userSourceService = new Mock<IUserSourceService>();
+        _chapterService = new Mock<IChapterService>();
         _userMangaService = new Mock<IUserMangaService>();
 
-        _userController = new UserController(_userMangaChapterService.Object, _userSourceService.Object,
+        _userController = new UserController(_userMangaChapterService.Object, _chapterService.Object,
             _userMangaService.Object)
         {
             ControllerContext = new ControllerContext
@@ -186,7 +186,7 @@ public class UserControllerTests
         _userMangaService
             .Setup(service => service.GetByMangaIdUserIdAndSourceId(mangaId, "testUser", sourceId))
             .ReturnsAsync(sampleUserManga);
-        
+
         _userMangaService
             .Setup(s => s.Update(sampleUserManga))
             .Verifiable();
@@ -196,7 +196,9 @@ public class UserControllerTests
 
         // Assert
         var okResult = Assert.IsType<OkResult>(result);
-        _userMangaService.Verify(service => service.GetByMangaIdUserIdAndSourceId(mangaId, "testUser", sourceId), Times.Once);
-        _userMangaService.Verify(service => service.Update(It.Is<UserManga>(um => um.CurrentChapterId == chapterId)), Times.Once);
+        _userMangaService.Verify(service => service.GetByMangaIdUserIdAndSourceId(mangaId, "testUser", sourceId),
+            Times.Once);
+        _userMangaService.Verify(service => service.Update(It.Is<UserManga>(um => um.CurrentChapterId == chapterId)),
+            Times.Once);
     }
 }

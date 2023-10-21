@@ -92,6 +92,7 @@ public class MangaControllerTests
         const string userId = "testUser";
         var sampleMangaDto = new MangaDto
         {
+            MangaId = 1,
             CoverUrl = "url",
             Name = "Manga1",
             AlternativeName = "",
@@ -124,6 +125,7 @@ public class MangaControllerTests
         const int mangaId = 123;
         var sampleMangaDto = new MangaDto
         {
+            MangaId = 1,
             CoverUrl = "url",
             Name = "Manga1",
             AlternativeName = "",
@@ -208,7 +210,7 @@ public class MangaControllerTests
         const string mangaSourceUrl = "https://example.com/manga-source-url";
         var sampleMangaSource = new MangaSource { Id = 1, MangaId = 1, SourceId = 1, Url = "" };
         var sampleChapter = new Chapter { Id = 1, MangaId = 1, SourceId = 1, Number = "1", Date = DateTime.Now };
-        
+
         _mangaSourceService
             .Setup(service => service.GetByMangaIdAndSourceId(mangaId, sourceId))
             .ReturnsAsync(sampleMangaSource);

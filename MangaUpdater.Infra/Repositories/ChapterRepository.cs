@@ -18,6 +18,14 @@ public class ChapterRepository : BaseRepository<Chapter>, IChapterRepository
         Context.Chapters.AddRange(chapters);
     }
 
+    public async Task<Chapter?> GetByIdAndMangaIdAsync(int mangaId, int chapterId)
+    {
+        return await Get()
+            .AsNoTracking()
+            .Where(ch => ch.MangaId == mangaId && ch.Id == chapterId)
+            .SingleOrDefaultAsync();
+    }
+
     public override async Task<Chapter?> GetByIdAsync(int id)
     {
         return await Get()

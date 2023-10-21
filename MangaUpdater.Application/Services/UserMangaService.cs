@@ -36,6 +36,6 @@ public class UserMangaService : IUserMangaService
     public async Task Update(UserManga userManga)
     {
         _userMangaRepository.Update(userManga);
-        await _userMangaRepository.SaveAsync();
+        await _userMangaRepository.SaveChangesAsync(userManga);
     }
 }

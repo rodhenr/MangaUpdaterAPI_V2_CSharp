@@ -35,7 +35,6 @@ public class UserMangaRepository : BaseRepository<UserManga>, IUserMangaReposito
     public async Task<UserManga?> GetByMangaIdUserIdAndSourceIdAsync(int mangaId, string userId, int sourceId)
     {
         return await Get()
-            .AsNoTracking()
             .SingleOrDefaultAsync(um => um.UserId == userId && um.MangaId == mangaId && um.SourceId == sourceId);
     }
 
@@ -56,6 +55,12 @@ public class UserMangaRepository : BaseRepository<UserManga>, IUserMangaReposito
             .ToListAsync();
 
         Context.UserMangas.RemoveRange(userMangas);
+        await Context.SaveChangesAsync();
+    }
+
+    public async Task SaveChangesAsync(UserManga userManga)
+    {
+        Context.Entry(userManga).Property(x => x.Id).IsModified = false;
         await Context.SaveChangesAsync();
     }
 }
