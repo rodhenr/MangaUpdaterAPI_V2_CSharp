@@ -4,6 +4,7 @@ using MangaUpdater.Infra.Data.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace MangaUpdater.Infra.Data.Migrations
 {
     [DbContext(typeof(IdentityMangaUpdaterContext))]
-    partial class MangaUpdaterContextModelSnapshot : ModelSnapshot
+    [Migration("20231021212854_Add-UserChapter")]
+    partial class AddUserChapter
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -218,10 +221,7 @@ namespace MangaUpdater.Infra.Data.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int?>("ChapterId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("SourceId")
+                    b.Property<int>("ChapterId")
                         .HasColumnType("int");
 
                     b.Property<int>("UserMangaId")
@@ -230,15 +230,12 @@ namespace MangaUpdater.Infra.Data.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("ChapterId")
-                        .IsUnique()
-                        .HasFilter("[ChapterId] IS NOT NULL");
-
-                    b.HasIndex("SourceId");
+                        .IsUnique();
 
                     b.HasIndex("UserMangaId")
                         .IsUnique();
 
-                    b.HasIndex("UserMangaId", "SourceId")
+                    b.HasIndex("UserMangaId", "ChapterId")
                         .IsUnique();
 
                     b.ToTable("UserChapters");
@@ -255,6 +252,9 @@ namespace MangaUpdater.Infra.Data.Migrations
                     b.Property<int>("MangaId")
                         .HasColumnType("int");
 
+                    b.Property<int>("SourceId")
+                        .HasColumnType("int");
+
                     b.Property<string>("UserId")
                         .IsRequired()
                         .HasMaxLength(450)
@@ -262,7 +262,9 @@ namespace MangaUpdater.Infra.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("MangaId", "UserId")
+                    b.HasIndex("SourceId");
+
+                    b.HasIndex("MangaId", "UserId", "SourceId")
                         .IsUnique();
 
                     b.ToTable("UserMangas");
@@ -557,11 +559,7 @@ namespace MangaUpdater.Infra.Data.Migrations
                 {
                     b.HasOne("MangaUpdater.Domain.Entities.Chapter", "Chapter")
                         .WithOne("UserChapter")
-                        .HasForeignKey("MangaUpdater.Domain.Entities.UserChapter", "ChapterId");
-
-                    b.HasOne("MangaUpdater.Domain.Entities.Source", "Source")
-                        .WithMany("UserChapter")
-                        .HasForeignKey("SourceId")
+                        .HasForeignKey("MangaUpdater.Domain.Entities.UserChapter", "ChapterId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -572,8 +570,6 @@ namespace MangaUpdater.Infra.Data.Migrations
                         .IsRequired();
 
                     b.Navigation("Chapter");
-
-                    b.Navigation("Source");
 
                     b.Navigation("UserManga");
                 });
@@ -586,7 +582,15 @@ namespace MangaUpdater.Infra.Data.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("MangaUpdater.Domain.Entities.Source", "Source")
+                        .WithMany("UserMangas")
+                        .HasForeignKey("SourceId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.Navigation("Manga");
+
+                    b.Navigation("Source");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -671,7 +675,7 @@ namespace MangaUpdater.Infra.Data.Migrations
 
                     b.Navigation("MangaSources");
 
-                    b.Navigation("UserChapter");
+                    b.Navigation("UserMangas");
                 });
 
             modelBuilder.Entity("MangaUpdater.Domain.Entities.UserManga", b =>

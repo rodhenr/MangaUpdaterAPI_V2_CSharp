@@ -93,6 +93,8 @@ public class MangaRepository : BaseRepository<Manga>, IMangaRepository
     {
         var manga = await Get()
             .Include(m => m.UserMangas!.Where(um => um.UserId == userId))
+            .ThenInclude(um => um.UserChapter)
+            .ThenInclude(uc => uc!.Source)
             .Include(m => m.MangaGenres)!
             .ThenInclude(m => m.Genre)
             .Include(m => m.MangaSources)!

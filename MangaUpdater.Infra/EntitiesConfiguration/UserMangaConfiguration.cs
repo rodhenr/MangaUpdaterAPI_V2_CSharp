@@ -9,21 +9,13 @@ public class UserMangaConfiguration : IEntityTypeConfiguration<UserManga>
     public void Configure(EntityTypeBuilder<UserManga> builder)
     {
         builder
-            .HasKey(um => new { um.MangaId, um.UserId, um.SourceId });
-
-        builder
-            .Property(um => um.Id)
-            .ValueGeneratedOnAdd();
+            .HasIndex(um => new { um.MangaId, um.UserId})
+            .IsUnique();
 
         builder
             .HasOne(um => um.Manga)
             .WithMany(um => um.UserMangas)
             .HasForeignKey(um => um.MangaId);
-
-        builder
-            .HasOne(um => um.Source)
-            .WithMany(um => um.UserMangas)
-            .HasForeignKey(um => um.SourceId);
 
         builder
             .Property(um => um.UserId)

@@ -8,4 +8,5 @@ public interface IUserMangaChapterService
     Task<IEnumerable<MangaUserLoggedDto>> GetUserMangasWithThreeLastChapterByUserId(string userId);
     Task DeleteUserMangasByMangaId(int mangaId, string userId);
     Task DeleteUserMangaByMangaIdAndSourceId(int mangaId, int sourceId, string userId);
+    Task UpdateOrCreateUserChapter(string userId, int mangaId, int sourceId, int chapterId);
 }

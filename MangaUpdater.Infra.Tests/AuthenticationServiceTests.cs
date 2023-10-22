@@ -160,11 +160,12 @@ public class AuthenticationServiceTests
 
         _userManagerMock
             .Setup(userManager => userManager.FindByEmailAsync(userAuthenticate.Email))
-            .ReturnsAsync(appUser);
+            .ReturnsAsync(() => null);
 
-        // Assert
+        // Act and Assert
         var exception = await Assert.ThrowsAsync<AuthenticationException>(async () =>
             await _authenticationService.Authenticate(userAuthenticate));
+
         Assert.Contains("User not found", exception.Message);
     }
 

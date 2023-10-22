@@ -291,7 +291,7 @@ public class MangaRepositoryTests
             Chapters = chapterList,
             UserMangas = new List<UserManga>()
             {
-                new() { Id = 1, MangaId = 1, SourceId = 1, UserId = "1", CurrentChapterId = 1 }
+                new() { Id = 1, MangaId = 1, UserId = "1" }
             },
             MangaGenres = Enumerable.Empty<MangaGenre>(),
             MangaSources = Enumerable.Empty<MangaSource>(),
@@ -338,11 +338,17 @@ public class MangaRepositoryTests
     public async Task GetByIdOrderedDescAsync_Should_Return_Manga_If_Found()
     {
         // Arrange
-        var chapterList = new List<Chapter>()
+        var chapterList = new List<Chapter>
         {
             new() { Id = 1, MangaId = 1, SourceId = 1, Date = DateTime.Parse("2023-01-01"), Number = "1" },
             new() { Id = 2, MangaId = 1, SourceId = 1, Date = DateTime.Parse("2023-02-01"), Number = "2" },
-            new() { Id = 3, MangaId = 1, SourceId = 1, Date = DateTime.Parse("2023-03-01"), Number = "3" },
+            new() { Id = 3, MangaId = 1, SourceId = 1, Date = DateTime.Parse("2023-03-01"), Number = "3" }
+        };
+        var sampleSource = new Source
+        {
+            Id = 1,
+            Name = "Source1",
+            BaseUrl = "",
         };
         var sampleManga = new Manga
         {
@@ -350,19 +356,18 @@ public class MangaRepositoryTests
             Synopsis = "",
             Type = "Manga",
             CoverUrl = "url",
-            MyAnimeListId = 1,
-            Chapters = chapterList,
-            MangaGenres = Enumerable.Empty<MangaGenre>(),
-            MangaSources = Enumerable.Empty<MangaSource>(),
+            MyAnimeListId = 1
         };
-        var expectedChapterList = new List<Chapter>()
+        var expectedChapterList = new List<Chapter>
         {
             new() { Id = 3, MangaId = 1, SourceId = 1, Date = DateTime.Parse("2023-03-01"), Number = "3" },
             new() { Id = 2, MangaId = 1, SourceId = 1, Date = DateTime.Parse("2023-02-01"), Number = "2" },
             new() { Id = 1, MangaId = 1, SourceId = 1, Date = DateTime.Parse("2023-01-01"), Number = "1" }
         };
 
+        _context.Sources.AddRange(sampleSource);
         _context.Mangas.Add(sampleManga);
+        _context.Chapters.AddRange(chapterList);
         await _context.SaveChangesAsync();
 
         // Act

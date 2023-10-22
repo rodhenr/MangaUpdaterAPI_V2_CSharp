@@ -7,15 +7,15 @@ namespace MangaUpdater.Application.Tests;
 
 public class UserSourceServiceTests
 {
-    private readonly Mock<IUserMangaRepository> _userMangaRepository;
+    private readonly Mock<IUserChapterRepository> _userChapterRepository;
     private readonly Mock<IMangaSourceRepository> _mangaSourceRepository;
     private readonly UserSourceService _service;
 
     public UserSourceServiceTests()
     {
-        _userMangaRepository = new Mock<IUserMangaRepository>();
+        _userChapterRepository = new Mock<IUserChapterRepository>();
         _mangaSourceRepository = new Mock<IMangaSourceRepository>();
-        _service = new UserSourceService(_userMangaRepository.Object, _mangaSourceRepository.Object);
+        _service = new UserSourceService(_mangaSourceRepository.Object, _userChapterRepository.Object);
     }
 
     [Fact]
@@ -49,9 +49,9 @@ public class UserSourceServiceTests
                 Source = new Source { Id = 3, Name = "Source3", BaseUrl = "url" }
             },
         };
-        var userMangaSample = new List<UserManga>
+        var userMangaSample = new List<UserChapter>
         {
-            new() { Id = 1, MangaId = 1, SourceId = 1, UserId = "1", CurrentChapterId = 1 },
+            new() { Id = 1, UserMangaId = 1, SourceId = 1, ChapterId = 1 },
         };
         var expectedDto = new List<UserSourceDto>
         {
@@ -63,17 +63,16 @@ public class UserSourceServiceTests
         _mangaSourceRepository
             .Setup(repo => repo.GetAllByMangaIdAsync(It.IsAny<int>()))
             .ReturnsAsync(mangaSourceSample);
-        _userMangaRepository
-            .Setup(repo => repo.GetAllByMangaIdAndUserIdAsync(It.IsAny<int>(), It.IsAny<string>()))
+        _userChapterRepository
+            .Setup(repo => repo.GetByUserMangaIdAsync(It.IsAny<int>()))
             .ReturnsAsync(userMangaSample);
 
         // Act
-        var result = await _service.GetUserSourcesByMangaId(It.IsAny<int>(), It.IsAny<string>());
+        var result = await _service.GetUserSourcesByMangaId(It.IsAny<int>(), It.IsAny<int>());
 
         // Assert
         _mangaSourceRepository.Verify(repo => repo.GetAllByMangaIdAsync(It.IsAny<int>()), Times.Once);
-        _userMangaRepository.Verify(repo => repo.GetAllByMangaIdAndUserIdAsync(It.IsAny<int>(), It.IsAny<string>()),
-            Times.Once);
+        _userChapterRepository.Verify(repo => repo.GetByUserMangaIdAsync(It.IsAny<int>()), Times.Once);
         result.Should().BeEquivalentTo(expectedDto);
     }
 }

@@ -19,6 +19,7 @@ public class IdentityMangaUpdaterContext : IdentityDbContext<AppUser>
     public DbSet<MangaSource> MangaSources { get; set; } = null!;
     public DbSet<Source> Sources { get; set; } = null!;
     public DbSet<UserManga> UserMangas { get; set; } = null!;
+    public DbSet<UserChapter> UserChapters { get; set; } = null!;
     public DbSet<MangaTitle> MangaTitles { get; set; } = null!;
 
     protected override void OnModelCreating(ModelBuilder builder)

@@ -7,7 +7,6 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
 using MangaUpdater.Application.Interfaces.Authentication;
 using MangaUpdater.Application.Models.Login;
-using MangaUpdater.Application.Models.RefreshToken;
 using MangaUpdater.Application.Models.Register;
 using MangaUpdater.Domain.Exceptions;
 

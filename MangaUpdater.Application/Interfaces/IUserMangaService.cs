@@ -6,6 +6,6 @@ namespace MangaUpdater.Application.Interfaces;
 public interface IUserMangaService
 {
     Task<IEnumerable<MangaUserDto>> GetMangasByUserId(string userId);
-    Task<UserManga> GetByMangaIdUserIdAndSourceId(int mangaId, string userId, int sourceId);
+    Task<UserManga?> GetByUserIdAndMangaId(string userId, int mangaId);
     Task Update(UserManga userManga);
 }

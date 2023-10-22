@@ -4,7 +4,7 @@ namespace MangaUpdater.Application.DTOs;
 
 public sealed class UserMangaGroupByMangaDto
 {
-    public UserMangaGroupByMangaDto(Manga manga, List<SourceWithLastChapterRead> sourcesWithLastChapterRead)
+    public UserMangaGroupByMangaDto(Manga manga, List<SourceWithLastChapterRead?> sourcesWithLastChapterRead)
     {
         Manga = manga;
         SourcesWithLastChapterRead = sourcesWithLastChapterRead;

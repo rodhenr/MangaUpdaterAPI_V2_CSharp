@@ -20,10 +20,11 @@ public class MangaController : BaseController
     private readonly IMangaLivreService _mangaLivreService;
     private readonly IMangaSourceService _mangaSourceService;
     private readonly IChapterService _chapterService;
+    private readonly IUserMangaService _userMangaService;
 
     public MangaController(IMangaService mangaService, IUserSourceService userSourceService,
         IRegisterMangaFromMyAnimeListService registerMangaFromMyAnimeListService, IMangaLivreService mangaLivreService,
-        IMangaSourceService mangaSourceService, IChapterService chapterService)
+        IMangaSourceService mangaSourceService, IChapterService chapterService, IUserMangaService userMangaService)
     {
         _mangaService = mangaService;
         _userSourceService = userSourceService;
@@ -31,6 +32,7 @@ public class MangaController : BaseController
         _mangaLivreService = mangaLivreService;
         _mangaSourceService = mangaSourceService;
         _chapterService = chapterService;
+        _userMangaService = userMangaService;
     }
 
     /// <summary>
@@ -85,8 +87,11 @@ public class MangaController : BaseController
     /// <response code="400">Error.</response>
     [SwaggerOperation("Get all sources from a manga with following info for a logged-in user")]
     [HttpGet("{mangaId:int}/sources")]
-    public async Task<ActionResult<IEnumerable<UserSourceDto>>> GetUserSources(int mangaId) =>
-        Ok(await _userSourceService.GetUserSourcesByMangaId(mangaId, UserId!));
+    public async Task<ActionResult<IEnumerable<UserSourceDto>>> GetUserSources(int mangaId)
+    {
+        var userManga = await _userMangaService.GetByUserIdAndMangaId(UserId!, mangaId);
+        return Ok(await _userSourceService.GetUserSourcesByMangaId(mangaId, userManga?.Id));
+    }
 
     /// <summary>
     /// Register a new source for a manga.

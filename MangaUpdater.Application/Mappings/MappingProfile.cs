@@ -28,11 +28,14 @@ public class MappingProfile : Profile
             ))
             .ForMember(dest => dest.Chapters, opt => opt.MapFrom((src, _, _, _) =>
             {
-                if (src.Chapters is null)
+                if (src.Chapters is null || !src.Chapters.Any())
                     return Enumerable.Empty<ChapterDto>();
 
                 var userSourceChapterList =
-                    src.UserMangas?.Select(um => new { um.SourceId, um.CurrentChapterId }).ToList();
+                    src.UserMangas?
+                        .Where(um => um.UserChapter is not null)
+                        .Select(um => new { um.UserChapter!.SourceId, um.UserChapter!.ChapterId })
+                        .ToList();
 
                 return src.Chapters
                     .Select(ch =>
@@ -49,7 +52,7 @@ public class MappingProfile : Profile
                                    ch.Id <=
                                    userSourceChapterList.First(chapterListRead =>
                                            chapterListRead.SourceId == ch.SourceId)
-                                       .CurrentChapterId
+                                       .ChapterId
                         };
                     });
             }));

@@ -10,6 +10,6 @@ public sealed class Chapter : Entity
     public required string Number { get; set; }
 
     [JsonIgnore] public Manga? Manga { get; set; }
-
+    [JsonIgnore] public UserChapter? UserChapter { get; set; }
     [JsonIgnore] public Source? Source { get; set; }
 }

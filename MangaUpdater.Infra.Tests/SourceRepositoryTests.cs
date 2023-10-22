@@ -43,7 +43,7 @@ public class SourceRepositoryTests
         {
             options.Excluding(s => s.Chapters);
             options.Excluding(s => s.MangaSources);
-            options.Excluding(s => s.UserMangas);
+            options.Excluding(s => s.UserChapter);
             return options;
         });
     }

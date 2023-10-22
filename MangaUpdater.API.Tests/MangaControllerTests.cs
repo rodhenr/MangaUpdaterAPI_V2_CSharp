@@ -19,6 +19,7 @@ public class MangaControllerTests
     private readonly Mock<IMangaLivreService> _mangaLivreService;
     private readonly Mock<IMangaSourceService> _mangaSourceService;
     private readonly Mock<IChapterService> _chapterService;
+    private readonly Mock<IUserMangaService> _userMangaService;
 
     public MangaControllerTests()
     {
@@ -31,11 +32,11 @@ public class MangaControllerTests
         _mangaLivreService = new Mock<IMangaLivreService>();
         _mangaSourceService = new Mock<IMangaSourceService>();
         _chapterService = new Mock<IChapterService>();
-
+        _userMangaService = new Mock<IUserMangaService>();
 
         _mangaController = new MangaController(_mangaService.Object, _userSourceService.Object,
             _registerMangaFromMyAnimeListService.Object, _mangaLivreService.Object, _mangaSourceService.Object,
-            _chapterService.Object)
+            _chapterService.Object, _userMangaService.Object)
         {
             ControllerContext = new ControllerContext
             {
@@ -168,10 +169,16 @@ public class MangaControllerTests
             new(2, "Source2", true),
             new(3, "Source3", false),
         };
+        var sampleUserManga = new UserManga
+        {
+            Id = 1,
+            MangaId = mangaId,
+            UserId = userId
+        };
 
-        _userSourceService
-            .Setup(service => service.GetUserSourcesByMangaId(mangaId, userId))
-            .ReturnsAsync(userSourceDtoList);
+        _userMangaService
+            .Setup(service => service.GetByUserIdAndMangaId(userId, mangaId))
+            .ReturnsAsync(sampleUserManga);
 
         // Act
         var result = await _mangaController.GetUserSources(mangaId);

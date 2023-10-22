@@ -104,12 +104,7 @@ public class UserController : BaseController
     [HttpPatch("mangas/{mangaId:int}/sources/{sourceId:int}")]
     public async Task<ActionResult> UpdateManga(int mangaId, int sourceId, [FromQuery] int chapterId)
     {
-        var userManga = await _userMangaService.GetByMangaIdUserIdAndSourceId(mangaId, UserId!, sourceId);
-        var chapter = await _chapterService.GetByIdAndMangaId(mangaId, chapterId);
-
-        userManga.CurrentChapterId = chapterId;
-
-        await _userMangaService.Update(userManga);
+        await _userMangaChapterService.UpdateOrCreateUserChapter(UserId!, mangaId, sourceId, chapterId);
         return Ok();
     }
 }

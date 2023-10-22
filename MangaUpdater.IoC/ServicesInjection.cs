@@ -29,7 +29,8 @@ public static class ServicesInjection
         services.AddScoped<IUserMangaRepository, UserMangaRepository>();
         services.AddScoped<IMangaAuthorRepository, MangaAuthorRepository>();
         services.AddScoped<IMangaTitleRepository, MangaTitleRepository>();
-
+        services.AddScoped<IUserChapterRepository, UserChapterRepository>();
+        
         services.AddScoped<IChapterService, ChapterService>();
         services.AddScoped<IGenreService, GenreService>();
         services.AddScoped<IMangaGenreService, MangaGenreService>();
@@ -41,7 +42,8 @@ public static class ServicesInjection
         services.AddScoped<IUserMangaChapterService, UserMangaChapterService>();
         services.AddScoped<IMangaAuthorService, MangaAuthorService>();
         services.AddScoped<IMangaTitleService, MangaTitleService>();
-
+        services.AddScoped<IUserChapterService, UserChapterService>();
+        
         services.AddScoped<IMyAnimeListApiService, MyAnimeListApiService>();
         services.AddScoped<IRegisterMangaFromMyAnimeListService, RegisterMangaFromMyAnimeListService>();
         services.AddScoped<IAuthenticationService, AuthenticationService>();

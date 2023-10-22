@@ -6,9 +6,7 @@ public sealed class UserManga: Entity
 {
     public required string UserId { get; set; }
     public required int MangaId { get; set; }
-    public required int SourceId { get; set; }
-    public int? CurrentChapterId { get; set; }
-
+    
     [JsonIgnore] public Manga? Manga { get; set; }
-    [JsonIgnore] public Source? Source { get; set; }
+    [JsonIgnore] public UserChapter? UserChapter { get; set; }
 }

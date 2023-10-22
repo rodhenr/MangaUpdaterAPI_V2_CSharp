@@ -159,6 +159,7 @@ public class MangaServiceTests
         var date = DateTime.Now;
         var sampleManga = new Manga
         {
+            Id = 1,
             CoverUrl = "url",
             Synopsis = "synopsis",
             Type = "Manga",
@@ -176,29 +177,45 @@ public class MangaServiceTests
                 new() { Id = 1, MangaId = 1, Name = "Manga1", },
                 new() { Id = 1, MangaId = 1, Name = "AltManga1" }
             },
-            MangaAuthors = new List<MangaAuthor>()
+            MangaAuthors = new List<MangaAuthor>
             {
                 new() { Id = 1, MangaId = 1, Name = "Author1" }
             },
-            UserMangas = new List<UserManga>()
-            {
-                new() { Id = 1, UserId = "1", MangaId = 1, SourceId = 1, CurrentChapterId = 1 }
-            },
-            MangaGenres = new List<MangaGenre>()
-            {
-                new() { Id = 1, MangaId = 1, GenreId = 1, Genre = new Genre() { Id = 1, Name = "Genre1" } }
-            },
-            MangaSources = new List<MangaSource>()
+            UserMangas = new List<UserManga>
             {
                 new()
                 {
-                    Id = 1, MangaId = 1, SourceId = 1, Url = "http",
-                    Source = new Source() { Id = 1, Name = "Source1", BaseUrl = "base" }
+                    Id = 1,
+                    UserId = "1",
+                    MangaId = 1,
+                    UserChapter = new UserChapter { UserMangaId = 1, SourceId = 1, ChapterId = 1 }
+                }
+            },
+            MangaGenres = new List<MangaGenre>
+            {
+                new()
+                {
+                    Id = 1,
+                    MangaId = 1,
+                    GenreId = 1,
+                    Genre = new Genre() { Id = 1, Name = "Genre1" }
+                }
+            },
+            MangaSources = new List<MangaSource>
+            {
+                new()
+                {
+                    Id = 1,
+                    MangaId = 1,
+                    SourceId = 1,
+                    Url = "http",
+                    Source = new Source { Id = 1, Name = "Source1", BaseUrl = "base" }
                 }
             }
         };
         var expectedMangaDto = new MangaDto
         {
+            MangaId = 1,
             CoverUrl = "url",
             Name = "Manga1",
             AlternativeName = "AltManga1",
@@ -261,46 +278,64 @@ public class MangaServiceTests
         var date = DateTime.Now;
         var sampleManga = new Manga
         {
+            Id = 1,
             CoverUrl = "url",
             Synopsis = "synopsis",
             Type = "Manga",
             MyAnimeListId = 1,
-            Chapters = new List<Chapter>()
+            Chapters = new List<Chapter>
             {
                 new()
                 {
-                    Id = 1, MangaId = 1, SourceId = 1, Date = date, Number = "1",
-                    Source = new Source() { Id = 1, Name = "Source1", BaseUrl = "base" }
+                    Id = 1,
+                    MangaId = 1,
+                    SourceId = 1,
+                    Date = date,
+                    Number = "1",
+                    Source = new Source { Id = 1, Name = "Source1", BaseUrl = "base" }
                 }
             },
-            MangaTitles = new List<MangaTitle>()
+            MangaTitles = new List<MangaTitle>
             {
                 new() { Id = 1, MangaId = 1, Name = "Manga1", },
                 new() { Id = 1, MangaId = 1, Name = "AltManga1" }
             },
-            MangaAuthors = new List<MangaAuthor>()
+            MangaAuthors = new List<MangaAuthor>
             {
                 new() { Id = 1, MangaId = 1, Name = "Author1" }
             },
-            UserMangas = new List<UserManga>()
+            UserMangas = new List<UserManga>
             {
-                new() { Id = 1, UserId = "1", MangaId = 1, SourceId = 1, CurrentChapterId = 1 }
+                new()
+                {
+                    Id = 1,
+                    UserId = "1",
+                    MangaId = 1,
+                    UserChapter = new UserChapter { UserMangaId = 1, SourceId = 1, ChapterId = 1 }
+                }
             },
-            MangaGenres = new List<MangaGenre>()
+            MangaGenres = new List<MangaGenre>
             {
-                new() { Id = 1, MangaId = 1, GenreId = 1, Genre = new Genre() { Id = 1, Name = "Genre1" } }
+                new()
+                {
+                    Id = 1,
+                    MangaId = 1,
+                    GenreId = 1,
+                    Genre = new Genre { Id = 1, Name = "Genre1" }
+                }
             },
-            MangaSources = new List<MangaSource>()
+            MangaSources = new List<MangaSource>
             {
                 new()
                 {
                     Id = 1, MangaId = 1, SourceId = 1, Url = "http",
-                    Source = new Source() { Id = 1, Name = "Source1", BaseUrl = "base" }
+                    Source = new Source { Id = 1, Name = "Source1", BaseUrl = "base" }
                 }
             }
         };
         var expectedMangaDto = new MangaDto
         {
+            MangaId = 1,
             CoverUrl = "url",
             Name = "Manga1",
             AlternativeName = "AltManga1",
@@ -362,6 +397,7 @@ public class MangaServiceTests
         // Arrange
         var sampleManga = new Manga
         {
+            Id = 1,
             CoverUrl = "url",
             Synopsis = "synopsis",
             Type = "Manga",
@@ -392,6 +428,7 @@ public class MangaServiceTests
         };
         var expectedMangaDto = new MangaDto
         {
+            MangaId = 1,
             CoverUrl = "url",
             Name = "Manga1",
             AlternativeName = "AltManga1",

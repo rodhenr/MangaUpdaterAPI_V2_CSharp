@@ -9,11 +9,8 @@ public class ChaptersConfiguration : IEntityTypeConfiguration<Chapter>
     public void Configure(EntityTypeBuilder<Chapter> builder)
     {
         builder
-            .HasKey(ch => new { ch.MangaId, ch.SourceId, ch.Number });
-
-        builder
-            .Property(ch => ch.Id)
-            .ValueGeneratedOnAdd();
+            .HasIndex(ch => new { ch.MangaId, ch.SourceId, ch.Number })
+            .IsUnique();
 
         builder.HasOne(ch => ch.Manga)
             .WithMany(ch => ch.Chapters)

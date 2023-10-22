@@ -16,42 +16,27 @@ public class UserMangaRepository : BaseRepository<UserManga>, IUserMangaReposito
         return await Get()
             .Where(um => um.UserId == userId)
             .Include(um => um.Manga)
-            .ThenInclude(m => m.MangaTitles)
-            .Include(um => um.Source)
+            .ThenInclude(m => m!.MangaTitles)
+            .Include(um => um.UserChapter)
+            .ThenInclude(uc => uc!.Source)
             .GroupBy(um => um.MangaId)
             .Select(group => group.First())
             .AsNoTracking()
             .ToListAsync();
     }
 
-    public async Task<IEnumerable<UserManga>> GetAllByMangaIdAndUserIdAsync(int mangaId, string userId)
+    public async Task<UserManga?> GetByMangaIdAndUserIdAsync(int mangaId, string userId)
     {
         return await Get()
             .Where(um => um.MangaId == mangaId && um.UserId == userId)
             .AsNoTracking()
-            .ToListAsync();
-    }
-
-    public async Task<UserManga?> GetByMangaIdUserIdAndSourceIdAsync(int mangaId, string userId, int sourceId)
-    {
-        return await Get()
-            .SingleOrDefaultAsync(um => um.UserId == userId && um.MangaId == mangaId && um.SourceId == sourceId);
+            .SingleOrDefaultAsync();
     }
 
     public async Task DeleteAsync(int mangaId, string userId)
     {
         var userMangas = await Get()
             .Where(um => um.MangaId == mangaId && um.UserId == userId)
-            .ToListAsync();
-
-        Context.UserMangas.RemoveRange(userMangas);
-        await Context.SaveChangesAsync();
-    }
-
-    public async Task DeleteAsync(int mangaId, int sourceId, string userId)
-    {
-        var userMangas = await Get()
-            .Where(um => um.MangaId == mangaId && um.SourceId == sourceId && um.UserId == userId)
             .ToListAsync();
 
         Context.UserMangas.RemoveRange(userMangas);
