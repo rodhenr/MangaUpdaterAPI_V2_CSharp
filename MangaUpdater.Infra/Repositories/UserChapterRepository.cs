@@ -44,4 +44,14 @@ public class UserChapterRepository : BaseRepository<UserChapter>, IUserChapterRe
         Context.UserChapters.RemoveRange(userChapters);
         await Context.SaveChangesAsync();
     }
+
+    public async Task DeleteRangeAsync(int userMangaId, IEnumerable<int> sourceIdList)
+    {
+        var userChapters = await Get()
+            .Where(uc => uc.UserMangaId == userMangaId && sourceIdList.Contains(uc.SourceId))
+            .ToListAsync();
+
+        Context.UserChapters.RemoveRange(userChapters);
+        await Context.SaveChangesAsync();
+    }
 }

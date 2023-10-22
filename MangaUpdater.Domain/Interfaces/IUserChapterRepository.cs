@@ -8,4 +8,5 @@ public interface IUserChapterRepository : IBaseRepository<UserChapter>
     Task<UserChapter?> GetByUserMangaIdAndSourceIdAsync(int userMangaId, int sourceId);
     Task DeleteAsync(int userMangaId);
     Task DeleteAsync(int userMangaId, int sourceId);
+    Task DeleteRangeAsync(int userMangaId, IEnumerable<int> sourceIdList);
 }

@@ -45,18 +45,26 @@ public class UserMangaChapterService : IUserMangaChapterService
             .Select(us => us.SourceId)
             .ToList();
 
-        if (!sourceIdListToAdd.Any()) return;
+        var sourceIdListToRemove = userSourceList
+            .Where(us => us.IsFollowing && !sourceIdList.Contains(us.SourceId))
+            .Select(us => us.SourceId)
+            .ToList();
 
         userManga ??= await _userMangaRepository.GetByMangaIdAndUserIdAsync(mangaId, userId);
-
         if (userManga is null) return;
 
-        foreach (var sourceId in sourceIdListToAdd)
+        if (sourceIdListToAdd.Any())
         {
-            _userChapterRepository.Create(new UserChapter { UserMangaId = userManga.Id, SourceId = sourceId });
+            foreach (var sourceId in sourceIdListToAdd)
+            {
+                _userChapterRepository.Create(new UserChapter { UserMangaId = userManga.Id, SourceId = sourceId });
+            }
+
+            await _userChapterRepository.SaveAsync();
         }
 
-        await _userChapterRepository.SaveAsync();
+        if (sourceIdListToRemove.Any())
+            await _userChapterRepository.DeleteRangeAsync(userManga.Id, sourceIdListToRemove);
     }
 
     public async Task<IEnumerable<MangaUserLoggedDto>> GetUserMangasWithThreeLastChapterByUserId(string userId)
@@ -83,7 +91,7 @@ public class UserMangaChapterService : IUserMangaChapterService
             var sourceList = userManga.SourcesWithLastChapterRead
                 .Select(sch => sch.SourceId)
                 .ToList();
-            
+
             var chapters =
                 await _chapterRepository.GetThreeLastByMangaIdAndSourceListAsync(userManga.Manga.Id, sourceList);
 
