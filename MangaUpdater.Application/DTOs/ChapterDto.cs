@@ -7,5 +7,6 @@ public record ChapterDto
     public required string SourceName { get; init; }
     public required DateTime Date { get; init; }
     public required string Number { get; init; }
+    public required bool IsUserAllowedToRead { get; init; }
     public required bool Read { get; init; }
 };

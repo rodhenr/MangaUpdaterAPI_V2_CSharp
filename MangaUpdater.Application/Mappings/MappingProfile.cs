@@ -47,6 +47,9 @@ public class MappingProfile : Profile
                             SourceName = ch.Source.Name,
                             Date = ch.Date,
                             Number = ch.Number,
+                            IsUserAllowedToRead = userSourceChapterList is not null &&
+                                                  userSourceChapterList.Any(chapterList =>
+                                                      chapterList.SourceId == ch.SourceId),
                             Read = userSourceChapterList is not null &&
                                    userSourceChapterList.Any(chapterList => chapterList.SourceId == ch.SourceId) &&
                                    ch.Id <=
@@ -71,6 +74,7 @@ public class MappingProfile : Profile
                         SourceName = ch.Source!.Name,
                         Date = ch.Date,
                         Number = ch.Number,
+                        IsUserAllowedToRead = src.SourcesWithLastChapterRead.Any(b => b.SourceId == ch.SourceId),
                         Read = src.SourcesWithLastChapterRead.Any(b => b.SourceId == ch.SourceId) && ch.Id <=
                             src.SourcesWithLastChapterRead.First(c => c.SourceId == ch.SourceId).LastChapterRead
                     });
