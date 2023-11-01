@@ -20,6 +20,8 @@ public class MangaControllerTests
     private readonly Mock<IMangaSourceService> _mangaSourceService;
     private readonly Mock<IChapterService> _chapterService;
     private readonly Mock<IUserMangaService> _userMangaService;
+    private readonly Mock<IGenreService> _genreService;
+    private readonly Mock<IMangaGenreService> _mangaGenreService;
 
     public MangaControllerTests()
     {
@@ -33,10 +35,12 @@ public class MangaControllerTests
         _mangaSourceService = new Mock<IMangaSourceService>();
         _chapterService = new Mock<IChapterService>();
         _userMangaService = new Mock<IUserMangaService>();
+        _genreService = new Mock<IGenreService>();
+        _mangaGenreService = new Mock<IMangaGenreService>();
 
         _mangaController = new MangaController(_mangaService.Object, _userSourceService.Object,
             _registerMangaFromMyAnimeListService.Object, _mangaLivreService.Object, _mangaSourceService.Object,
-            _chapterService.Object, _userMangaService.Object)
+            _chapterService.Object, _userMangaService.Object, _genreService.Object, _mangaGenreService.Object)
         {
             ControllerContext = new ControllerContext
             {

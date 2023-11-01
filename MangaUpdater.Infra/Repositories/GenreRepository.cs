@@ -17,4 +17,12 @@ public class GenreRepository : BaseRepository<Genre>, IGenreRepository
             .AsNoTracking()
             .SingleOrDefaultAsync(g => g.Id == id);
     }
+
+    public async Task<IEnumerable<Genre>> GetGenresByListIdAsync(IEnumerable<int> genreIdList)
+    {
+        return await Get()
+            .Where(g => genreIdList.Contains(g.Id))
+            .OrderBy(g => g.Name)
+            .ToListAsync();
+    }
 }

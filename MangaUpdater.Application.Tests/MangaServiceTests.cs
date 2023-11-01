@@ -241,7 +241,8 @@ public class MangaServiceTests
                     SourceName = "Source1",
                     Date = date,
                     Number = "1",
-                    Read = true
+                    Read = true,
+                    IsUserAllowedToRead = true
                 }
             }
         };
@@ -361,7 +362,8 @@ public class MangaServiceTests
                     SourceName = "Source1",
                     Date = date,
                     Number = "1",
-                    Read = true
+                    Read = true,
+                    IsUserAllowedToRead = true
                 }
             }
         };

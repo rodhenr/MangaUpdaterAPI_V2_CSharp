@@ -12,7 +12,12 @@ public class MangaGenreService : IMangaGenreService
     {
         _mangaGenreRepository = mangaGenreRepository;
     }
-    
+
+    public async Task<IEnumerable<int>> GetUniqueGenresId()
+    {
+        return await _mangaGenreRepository.GetUniqueGenreIdListAsync();
+    }
+
     public void BulkCreate(IEnumerable<MangaGenre> mangaGenres)
     {
         _mangaGenreRepository.BulkCreate(mangaGenres);

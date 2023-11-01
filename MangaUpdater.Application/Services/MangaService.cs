@@ -37,9 +37,10 @@ public class MangaService : IMangaService
         var mangas = await _mangaRepository.GetWithFiltersAsync(page, orderBy, sourceIdList, genreIdList);
 
         var mangaUserDtoList = mangas
-            .Select(manga => new MangaUserDto(manga.Id, manga.CoverUrl, manga.MangaTitles!.First().Name))
+            .Select(manga =>
+                new MangaUserDto(manga.Id, manga.CoverUrl, manga.MangaTitles!.First().Name))
             .ToList();
-        
+
         return mangaUserDtoList;
     }
 

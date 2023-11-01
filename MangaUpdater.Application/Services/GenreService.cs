@@ -13,6 +13,11 @@ public class GenreService : IGenreService
         _genreRepository = genreRepository;
     }
 
+    public async Task<IEnumerable<Genre>> GetGenresByListId(IEnumerable<int> genreIdList)
+    {
+        return await _genreRepository.GetGenresByListIdAsync(genreIdList);
+    }
+
     public async Task<IEnumerable<Genre>> Get()
     {
         return await _genreRepository.GetAsync();

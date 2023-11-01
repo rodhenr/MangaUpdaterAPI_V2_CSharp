@@ -21,10 +21,13 @@ public class MangaController : BaseController
     private readonly IMangaSourceService _mangaSourceService;
     private readonly IChapterService _chapterService;
     private readonly IUserMangaService _userMangaService;
+    private readonly IGenreService _genreService;
+    private readonly IMangaGenreService _mangaGenreService;
 
     public MangaController(IMangaService mangaService, IUserSourceService userSourceService,
         IRegisterMangaFromMyAnimeListService registerMangaFromMyAnimeListService, IMangaLivreService mangaLivreService,
-        IMangaSourceService mangaSourceService, IChapterService chapterService, IUserMangaService userMangaService)
+        IMangaSourceService mangaSourceService, IChapterService chapterService, IUserMangaService userMangaService,
+        IGenreService genreService, IMangaGenreService mangaGenreService)
     {
         _mangaService = mangaService;
         _userSourceService = userSourceService;
@@ -33,6 +36,8 @@ public class MangaController : BaseController
         _mangaSourceService = mangaSourceService;
         _chapterService = chapterService;
         _userMangaService = userMangaService;
+        _genreService = genreService;
+        _mangaGenreService = mangaGenreService;
     }
 
     /// <summary>
@@ -43,12 +48,17 @@ public class MangaController : BaseController
     [AllowAnonymous]
     [SwaggerOperation("Get all manga")]
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<MangaUserDto>>> GetMangas([FromQuery] int page = 1,
+    public async Task<ActionResult<IEnumerable<MangasWithGenresDto>>> GetMangas([FromQuery] int page = 1,
         [SwaggerParameter("Empty (no ordering), alphabet or latest")] [FromQuery]
         string? orderBy = null,
-        [FromQuery] List<int>? sourceId = null, [FromQuery] List<int>? genreId = null) =>
-        Ok(await _mangaService.GetWithFilter(page, orderBy, sourceId, genreId));
+        [FromQuery] List<int>? sourceId = null, [FromQuery] List<int>? genreId = null)
+    {
+        var mangaDto = await _mangaService.GetWithFilter(page, orderBy, sourceId, genreId);
+        var genreIdList = await _mangaGenreService.GetUniqueGenresId();
+        var genres = await _genreService.GetGenresByListId(genreIdList);
 
+        return Ok(new MangasWithGenresDto(mangaDto, genres));
+    }
 
     /// <summary>
     /// Register a new manga using a MyAnimeList id.
