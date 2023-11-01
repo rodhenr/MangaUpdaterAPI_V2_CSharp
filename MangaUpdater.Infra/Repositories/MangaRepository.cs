@@ -34,18 +34,16 @@ public class MangaRepository : BaseRepository<Manga>, IMangaRepository
         List<int>? genreIdList)
     {
         const int pageSize = 20;
-        var query = Get();
+        var query = Get()
+            .Include(m => m.MangaTitles)
+            .Include(m => m.MangaSources)
+            .Include(m => m.MangaGenres)
+            .AsQueryable();
 
         query = orderBy switch
         {
             "alphabet" => query
-                .Select(q => new
-                {
-                    Manga = q,
-                    SortedMangaTitle = q.MangaTitles!.First()
-                })
-                .OrderBy(m => m.SortedMangaTitle)
-                .Select(m => m.Manga),
+                .OrderBy(m => m.MangaTitles!.First().Name),
             "latest" => query
                 .OrderByDescending(m => m.Id),
             _ => query
@@ -61,7 +59,6 @@ public class MangaRepository : BaseRepository<Manga>, IMangaRepository
                 .Include(m => m.MangaGenres);
 
         return await query
-            .Include(q => q.MangaTitles!)
             .Skip((page - 1) * pageSize)
             .Take(pageSize)
             .AsNoTracking()
