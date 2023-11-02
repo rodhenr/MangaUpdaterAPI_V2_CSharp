@@ -60,7 +60,7 @@ public class MangaControllerTests
             new(3, "Cover3", "Manga3")
         };
         _mangaService
-            .Setup(service => service.GetWithFilter(It.IsAny<int>(), It.IsAny<string>(), It.IsAny<List<int>>(),
+            .Setup(service => service.GetWithFilter(It.IsAny<int>(), It.IsAny<int>(),It.IsAny<string>(), It.IsAny<List<int>>(),
                 It.IsAny<List<int>>()))
             .ReturnsAsync(mangaUserDtoList);
 

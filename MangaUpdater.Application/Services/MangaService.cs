@@ -24,6 +24,11 @@ public class MangaService : IMangaService
         await _mangaRepository.SaveAsync();
     }
 
+    public async Task<int> CheckNumberOfPages(int pageSize)
+    {
+        return await _mangaRepository.CheckNumberOfPagesAsync(pageSize);
+    }
+
     public async Task<bool> CheckIfMangaIsRegistered(int myAnimeListId)
     {
         var manga = await _mangaRepository.GetByMalIdAsync(myAnimeListId);
@@ -31,10 +36,10 @@ public class MangaService : IMangaService
         return manga is not null;
     }
 
-    public async Task<IEnumerable<MangaUserDto>> GetWithFilter(int page, string? orderBy, List<int>? sourceIdList,
+    public async Task<IEnumerable<MangaUserDto>> GetWithFilter(int page, int pageSize, string? orderBy, List<int>? sourceIdList,
         List<int>? genreIdList)
     {
-        var mangas = await _mangaRepository.GetWithFiltersAsync(page, orderBy, sourceIdList, genreIdList);
+        var mangas = await _mangaRepository.GetWithFiltersAsync(page, pageSize, orderBy, sourceIdList, genreIdList);
 
         var mangaUserDtoList = mangas
             .Select(manga =>

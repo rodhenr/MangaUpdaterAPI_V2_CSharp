@@ -30,10 +30,10 @@ public class MangaRepository : BaseRepository<Manga>, IMangaRepository
             .SingleOrDefaultAsync(m => m.MyAnimeListId == malId);
     }
 
-    public async Task<IEnumerable<Manga>> GetWithFiltersAsync(int page, string? orderBy, List<int>? sourceIdList,
+    public async Task<IEnumerable<Manga>> GetWithFiltersAsync(int page, int pageSize, string? orderBy,
+        List<int>? sourceIdList,
         List<int>? genreIdList)
     {
-        const int pageSize = 20;
         var query = Get()
             .Include(m => m.MangaTitles)
             .Include(m => m.MangaSources)
@@ -108,5 +108,17 @@ public class MangaRepository : BaseRepository<Manga>, IMangaRepository
                 manga.Chapters?.OrderByDescending(ch => float.Parse(ch.Number, CultureInfo.InvariantCulture));
 
         return manga;
+    }
+
+    public async Task<int> CheckNumberOfPagesAsync(int pageSize)
+    {
+        var numberOfMangas = await Get()
+            .AsNoTracking()
+            .Select(m => m.Id)
+            .ToListAsync();
+
+        var numberOfPages = (int)Math.Ceiling((double)numberOfMangas.Count / pageSize);
+
+        return numberOfPages;
     }
 }

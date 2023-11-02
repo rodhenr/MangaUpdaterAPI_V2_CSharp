@@ -8,6 +8,7 @@ using MangaUpdater.Domain.Entities;
 using MangaUpdater.API.Controllers.Shared;
 using MangaUpdater.Application.Interfaces.External.MangaLivre;
 using MangaUpdater.Application.Interfaces.External.MyAnimeList;
+using MangaUpdater.Domain.Exceptions;
 
 namespace MangaUpdater.API.Controllers;
 
@@ -49,15 +50,19 @@ public class MangaController : BaseController
     [SwaggerOperation("Get all manga")]
     [HttpGet]
     public async Task<ActionResult<IEnumerable<MangasWithGenresDto>>> GetMangas([FromQuery] int page = 1,
+        [FromQuery] int pageSize = 20,
         [SwaggerParameter("Empty (no ordering), alphabet or latest")] [FromQuery]
         string? orderBy = null,
         [FromQuery] List<int>? sourceId = null, [FromQuery] List<int>? genreId = null)
     {
-        var mangaDto = await _mangaService.GetWithFilter(page, orderBy, sourceId, genreId);
+        var mangaDto = await _mangaService.GetWithFilter(page, pageSize, orderBy, sourceId, genreId);
         var genreIdList = await _mangaGenreService.GetUniqueGenresId();
         var genres = await _genreService.GetGenresByListId(genreIdList);
+        var mangaData = new MangasWithGenresDto(mangaDto, genres);
 
-        return Ok(new MangasWithGenresDto(mangaDto, genres));
+        var numberOfPages = await _mangaService.CheckNumberOfPages(pageSize);
+
+        return Ok(new MangaResponse(page, pageSize, numberOfPages, mangaData));
     }
 
     /// <summary>
@@ -84,6 +89,9 @@ public class MangaController : BaseController
     [HttpGet("{mangaId:int}")]
     public async Task<ActionResult<MangaDto>> GetManga(int mangaId)
     {
+        if (!string.IsNullOrEmpty(Request.Headers["Authorization"]) && UserId is null)
+            return Unauthorized("Invalid token data");
+
         return UserId is not null
             ? Ok(await _mangaService.GetByIdAndUserId(mangaId, UserId!))
             : Ok(await _mangaService.GetByIdNotLogged(mangaId));

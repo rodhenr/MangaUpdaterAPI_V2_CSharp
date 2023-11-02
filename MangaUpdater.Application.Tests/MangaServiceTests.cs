@@ -115,17 +115,20 @@ public class MangaServiceTests
         };
 
         _repository
-            .Setup(repo => repo.GetWithFiltersAsync(It.IsAny<int>(), It.IsAny<string>(), It.IsAny<List<int>>(),
+            .Setup(repo => repo.GetWithFiltersAsync(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<string>(),
+                It.IsAny<List<int>>(),
                 It.IsAny<List<int>>()))
             .ReturnsAsync(sampleMangas);
 
         // Act
-        var result = await _service.GetWithFilter(It.IsAny<int>(), It.IsAny<string>(), It.IsAny<List<int>>(),
+        var result = await _service.GetWithFilter(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<string>(),
+            It.IsAny<List<int>>(),
             It.IsAny<List<int>>());
 
         // Assert
         _repository.Verify(
-            repo => repo.GetWithFiltersAsync(It.IsAny<int>(), It.IsAny<string>(), It.IsAny<List<int>>(),
+            repo => repo.GetWithFiltersAsync(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<string>(),
+                It.IsAny<List<int>>(),
                 It.IsAny<List<int>>()), Times.Once);
         result.Should().BeEquivalentTo(expectedDto);
     }
@@ -137,17 +140,20 @@ public class MangaServiceTests
         var sampleMangas = Enumerable.Empty<Manga>();
 
         _repository
-            .Setup(repo => repo.GetWithFiltersAsync(It.IsAny<int>(), It.IsAny<string>(), It.IsAny<List<int>>(),
+            .Setup(repo => repo.GetWithFiltersAsync(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<string>(),
+                It.IsAny<List<int>>(),
                 It.IsAny<List<int>>()))
             .ReturnsAsync(sampleMangas);
 
         // Act
-        var result = await _service.GetWithFilter(It.IsAny<int>(), It.IsAny<string>(), It.IsAny<List<int>>(),
+        var result = await _service.GetWithFilter(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<string>(),
+            It.IsAny<List<int>>(),
             It.IsAny<List<int>>());
 
         // Assert
         _repository.Verify(
-            repo => repo.GetWithFiltersAsync(It.IsAny<int>(), It.IsAny<string>(), It.IsAny<List<int>>(),
+            repo => repo.GetWithFiltersAsync(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<string>(),
+                It.IsAny<List<int>>(),
                 It.IsAny<List<int>>()), Times.Once);
         Assert.Empty(result);
     }
