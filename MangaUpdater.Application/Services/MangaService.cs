@@ -4,6 +4,7 @@ using MangaUpdater.Application.Helpers;
 using MangaUpdater.Application.Interfaces;
 using MangaUpdater.Domain.Entities;
 using MangaUpdater.Domain.Interfaces;
+using Microsoft.EntityFrameworkCore;
 
 namespace MangaUpdater.Application.Services;
 
@@ -24,11 +25,6 @@ public class MangaService : IMangaService
         await _mangaRepository.SaveAsync();
     }
 
-    public async Task<int> CheckNumberOfPages(int pageSize)
-    {
-        return await _mangaRepository.CheckNumberOfPagesAsync(pageSize);
-    }
-
     public async Task<bool> CheckIfMangaIsRegistered(int myAnimeListId)
     {
         var manga = await _mangaRepository.GetByMalIdAsync(myAnimeListId);
@@ -36,17 +32,29 @@ public class MangaService : IMangaService
         return manga is not null;
     }
 
-    public async Task<IEnumerable<MangaUserDto>> GetWithFilter(int page, int pageSize, string? orderBy, List<int>? sourceIdList,
-        List<int>? genreIdList)
-    {
-        var mangas = await _mangaRepository.GetWithFiltersAsync(page, pageSize, orderBy, sourceIdList, genreIdList);
-
+    public async Task<MangaDataWithPagesDto> GetWithFilter(int page, int pageSize, string? orderBy, List<int>? sourceIdList, List<int>? genreIdList, string? input)
+    { 
+        var query = _mangaRepository.GetWithFiltersAsync(orderBy, sourceIdList, genreIdList, input);
+        
+        var mangas = await query
+            .Skip((page - 1) * pageSize)
+            .Take(pageSize)
+            .AsNoTracking()
+            .ToListAsync();
+        
+        var numberOfMangas = await query
+            .AsNoTracking()
+            .Select(m => m.Id)
+            .ToListAsync();
+        
         var mangaUserDtoList = mangas
             .Select(manga =>
                 new MangaUserDto(manga.Id, manga.CoverUrl, manga.MangaTitles!.First().Name))
             .ToList();
+        
+        var numberOfPages = (int)Math.Ceiling((double)numberOfMangas.Count / pageSize);
 
-        return mangaUserDtoList;
+        return new MangaDataWithPagesDto(mangaUserDtoList, numberOfPages);
     }
 
     public async Task<MangaDto> GetByIdNotLogged(int id)

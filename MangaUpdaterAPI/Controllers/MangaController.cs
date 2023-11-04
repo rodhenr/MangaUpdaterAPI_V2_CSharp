@@ -53,16 +53,17 @@ public class MangaController : BaseController
         [FromQuery] int pageSize = 20,
         [SwaggerParameter("Empty (no ordering), alphabet or latest")] [FromQuery]
         string? orderBy = null,
-        [FromQuery] List<int>? sourceId = null, [FromQuery] List<int>? genreId = null)
+        [FromQuery] List<int>? sourceId = null,
+        [FromQuery] List<int>? genreId = null,
+        [FromQuery] string? input = null)
     {
-        var mangaDto = await _mangaService.GetWithFilter(page, pageSize, orderBy, sourceId, genreId);
+        var mangaDto = await _mangaService.GetWithFilter(page, pageSize, orderBy, sourceId, genreId, input);
         var genreIdList = await _mangaGenreService.GetUniqueGenresId();
         var genres = await _genreService.GetGenresByListId(genreIdList);
-        var mangaData = new MangasWithGenresDto(mangaDto, genres);
 
-        var numberOfPages = await _mangaService.CheckNumberOfPages(pageSize);
+        var mangaData = new MangasWithGenresDto(mangaDto.Mangas, genres);
 
-        return Ok(new MangaResponse(page, pageSize, numberOfPages, mangaData));
+        return Ok(new MangaResponse(page, pageSize, mangaDto.NumberOfPages, mangaData));
     }
 
     /// <summary>
@@ -148,6 +149,3 @@ public class MangaController : BaseController
         return Ok();
     }
 }
-
-// Comparar strings para saber qual o último capítulo
-// Mudar ordenação de consultas no repositório

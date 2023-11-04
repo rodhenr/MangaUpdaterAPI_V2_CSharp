@@ -30,9 +30,8 @@ public class MangaRepository : BaseRepository<Manga>, IMangaRepository
             .SingleOrDefaultAsync(m => m.MyAnimeListId == malId);
     }
 
-    public async Task<IEnumerable<Manga>> GetWithFiltersAsync(int page, int pageSize, string? orderBy,
-        List<int>? sourceIdList,
-        List<int>? genreIdList)
+    public IQueryable<Manga> GetWithFiltersAsync(string? orderBy, List<int>? sourceIdList, List<int>? genreIdList,
+        string? input)
     {
         var query = Get()
             .Include(m => m.MangaTitles)
@@ -50,19 +49,25 @@ public class MangaRepository : BaseRepository<Manga>, IMangaRepository
         };
 
         if (sourceIdList != null && sourceIdList.Any())
+        {
             query = query
                 .Where(m => m.MangaSources != null && m.MangaSources.Any(b => sourceIdList.Contains(b.SourceId)))
                 .Include(m => m.MangaSources);
+        }
 
         if (genreIdList != null && genreIdList.Any())
-            query = query.Where(m => m.MangaGenres != null && m.MangaGenres.Any(b => genreIdList.Contains(b.GenreId)))
+        {
+            query = query
+                .Where(m => m.MangaGenres != null && m.MangaGenres.Any(b => genreIdList.Contains(b.GenreId)))
                 .Include(m => m.MangaGenres);
+        }
 
-        return await query
-            .Skip((page - 1) * pageSize)
-            .Take(pageSize)
-            .AsNoTracking()
-            .ToListAsync();
+        if (input is not null)
+        {
+            query = query.Where(m => m.MangaTitles!.Any(mt => mt.Name.Contains(input)));
+        }
+
+        return query;
     }
 
     public async Task<Manga?> GetByIdOrderedDescAsync(int id)
@@ -108,17 +113,5 @@ public class MangaRepository : BaseRepository<Manga>, IMangaRepository
                 manga.Chapters?.OrderByDescending(ch => float.Parse(ch.Number, CultureInfo.InvariantCulture));
 
         return manga;
-    }
-
-    public async Task<int> CheckNumberOfPagesAsync(int pageSize)
-    {
-        var numberOfMangas = await Get()
-            .AsNoTracking()
-            .Select(m => m.Id)
-            .ToListAsync();
-
-        var numberOfPages = (int)Math.Ceiling((double)numberOfMangas.Count / pageSize);
-
-        return numberOfPages;
     }
 }
