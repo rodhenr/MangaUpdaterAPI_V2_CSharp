@@ -57,19 +57,29 @@ public class MangaService : IMangaService
         return new MangaDataWithPagesDto(mangaUserDtoList, numberOfPages);
     }
 
-    public async Task<MangaDto> GetByIdNotLogged(int id)
+    public async Task<MangaDataWithHighlightedMangasDto> GetByIdNotLogged(int id, int quantity)
     {
         var manga = await _mangaRepository.GetByIdOrderedDescAsync(id);
         ValidationHelper.ValidateEntity(manga);
 
-        return _mapper.Map<MangaDto>(manga);
+        var mangaDto = _mapper.Map<MangaDto>(manga);
+        
+        var highlightedMangas = await _mangaRepository.GetHighlightedAsync(id, quantity);
+        var highlightedMangasDto = _mapper.Map<IEnumerable<MangaUserDto>>(highlightedMangas);
+
+        return new MangaDataWithHighlightedMangasDto(mangaDto, highlightedMangasDto);
     }
 
-    public async Task<MangaDto> GetByIdAndUserId(int id, string userId)
+    public async Task<MangaDataWithHighlightedMangasDto> GetByIdAndUserId(int id, string userId, int quantity)
     {
         var manga = await _mangaRepository.GetByIdAndUserIdOrderedDescAsync(id, userId);
         ValidationHelper.ValidateEntity(manga);
+        
+        var mangaDto= _mapper.Map<MangaDto>(manga);
 
-        return _mapper.Map<MangaDto>(manga);
+        var highlightedMangas = await _mangaRepository.GetHighlightedAsync(id, quantity);
+        var highlightedMangasDto = _mapper.Map<IEnumerable<MangaUserDto>>(highlightedMangas);
+
+        return new MangaDataWithHighlightedMangasDto(mangaDto,highlightedMangasDto);
     }
 }

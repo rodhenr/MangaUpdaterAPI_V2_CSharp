@@ -11,6 +11,6 @@ public interface IMangaService
         List<int>? genreIdList, string? input);
 
     Task<bool> CheckIfMangaIsRegistered(int myAnimeListId);
-    Task<MangaDto> GetByIdNotLogged(int id);
-    Task<MangaDto> GetByIdAndUserId(int id, string userId);
+    Task<MangaDataWithHighlightedMangasDto> GetByIdNotLogged(int id, int quantity);
+    Task<MangaDataWithHighlightedMangasDto> GetByIdAndUserId(int id, string userId, int quantity);
 }

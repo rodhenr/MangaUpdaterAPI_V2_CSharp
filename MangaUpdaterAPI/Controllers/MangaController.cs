@@ -88,14 +88,14 @@ public class MangaController : BaseController
     [AllowAnonymous]
     [SwaggerOperation("Get manga data by id")]
     [HttpGet("{mangaId:int}")]
-    public async Task<ActionResult<MangaDto>> GetManga(int mangaId)
+    public async Task<ActionResult<MangaDataWithHighlightedMangasDto>> GetManga(int mangaId, [FromQuery] int quantity = 4)
     {
         if (!string.IsNullOrEmpty(Request.Headers["Authorization"]) && UserId is null)
             return Unauthorized("Invalid token data");
 
         return UserId is not null
-            ? Ok(await _mangaService.GetByIdAndUserId(mangaId, UserId!))
-            : Ok(await _mangaService.GetByIdNotLogged(mangaId));
+            ? Ok(await _mangaService.GetByIdAndUserId(mangaId, UserId!, quantity))
+            : Ok(await _mangaService.GetByIdNotLogged(mangaId, quantity));
     }
 
     /// <summary>

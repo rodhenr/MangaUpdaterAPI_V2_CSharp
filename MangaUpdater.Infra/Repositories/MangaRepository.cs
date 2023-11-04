@@ -114,4 +114,14 @@ public class MangaRepository : BaseRepository<Manga>, IMangaRepository
 
         return manga;
     }
+
+    public async Task<IEnumerable<Manga>> GetHighlightedAsync(int currentMangaId, int quantity)
+    {
+        return await Get()
+            .AsNoTracking()
+            .Include(m => m.MangaTitles)
+            .Where(m => m.Id != currentMangaId)
+            .Take(quantity)
+            .ToListAsync();
+    }
 }
