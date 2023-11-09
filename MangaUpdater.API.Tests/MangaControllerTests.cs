@@ -59,17 +59,20 @@ public class MangaControllerTests
             new(2, "Cover2", "Manga2"),
             new(3, "Cover3", "Manga3")
         };
+        var expected = new MangaDataWithPagesDto(mangaUserDtoList, 1);
+
         _mangaService
-            .Setup(service => service.GetWithFilter(It.IsAny<int>(), It.IsAny<int>(),It.IsAny<string>(), It.IsAny<List<int>>(),
-                It.IsAny<List<int>>()))
-            .ReturnsAsync(mangaUserDtoList);
+            .Setup(service => service.GetWithFilter(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<string>(),
+                It.IsAny<List<int>>(),
+                It.IsAny<List<int>>(), It.IsAny<string>()))
+            .ReturnsAsync(expected);
 
         // Act
         var result = await _mangaController.GetMangas();
 
         // Assert
         var okResult = Assert.IsType<OkObjectResult>(result.Result);
-        Assert.IsAssignableFrom<IEnumerable<MangaUserDto>>(okResult.Value);
+        Assert.IsAssignableFrom<MangaResponse>(okResult.Value);
     }
 
     [Fact]
@@ -110,17 +113,24 @@ public class MangaControllerTests
             Genres = Enumerable.Empty<string>(),
             Chapters = Enumerable.Empty<ChapterDto>(),
         };
+        var sampleHighlightedMangas = new List<MangaUserDto>()
+        {
+            new(1, "cover1", "Manga1"),
+            new(2, "cover2", "Manga2"),
+            new(3, "cover3", "Manga3"),
+        };
+        var expected = new MangaDataWithHighlightedMangasDto(sampleMangaDto,sampleHighlightedMangas);
 
         _mangaService
-            .Setup(service => service.GetByIdAndUserId(mangaId, userId))
-            .ReturnsAsync(sampleMangaDto);
+            .Setup(service => service.GetByIdAndUserId(mangaId, userId, 4))
+            .ReturnsAsync(expected);
 
         // Act
         var result = await _mangaController.GetManga(mangaId);
 
         // Assert
         var okResult = Assert.IsType<OkObjectResult>(result.Result);
-        Assert.IsType<MangaDto>(okResult.Value);
+        Assert.IsType<MangaDataWithHighlightedMangasDto>(okResult.Value);
     }
 
     [Fact]
@@ -143,6 +153,13 @@ public class MangaControllerTests
             Genres = Enumerable.Empty<string>(),
             Chapters = Enumerable.Empty<ChapterDto>(),
         };
+        var sampleHighlightedMangas = new List<MangaUserDto>()
+        {
+            new(1, "cover1", "Manga1"),
+            new(2, "cover2", "Manga2"),
+            new(3, "cover3", "Manga3"),
+        };
+        var expected = new MangaDataWithHighlightedMangasDto(sampleMangaDto,sampleHighlightedMangas);
 
         _mangaController.ControllerContext = new ControllerContext
         {
@@ -150,15 +167,15 @@ public class MangaControllerTests
         };
 
         _mangaService
-            .Setup(service => service.GetByIdNotLogged(mangaId))
-            .ReturnsAsync(sampleMangaDto);
+            .Setup(service => service.GetByIdNotLogged(mangaId, 4))
+            .ReturnsAsync(expected);
 
         // Act
         var result = await _mangaController.GetManga(mangaId);
 
         // Assert
         var okResult = Assert.IsType<OkObjectResult>(result.Result);
-        Assert.IsType<MangaDto>(okResult.Value);
+        Assert.IsType<MangaDataWithHighlightedMangasDto>(okResult.Value);
     }
 
     [Fact]

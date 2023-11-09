@@ -69,6 +69,32 @@ public class ChapterRepositoryTests
         Assert.NotNull(result);
         result.Should().BeEquivalentTo(expectedChapter, options => options.Excluding(chap => chap.Source));
     }
+    
+    [Fact]
+    public async Task GetByIdAndMangaIdAsync_Should_Return_Chapter_If_Found()
+    {
+        // Arrange
+        var date = DateTime.Now;
+        var source = new Source { Id = 1, Name = "Source1", BaseUrl = "url", Chapters = null };
+        var expectedChapter = new Chapter
+            { Id = 1, MangaId = 1, SourceId = 1, Date = date, Number = "1", Source = source };
+        var sampleChapter = new List<Chapter>
+        {
+            expectedChapter,
+            new() { Id = 2, MangaId = 1, SourceId = 1, Date = date, Number = "2", Source = source },
+            new() { Id = 3, MangaId = 1, SourceId = 1, Date = date, Number = "3", Source = source }
+        };
+
+        _context.Chapters.AddRange(sampleChapter);
+        await _context.SaveChangesAsync();
+
+        // Act
+        var result = await _repository.GetByIdAndMangaIdAsync(1, 1);
+
+        // Assert
+        Assert.NotNull(result);
+        result.Should().BeEquivalentTo(expectedChapter, options => options.Excluding(chap => chap.Source));
+    }
 
     [Fact]
     public async Task GetLastChapterByMangaIdAndSourceIdAsync_Should_Return_Chapter()

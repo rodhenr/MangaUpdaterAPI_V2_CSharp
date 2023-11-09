@@ -172,7 +172,7 @@ public class MangaRepositoryTests
         await _context.SaveChangesAsync();
 
         // Act
-        var result = await _repository.GetWithFiltersAsync(1, 20, null, null, null);
+        var result = _repository.GetWithFiltersAsync("", null, null, null);
 
         // Assert
         result.Should().HaveCount(4);
@@ -202,7 +202,7 @@ public class MangaRepositoryTests
         await _context.SaveChangesAsync();
 
         // Act
-        var result = await _repository.GetWithFiltersAsync(1, 20, "alphabet", null, null);
+        var result = _repository.GetWithFiltersAsync("alphabet", null, null, null);
 
         // Assert
         result.Should().HaveCount(4);
@@ -252,8 +252,7 @@ public class MangaRepositoryTests
         await _context.SaveChangesAsync();
 
         // Act
-        var result =
-            await _repository.GetWithFiltersAsync(1, 20, "latest", new List<int> { 1 }, new List<int> { 1, 2 });
+        var result = _repository.GetWithFiltersAsync("latest", new List<int> { 1 }, new List<int> { 1, 2 }, null);
 
         // Assert
         result.Should().HaveCount(3);

@@ -49,7 +49,7 @@ public class MangaController : BaseController
     [AllowAnonymous]
     [SwaggerOperation("Get all manga")]
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<MangasWithGenresDto>>> GetMangas([FromQuery] int page = 1,
+    public async Task<ActionResult<MangaResponse>> GetMangas([FromQuery] int page = 1,
         [FromQuery] int pageSize = 20,
         [SwaggerParameter("Empty (no ordering), alphabet or latest")] [FromQuery]
         string? orderBy = null,

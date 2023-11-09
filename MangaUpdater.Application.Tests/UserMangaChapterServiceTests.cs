@@ -164,15 +164,15 @@ public class UserMangaChapterServiceTests
                 {
                     new()
                     {
-                        ChapterId = 1, SourceId = 1, SourceName = "Source1", Date = date, Number = "1", Read = true
+                        ChapterId = 1, SourceId = 1, SourceName = "Source1", Date = date, Number = "1", Read = true, IsUserAllowedToRead = true
                     },
                     new()
                     {
-                        ChapterId = 2, SourceId = 1, SourceName = "Source1", Date = date, Number = "2", Read = true
+                        ChapterId = 2, SourceId = 1, SourceName = "Source1", Date = date, Number = "2", Read = true, IsUserAllowedToRead = true
                     },
                     new()
                     {
-                        ChapterId = 3, SourceId = 1, SourceName = "Source1", Date = date, Number = "3", Read = false
+                        ChapterId = 3, SourceId = 1, SourceName = "Source1", Date = date, Number = "3", Read = false, IsUserAllowedToRead = true
                     },
                 }
             }
@@ -209,11 +209,18 @@ public class UserMangaChapterServiceTests
     [Fact]
     public async Task DeleteUserMangaByMangaIdAndSourceId_ShouldCallRepositoryDeleteMethod()
     {
+        // Arrange
+        var sampleUserManga = new UserManga { Id = 1, MangaId = 1, UserId = "user1" };
+
+        _userMangaRepository
+            .Setup(service => service.GetByMangaIdAndUserIdAsync(It.IsAny<int>(), It.IsAny<string>()))
+            .ReturnsAsync(sampleUserManga);
+        
         // Act
-        await _service.DeleteUserMangaByMangaIdAndSourceId(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<string>());
+        await _service.DeleteUserMangaByMangaIdAndSourceId(1, It.IsAny<int>(), "user1");
 
         // Assert
-        _userMangaRepository.Verify(repo => repo.DeleteAsync(It.IsAny<int>(), It.IsAny<string>()),
+        _userChapterRepository.Verify(repo => repo.DeleteAsync(It.IsAny<int>(), It.IsAny<int>()),
             Times.Once());
     }
 }

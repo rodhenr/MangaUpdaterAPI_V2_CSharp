@@ -66,6 +66,28 @@ public class GenreRepositoryTests
     }
 
     [Fact]
+    public async Task GetGenresByListIdAsync_Should_Return_List_Genre()
+    {
+        // Arrange
+        var sampleGenre = new List<Genre>
+        {
+            new() { Id = 1, Name = "Genre1" },
+            new() { Id = 2, Name = "Genre2" },
+            new() { Id = 3, Name = "Genre3" },
+            new() { Id = 4, Name = "Genre4" },
+        };
+
+        _context.Genres.AddRange(sampleGenre);
+        await _context.SaveChangesAsync();
+
+        // Act
+        var result = await _repository.GetGenresByListIdAsync(new List<int> { 1, 2 });
+
+        // Assert
+        result.Should().HaveCount(2);
+    }
+
+    [Fact]
     public async Task Create_Should_Return_Create_Genre()
     {
         // Arrange
@@ -106,7 +128,7 @@ public class GenreRepositoryTests
     public async Task Update_Should_Update_Genre()
     {
         // Arrange
-        var expectedGenre = new Genre{ Id = 1, Name = "ModifiedGenre1" };
+        var expectedGenre = new Genre { Id = 1, Name = "ModifiedGenre1" };
         var sampleGenre = new List<Genre>
         {
             new() { Id = 1, Name = "Genre1" },
