@@ -3,7 +3,6 @@ using MangaUpdater.Application.DTOs;
 using MangaUpdater.Application.Mappings;
 using MangaUpdater.Application.Services;
 using MangaUpdater.Domain.Entities;
-using MangaUpdater.Domain.Exceptions;
 using MangaUpdater.Domain.Interfaces;
 
 namespace MangaUpdater.Application.Tests;
@@ -94,6 +93,26 @@ public class UserMangaServiceTests
         // Assert
         _userMangaRepository.Verify(repo => repo.GetAllByUserIdAsync(It.IsAny<string>()), Times.Once);
         result.Should().BeEquivalentTo(expectedDto);
+    }
+
+    [Fact]
+    public async Task GetByUserIdAndMangaId_Should_Return_UserManga()
+    {
+        // Arrange
+        const string userId = "user1";
+        const int mangaId = 1;
+        var userMangaSample = new UserManga { Id = 1, MangaId = 1, UserId = "1" };
+
+        _userMangaRepository
+            .Setup(repo => repo.GetByMangaIdAndUserIdAsync(mangaId, userId))
+            .ReturnsAsync(userMangaSample);
+
+        // Act
+        var result = await _service.GetByUserIdAndMangaId(userId, mangaId);
+
+        // Assert
+        _userMangaRepository.Verify(repo => repo.GetByMangaIdAndUserIdAsync(mangaId, userId), Times.Once);
+        result.Should().BeEquivalentTo(userMangaSample);
     }
 
     [Fact]

@@ -25,9 +25,9 @@ public class UserMangaService : IUserMangaService
         return _mapper.Map<IEnumerable<MangaUserDto>>(mangas.Select(userManga => userManga.Manga));
     }
 
-    public Task<UserManga?> GetByUserIdAndMangaId(string userId, int mangaId)
+    public async Task<UserManga?> GetByUserIdAndMangaId(string userId, int mangaId)
     {
-        return _userMangaRepository.GetByMangaIdAndUserIdAsync(mangaId, userId);
+        return await _userMangaRepository.GetByMangaIdAndUserIdAsync(mangaId, userId);
     }
 
     public async Task Update(UserManga userManga)

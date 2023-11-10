@@ -16,6 +16,24 @@ public class MangaGenreServiceTests
     }
 
     [Fact]
+    public async Task GetUniqueGenresId_Should_Return_List_Int()
+    {
+        // Arrange
+        var listGenreId = new List<int> { 1, 2, 3, 4 };
+
+        _repository
+            .Setup(repo => repo.GetUniqueGenreIdListAsync())
+            .ReturnsAsync(listGenreId);
+
+        // Act
+        var result = await _service.GetUniqueGenresId();
+
+        // Assert
+        _repository.Verify(repo => repo.GetUniqueGenreIdListAsync(), Times.Once);
+        result.Should().BeEquivalentTo(listGenreId);
+    }
+
+    [Fact]
     public void BulkCreate_Should_Call_BulkCreate_Method_In_Repository()
     {
         // Act

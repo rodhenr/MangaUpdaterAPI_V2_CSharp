@@ -48,6 +48,85 @@ public class MangaServiceTests
         // Assert
         Assert.True(result);
     }
+    //
+    // [Fact]
+    // public async Task CGetWithFilter_Should_Return_MangaDataWithPagesDto()
+    // {
+    //     // Arrange
+    //     var sampleMangaList = new List<Manga>
+    //     {
+    //         new()
+    //         {
+    //             Id = 1,
+    //             Synopsis = "",
+    //             Type = "",
+    //             CoverUrl = "",
+    //             MyAnimeListId = 1,
+    //             MangaTitles = new List<MangaTitle>
+    //             {
+    //                 new() { Id = 1, Name = "Manga1", MangaId = 1 }
+    //             }
+    //         },
+    //         new()
+    //         {
+    //             Id = 2,
+    //             Synopsis = "",
+    //             Type = "",
+    //             CoverUrl = "",
+    //             MyAnimeListId = 2,
+    //             MangaTitles = new List<MangaTitle>
+    //             {
+    //                 new() { Id = 2, Name = "Manga2", MangaId = 2 }
+    //             }
+    //         },
+    //         new()
+    //         {
+    //             Id = 3,
+    //             Synopsis = "",
+    //             Type = "",
+    //             CoverUrl = "",
+    //             MyAnimeListId = 3,
+    //             MangaTitles = new List<MangaTitle>
+    //             {
+    //                 new() { Id = 3, Name = "Manga3", MangaId = 3 }
+    //             }
+    //         },
+    //         new()
+    //         {
+    //             Id = 4,
+    //             Synopsis = "",
+    //             Type = "",
+    //             CoverUrl = "",
+    //             MyAnimeListId = 4,
+    //             MangaTitles = new List<MangaTitle>
+    //             {
+    //                 new() { Id = 4, Name = "Manga4", MangaId = 4 }
+    //             }
+    //         },
+    //     }.AsQueryable();
+    //
+    //     var expected =
+    //         new MangaDataWithPagesDto(
+    //             new List<MangaUserDto>
+    //             {
+    //                 new(1, "", "Manga1"),
+    //                 new(2, "", "Manga2"),
+    //                 new(3, "", "Manga3"),
+    //                 new(4, "", "Manga4"),
+    //             }, 1);
+    //
+    //     _repository
+    //         .Setup(repo => repo.GetWithFiltersAsync(It.IsAny<string>(), It.IsAny<List<int>>(), It.IsAny<List<int>>(),
+    //             It.IsAny<string>()))
+    //         .Returns(sampleMangaList);
+    //
+    //     // Act
+    //     var result = await _service.GetWithFilter(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<string>(),
+    //         It.IsAny<List<int>>(), It.IsAny<List<int>>(), It.IsAny<string>());
+    //
+    //     // Assert
+    //     result.Should().BeEquivalentTo(expected);
+    // }
 
     [Fact]
     public async Task CheckIfMangaIsRegistered_Should_Return_False_When_Manga_Does_Not_Exists()

@@ -34,6 +34,25 @@ public class ChapterServiceTests
     }
 
     [Fact]
+    public async Task GetByIdAndMangaId_Should_Return_Chapter()
+    {
+        // Arrange
+        var expected = new Chapter { Id = 1, MangaId = 1, SourceId = 1, Date = DateTime.Now, Number = "3" };
+
+        _repository
+            .Setup(repo => repo.GetByIdAndMangaIdAsync(It.IsAny<int>(), It.IsAny<int>()))
+            .ReturnsAsync(expected);
+
+        // Act
+        var result = await _service.GetByIdAndMangaId(1, 1);
+
+        // Assert
+        _repository.Verify(repo => repo.GetByIdAndMangaIdAsync(It.IsAny<int>(), It.IsAny<int>()),
+            Times.Once);
+        Assert.Equal(expected, result);
+    }
+    
+    [Fact]
     public async Task GetLastByMangaIdAndSourceId_Should_Return_Last_Chapter()
     {
         // Arrange

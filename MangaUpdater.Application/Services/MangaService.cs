@@ -39,11 +39,9 @@ public class MangaService : IMangaService
         var mangas = await query
             .Skip((page - 1) * pageSize)
             .Take(pageSize)
-            .AsNoTracking()
             .ToListAsync();
         
         var numberOfMangas = await query
-            .AsNoTracking()
             .Select(m => m.Id)
             .ToListAsync();
         
