@@ -202,7 +202,7 @@ public class MangaRepositoryTests
         await _context.SaveChangesAsync();
 
         // Act
-        var result = _repository.GetWithFiltersAsync("alphabet", null, null, null);
+        var result = _repository.GetWithFiltersAsync("alphabet", null, null, "Title");
 
         // Assert
         result.Should().HaveCount(4);
@@ -382,5 +382,91 @@ public class MangaRepositoryTests
             options.Excluding(c => c.Manga);
             return options;
         });
+    }
+
+    [Fact]
+    public async Task GetHighlightedAsync_Should_Return_List_Manga()
+    {
+        // Arrange
+        var mangaList = new List<Manga>
+        {
+            new()
+            {
+                Id = 1,
+                Synopsis = "",
+                Type = "Manga",
+                CoverUrl = "url",
+                MyAnimeListId = 1,
+                Chapters = Enumerable.Empty<Chapter>(),
+                UserMangas = Enumerable.Empty<UserManga>(),
+                MangaGenres = Enumerable.Empty<MangaGenre>(),
+                MangaSources = Enumerable.Empty<MangaSource>(),
+                MangaAuthors = Enumerable.Empty<MangaAuthor>(),
+                MangaTitles = new List<MangaTitle>
+                {
+                    new() { Id = 1, MangaId = 1, Name = "Manga1" }
+                }
+            },
+            new()
+            {
+                Id = 2,
+                Synopsis = "",
+                Type = "Manga",
+                CoverUrl = "url",
+                MyAnimeListId = 2,
+                Chapters = Enumerable.Empty<Chapter>(),
+                UserMangas = Enumerable.Empty<UserManga>(),
+                MangaGenres = Enumerable.Empty<MangaGenre>(),
+                MangaSources = Enumerable.Empty<MangaSource>(),
+                MangaAuthors = Enumerable.Empty<MangaAuthor>(),
+                MangaTitles = new List<MangaTitle>
+                {
+                    new() { Id = 2, MangaId = 2, Name = "Manga2" }
+                }
+            },
+            new()
+            {
+                Id = 3,
+                Synopsis = "",
+                Type = "Manga",
+                CoverUrl = "url",
+                MyAnimeListId = 3,
+                Chapters = Enumerable.Empty<Chapter>(),
+                UserMangas = Enumerable.Empty<UserManga>(),
+                MangaGenres = Enumerable.Empty<MangaGenre>(),
+                MangaSources = Enumerable.Empty<MangaSource>(),
+                MangaAuthors = Enumerable.Empty<MangaAuthor>(),
+                MangaTitles = new List<MangaTitle>
+                {
+                    new() { Id = 3, MangaId = 3, Name = "Manga3" }
+                }
+            },
+            new()
+            {
+                Id = 4,
+                Synopsis = "",
+                Type = "Manga",
+                CoverUrl = "url",
+                MyAnimeListId = 4,
+                Chapters = Enumerable.Empty<Chapter>(),
+                UserMangas = Enumerable.Empty<UserManga>(),
+                MangaGenres = Enumerable.Empty<MangaGenre>(),
+                MangaSources = Enumerable.Empty<MangaSource>(),
+                MangaAuthors = Enumerable.Empty<MangaAuthor>(),
+                MangaTitles = new List<MangaTitle>
+                {
+                    new() { Id = 4, MangaId = 4, Name = "Manga4" }
+                }
+            }
+        };
+
+        _context.Mangas.AddRange(mangaList);
+        await _context.SaveChangesAsync();
+
+        // Act
+        var result = await _repository.GetHighlightedAsync(2, 3);
+
+        // Assert
+        result.Should().HaveCount(3);
     }
 }

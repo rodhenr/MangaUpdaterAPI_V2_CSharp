@@ -1,8 +1,8 @@
-﻿using MangaUpdater.Domain.Interfaces;
+﻿using Microsoft.EntityFrameworkCore;
+using MangaUpdater.Domain.Interfaces;
 using MangaUpdater.Domain.Entities;
 using MangaUpdater.Infra.Data.Context;
 using MangaUpdater.Infra.Data.Repositories;
-using Microsoft.EntityFrameworkCore;
 
 namespace MangaUpdater.Infra.Tests;
 
@@ -91,6 +91,50 @@ public class UserMangaRepositoryTests
     }
 
     [Fact]
+    public async Task GetByMangaIdAndUserIdAsync_Should_Return_UserManga()
+    {
+        // Arrange
+        var sampleUserMangas = new List<UserManga>
+        {
+            new() { MangaId = 1, UserId = "user1" },
+            new() { MangaId = 1, UserId = "user2" },
+            new() { MangaId = 2, UserId = "user1" }
+        };
+        var expected = new UserManga { Id = 1, MangaId = 1, UserId = "user1" };
+
+        _context.UserMangas.AddRange(sampleUserMangas);
+        await _context.SaveChangesAsync();
+
+        // Act
+        var result = await _repository.GetByMangaIdAndUserIdAsync(1, "user1");
+
+        // Assert
+        Assert.NotNull(result);
+        result.Should().BeEquivalentTo(expected);
+    }
+
+    [Fact]
+    public async Task GetByMangaIdAndUserIdAsync_Should_Return_Null()
+    {
+        // Arrange
+        var sampleUserMangas = new List<UserManga>
+        {
+            new() { MangaId = 1, UserId = "user1" },
+            new() { MangaId = 1, UserId = "user2" },
+            new() { MangaId = 2, UserId = "user1" }
+        };
+
+        _context.UserMangas.AddRange(sampleUserMangas);
+        await _context.SaveChangesAsync();
+
+        // Act
+        var result = await _repository.GetByMangaIdAndUserIdAsync(2, "user2");
+
+        // Assert
+        Assert.Null(result);
+    }
+
+    [Fact]
     public async Task DeleteAsync_With_Two_Parameters_Should_Delete_UserMangas()
     {
         // Arrange
@@ -134,5 +178,47 @@ public class UserMangaRepositoryTests
         // Assert
         var userMangas = _context.UserMangas.ToList();
         userMangas.Should().HaveCount(2);
+    }
+
+    [Fact]
+    public async Task GetByMangaIdAndUserIdAsync_Should_Return_UserManga_If_Found()
+    {
+        // Arrange
+        var userMangaList = new List<UserManga>
+        {
+            new() { Id = 1, MangaId = 1, UserId = "user1" },
+            new() { Id = 2, MangaId = 2, UserId = "user1" },
+            new() { Id = 3, MangaId = 2, UserId = "user2" },
+            new() { Id = 4, MangaId = 3, UserId = "user1" },
+        };
+        var expected = new UserManga { Id = 1, MangaId = 1, UserId = "user1" };
+
+        _context.UserMangas.AddRange(userMangaList);
+        await _context.SaveChangesAsync();
+
+        // Act
+        var result = await _repository.GetByMangaIdAndUserIdAsync(1, "user1");
+
+        // Assert
+        Assert.NotNull(result);
+        result.Should().BeEquivalentTo(expected);
+    }
+
+    [Fact]
+    public async Task SaveChangesAsync_Should_Not_Modify_Id_And_SaveChanges()
+    {
+        // Arrange
+        var userMangaSample = new UserManga { MangaId = 1, UserId = "user1"};
+        _context.UserMangas.Add(userMangaSample);
+        await _context.SaveChangesAsync();
+
+        userMangaSample.MangaId = 2;
+        
+        // Act
+        await _repository.SaveChangesAsync(userMangaSample);
+        
+        // Assert
+        _context.Entry(userMangaSample).Property(x => x.Id).IsModified.Should().BeFalse();
+        userMangaSample.MangaId.Should().Be(2);
     }
 }
