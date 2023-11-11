@@ -51,6 +51,7 @@ public class UserMangaChapterService : IUserMangaChapterService
             .ToList();
 
         userManga ??= await _userMangaRepository.GetByMangaIdAndUserIdAsync(mangaId, userId);
+
         if (userManga is null) return;
 
         if (sourceIdListToAdd.Any())
@@ -74,16 +75,18 @@ public class UserMangaChapterService : IUserMangaChapterService
         var userMangasByMangaId = userMangas
             .Where(um => um.UserChapter is not null)
             .GroupBy(um => um.MangaId)
-            .Select(group => new UserMangaGroupByMangaDto(group.Select(us => us.Manga).FirstOrDefault()!,
-                group.Select(um =>
-                    {
-                        if (um.UserChapter != null)
-                            return new SourceWithLastChapterRead(um.UserChapter.SourceId, um.UserChapter.Source!.Name,
-                                um.UserChapter!.ChapterId);
+            .Select(group =>
+                new UserMangaGroupByMangaDto(group.Select(us => us.Manga).FirstOrDefault()!,
+                    group.Select(um =>
+                        {
+                            if (um.UserChapter != null)
+                                return new SourceWithLastChapterRead(um.UserChapter.SourceId,
+                                    um.UserChapter.Source!.Name,
+                                    um.UserChapter!.ChapterId);
 
-                        return null;
-                    })
-                    .ToList()))
+                            return null;
+                        })
+                        .ToList()))
             .ToList();
 
         foreach (var userManga in userMangasByMangaId)
@@ -123,9 +126,7 @@ public class UserMangaChapterService : IUserMangaChapterService
     {
         var userManga = await _userMangaRepository.GetByMangaIdAndUserIdAsync(mangaId, userId);
 
-        if (userManga is null) return;
-
-        await _userChapterRepository.DeleteAsync(userManga.Id, sourceId);
+        if (userManga is not null) await _userChapterRepository.DeleteAsync(userManga.Id, sourceId);
     }
 
     public async Task UpdateOrCreateUserChapter(string userId, int mangaId, int sourceId, int chapterId)

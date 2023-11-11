@@ -30,7 +30,7 @@ public class MangaRepository : BaseRepository<Manga>, IMangaRepository
             .SingleOrDefaultAsync(m => m.MyAnimeListId == malId);
     }
 
-    public IQueryable<Manga> GetWithFiltersAsync(string? orderBy, List<int>? sourceIdList, List<int>? genreIdList,
+    public IQueryable<Manga> GetWithFiltersQueryable(string? orderBy, List<int>? sourceIdList, List<int>? genreIdList,
         string? input)
     {
         var query = Get()

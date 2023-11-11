@@ -4,7 +4,7 @@ namespace MangaUpdater.Domain.Interfaces;
 
 public interface IMangaRepository : IBaseRepository<Manga>
 {
-    IQueryable<Manga> GetWithFiltersAsync(string? orderBy, List<int>? sourceIdList, List<int>? genreIdList,
+    IQueryable<Manga> GetWithFiltersQueryable(string? orderBy, List<int>? sourceIdList, List<int>? genreIdList,
         string? input);
 
     Task<Manga?> GetByMalIdAsync(int malId);

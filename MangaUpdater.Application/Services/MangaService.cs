@@ -34,21 +34,18 @@ public class MangaService : IMangaService
 
     public async Task<MangaDataWithPagesDto> GetWithFilter(int page, int pageSize, string? orderBy, List<int>? sourceIdList, List<int>? genreIdList, string? input)
     { 
-        var query = _mangaRepository.GetWithFiltersAsync(orderBy, sourceIdList, genreIdList, input);
-        
-        var mangas = await query
+        var query = _mangaRepository.GetWithFiltersQueryable(orderBy, sourceIdList, genreIdList, input);
+
+        var mangaUserDtoList = await query
             .Skip((page - 1) * pageSize)
             .Take(pageSize)
+            .Select(manga =>
+                new MangaUserDto(manga.Id, manga.CoverUrl, manga.MangaTitles!.First().Name))
             .ToListAsync();
         
         var numberOfMangas = await query
             .Select(m => m.Id)
             .ToListAsync();
-        
-        var mangaUserDtoList = mangas
-            .Select(manga =>
-                new MangaUserDto(manga.Id, manga.CoverUrl, manga.MangaTitles!.First().Name))
-            .ToList();
         
         var numberOfPages = (int)Math.Ceiling((double)numberOfMangas.Count / pageSize);
 
