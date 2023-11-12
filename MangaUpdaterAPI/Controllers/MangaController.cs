@@ -6,6 +6,7 @@ using MangaUpdater.Application.DTOs;
 using MangaUpdater.Application.Interfaces;
 using MangaUpdater.Domain.Entities;
 using MangaUpdater.API.Controllers.Shared;
+using MangaUpdater.Application.Interfaces.External;
 using MangaUpdater.Application.Interfaces.External.MangaDex;
 using MangaUpdater.Application.Interfaces.External.MangaLivre;
 using MangaUpdater.Application.Interfaces.External.MyAnimeList;
@@ -20,36 +21,30 @@ public class MangaController : BaseController
     private readonly IMangaService _mangaService;
     private readonly IUserSourceService _userSourceService;
     private readonly IRegisterMangaFromMyAnimeListService _registerMangaFromMyAnimeListService;
-    private readonly IMangaLivreService _mangaLivreService;
     private readonly IMangaSourceService _mangaSourceService;
     private readonly IChapterService _chapterService;
     private readonly IUserMangaService _userMangaService;
     private readonly IGenreService _genreService;
     private readonly IMangaGenreService _mangaGenreService;
-    private readonly IMangaDexApi _mangaDexService;
+    private readonly ISourceService _sourceService;
+    private readonly IExternalSourceService _externalSourceService;
 
     public MangaController(IMangaService mangaService, IUserSourceService userSourceService,
-        IRegisterMangaFromMyAnimeListService registerMangaFromMyAnimeListService, IMangaLivreService mangaLivreService,
+        IRegisterMangaFromMyAnimeListService registerMangaFromMyAnimeListService,
         IMangaSourceService mangaSourceService, IChapterService chapterService, IUserMangaService userMangaService,
-        IGenreService genreService, IMangaGenreService mangaGenreService, IMangaDexApi mangaDexService)
+        IGenreService genreService, IMangaGenreService mangaGenreService,
+        ISourceService sourceService, IExternalSourceService externalSourceService)
     {
         _mangaService = mangaService;
         _userSourceService = userSourceService;
         _registerMangaFromMyAnimeListService = registerMangaFromMyAnimeListService;
-        _mangaLivreService = mangaLivreService;
         _mangaSourceService = mangaSourceService;
         _chapterService = chapterService;
         _userMangaService = userMangaService;
         _genreService = genreService;
         _mangaGenreService = mangaGenreService;
-        _mangaDexService = mangaDexService;
-    }
-
-    [AllowAnonymous]
-    [HttpGet("mangadex")]
-    public async Task<ActionResult<List<MangaDexResponse>>> GetMangaDex(string id)
-    {
-        return Ok(await _mangaDexService.GetChaptersAsync(id));
+        _sourceService = sourceService;
+        _externalSourceService = externalSourceService;
     }
 
     /// <summary>
@@ -83,6 +78,7 @@ public class MangaController : BaseController
     /// <returns>Manga data, if success.</returns>
     /// <response code="200">Returns the registered manga data.</response>
     /// <response code="400">Error.</response>
+    [AllowAnonymous]
     [SwaggerOperation("Register a new manga using a MyAnimeList id")]
     [HttpPost]
     public async Task<ActionResult<Manga>> RegisterManga(int malId)
@@ -99,7 +95,8 @@ public class MangaController : BaseController
     [AllowAnonymous]
     [SwaggerOperation("Get manga data by id")]
     [HttpGet("{mangaId:int}")]
-    public async Task<ActionResult<MangaDataWithHighlightedMangasDto>> GetManga(int mangaId, [FromQuery] int quantity = 4)
+    public async Task<ActionResult<MangaDataWithHighlightedMangasDto>> GetManga(int mangaId,
+        [FromQuery] int quantity = 4)
     {
         if (!string.IsNullOrEmpty(Request.Headers["Authorization"]) && UserId is null)
             return Unauthorized("Invalid token data");
@@ -132,10 +129,10 @@ public class MangaController : BaseController
     [HttpPost("/{mangaId:int}/source/{sourceId:int}")]
     public async Task<ActionResult> AddSourceToMangaAndGetData(int mangaId, int sourceId, string mangaUrl)
     {
-        if (sourceId == 1)
-        {
-            await _mangaLivreService.RegisterSourceAndChapters(mangaId, sourceId, mangaUrl);
-        }
+        // if (sourceId == 1)
+        // {
+        //     await _mangaLivreService.RegisterSourceAndChapters(mangaId, sourceId, mangaUrl);
+        // }
 
         return Ok();
     }
@@ -145,17 +142,16 @@ public class MangaController : BaseController
     /// </summary>
     /// <response code="200">Success.</response>
     /// <response code="400">Error.</response>
+    [AllowAnonymous]
     [SwaggerOperation("Update chapters from a combination of manga and source.")]
     [HttpPost("/{mangaId:int}/source/{sourceId:int}/chapters")]
     public async Task<ActionResult> UpdateChaptersFromSource(int mangaId, int sourceId)
     {
         var mangaSource = await _mangaSourceService.GetByMangaIdAndSourceId(mangaId, sourceId);
+        var source = await _sourceService.GetById(sourceId);
         var lastChapter = await _chapterService.GetLastByMangaIdAndSourceId(mangaId, sourceId);
 
-        if (sourceId == 1)
-        {
-            await _mangaLivreService.UpdateChapters(mangaId, sourceId, lastChapter?.Number ?? "0", mangaSource.Url);
-        }
+        await _externalSourceService.UpdateChapters(mangaSource, source, lastChapter);
 
         return Ok();
     }

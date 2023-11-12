@@ -32,4 +32,9 @@ public class ChapterService : IChapterService
     {
         return await _chapterRepository.GetLastChapterByMangaIdAndSourceIdAsync(mangaId, sourceId);
     }
+
+    public async Task SaveChanges()
+    {
+        await _chapterRepository.SaveAsync();
+    }
 }

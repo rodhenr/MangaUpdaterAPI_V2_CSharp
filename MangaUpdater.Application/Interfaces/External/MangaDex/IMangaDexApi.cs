@@ -2,7 +2,6 @@
 
 namespace MangaUpdater.Application.Interfaces.External.MangaDex;
 
-public interface IMangaDexApi
+public interface IMangaDexApi: IExternalSourceApi
 {
-    Task<List<MangaDexResponse>> GetChaptersAsync(string mangaDexId, float initialChapter = 0);
 }

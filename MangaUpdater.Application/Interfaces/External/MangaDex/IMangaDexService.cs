@@ -1,6 +1,6 @@
 ﻿namespace MangaUpdater.Application.Interfaces.External.MangaDex;
 
-public class IMangaDexService
+public interface IMangaDexService
 {
-    
+    Task UpdateChapters(int mangaId, int sourceId,string mangaDexId);
 }
