@@ -6,8 +6,10 @@ using MangaUpdater.Application.DTOs;
 using MangaUpdater.Application.Interfaces;
 using MangaUpdater.Domain.Entities;
 using MangaUpdater.API.Controllers.Shared;
+using MangaUpdater.Application.Interfaces.External.MangaDex;
 using MangaUpdater.Application.Interfaces.External.MangaLivre;
 using MangaUpdater.Application.Interfaces.External.MyAnimeList;
+using MangaUpdater.Application.Models.External.MangaDex;
 using MangaUpdater.Domain.Exceptions;
 
 namespace MangaUpdater.API.Controllers;
@@ -24,11 +26,12 @@ public class MangaController : BaseController
     private readonly IUserMangaService _userMangaService;
     private readonly IGenreService _genreService;
     private readonly IMangaGenreService _mangaGenreService;
+    private readonly IMangaDexApi _mangaDexService;
 
     public MangaController(IMangaService mangaService, IUserSourceService userSourceService,
         IRegisterMangaFromMyAnimeListService registerMangaFromMyAnimeListService, IMangaLivreService mangaLivreService,
         IMangaSourceService mangaSourceService, IChapterService chapterService, IUserMangaService userMangaService,
-        IGenreService genreService, IMangaGenreService mangaGenreService)
+        IGenreService genreService, IMangaGenreService mangaGenreService, IMangaDexApi mangaDexService)
     {
         _mangaService = mangaService;
         _userSourceService = userSourceService;
@@ -39,6 +42,14 @@ public class MangaController : BaseController
         _userMangaService = userMangaService;
         _genreService = genreService;
         _mangaGenreService = mangaGenreService;
+        _mangaDexService = mangaDexService;
+    }
+
+    [AllowAnonymous]
+    [HttpGet("mangadex")]
+    public async Task<ActionResult<List<MangaDexResponse>>> GetMangaDex(string id)
+    {
+        return Ok(await _mangaDexService.GetChaptersAsync(id));
     }
 
     /// <summary>
