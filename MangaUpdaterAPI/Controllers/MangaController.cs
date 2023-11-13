@@ -7,11 +7,8 @@ using MangaUpdater.Application.Interfaces;
 using MangaUpdater.Domain.Entities;
 using MangaUpdater.API.Controllers.Shared;
 using MangaUpdater.Application.Interfaces.External;
-using MangaUpdater.Application.Interfaces.External.MangaDex;
-using MangaUpdater.Application.Interfaces.External.MangaLivre;
 using MangaUpdater.Application.Interfaces.External.MyAnimeList;
-using MangaUpdater.Application.Models.External.MangaDex;
-using MangaUpdater.Domain.Exceptions;
+using MangaUpdater.Application.Models.External;
 
 namespace MangaUpdater.API.Controllers;
 
@@ -78,7 +75,6 @@ public class MangaController : BaseController
     /// <returns>Manga data, if success.</returns>
     /// <response code="200">Returns the registered manga data.</response>
     /// <response code="400">Error.</response>
-    [AllowAnonymous]
     [SwaggerOperation("Register a new manga using a MyAnimeList id")]
     [HttpPost]
     public async Task<ActionResult<Manga>> RegisterManga(int malId)
@@ -127,13 +123,12 @@ public class MangaController : BaseController
     /// <response code="400">Error.</response>
     [SwaggerOperation("Register a new source for a manga.")]
     [HttpPost("/{mangaId:int}/source/{sourceId:int}")]
-    public async Task<ActionResult> AddSourceToMangaAndGetData(int mangaId, int sourceId, string mangaUrl)
+    public async Task<ActionResult> AddSourceToManga(int mangaId, int sourceId, string mangaUrl)
     {
-        // if (sourceId == 1)
-        // {
-        //     await _mangaLivreService.RegisterSourceAndChapters(mangaId, sourceId, mangaUrl);
-        // }
-
+        // TODO: Add validation
+        _mangaSourceService.Add(new MangaSource { MangaId = mangaId, SourceId = sourceId, Url = mangaUrl });
+        await _mangaSourceService.SaveChanges();
+        
         return Ok();
     }
 
@@ -142,7 +137,6 @@ public class MangaController : BaseController
     /// </summary>
     /// <response code="200">Success.</response>
     /// <response code="400">Error.</response>
-    [AllowAnonymous]
     [SwaggerOperation("Update chapters from a combination of manga and source.")]
     [HttpPost("/{mangaId:int}/source/{sourceId:int}/chapters")]
     public async Task<ActionResult> UpdateChaptersFromSource(int mangaId, int sourceId)
@@ -151,7 +145,8 @@ public class MangaController : BaseController
         var source = await _sourceService.GetById(sourceId);
         var lastChapter = await _chapterService.GetLastByMangaIdAndSourceId(mangaId, sourceId);
 
-        await _externalSourceService.UpdateChapters(mangaSource, source, lastChapter);
+        await _externalSourceService.UpdateChapters(new MangaInfoToUpdateChapters(mangaId, sourceId, mangaSource.Url,
+            source.BaseUrl, source.Name, lastChapter?.Number));
 
         return Ok();
     }

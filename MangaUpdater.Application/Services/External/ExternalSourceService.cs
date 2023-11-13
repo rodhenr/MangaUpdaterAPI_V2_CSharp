@@ -1,6 +1,8 @@
-﻿using MangaUpdater.Application.Interfaces;
+﻿using MangaUpdater.Application.Helpers;
+using MangaUpdater.Application.Interfaces;
 using MangaUpdater.Application.Interfaces.External;
 using MangaUpdater.Application.Interfaces.External.MangaDex;
+using MangaUpdater.Application.Models.External;
 using MangaUpdater.Domain.Entities;
 
 namespace MangaUpdater.Application.Services.External;
@@ -16,16 +18,21 @@ public class ExternalSourceService : IExternalSourceService
         _mangaDexApi = mangaDexApi;
     }
 
-    public async Task UpdateChapters(MangaSource mangaSource, Source source, Chapter? lastChapter)
+    public async Task UpdateChapters(MangaInfoToUpdateChapters mangaInfo)
     {
-        if (source.Name == "MangaDex")
+        if (mangaInfo.SourceName == "MangaDex")
         {
-            var chapters = await _mangaDexApi.GetChaptersAsync(mangaSource.MangaId, mangaSource.SourceId, mangaSource.Url,
-                source.BaseUrl, lastChapter?.Number);
+            var chapters = await _mangaDexApi.GetChaptersAsync(mangaInfo.MangaId, mangaInfo.SourceId, mangaInfo.MangaUrl,
+                mangaInfo.SourceBaseUrl, mangaInfo?.LastSavedChapter);
             
-            _chapterService.BulkCreate(chapters);
+            _chapterService.BulkCreate(chapters.Distinct(new ChapterEqualityComparer()).ToList());
         }
         
         await _chapterService.SaveChanges();
+    }
+
+    public Task UpdateAllChaptersFromMangaInfoList(IEnumerable<MangaInfoToUpdateChapters> mangaInfoList)
+    {
+        throw new NotImplementedException();
     }
 }

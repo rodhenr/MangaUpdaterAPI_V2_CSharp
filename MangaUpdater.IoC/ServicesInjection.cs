@@ -3,16 +3,13 @@ using MangaUpdater.Application.Interfaces;
 using MangaUpdater.Application.Interfaces.Authentication;
 using MangaUpdater.Application.Interfaces.External;
 using MangaUpdater.Application.Interfaces.External.MangaDex;
-using MangaUpdater.Application.Interfaces.External.MangaLivre;
 using MangaUpdater.Application.Interfaces.External.MyAnimeList;
 using MangaUpdater.Application.Mappings;
 using MangaUpdater.Application.Services;
 using MangaUpdater.Application.Services.External;
-using MangaUpdater.Application.Services.External.MangaLivre;
 using MangaUpdater.Application.Services.External.MyAnimeList;
 using MangaUpdater.Domain.Interfaces;
 using MangaUpdater.Infra.Data.ExternalServices.MangaDex;
-using MangaUpdater.Infra.Data.ExternalServices.MangaLivre;
 using MangaUpdater.Infra.Data.ExternalServices.MyAnimeList;
 using MangaUpdater.Infra.Data.Identity;
 using MangaUpdater.Infra.Data.Repositories;
@@ -51,10 +48,8 @@ public static class ServicesInjection
         services.AddScoped<IRegisterMangaFromMyAnimeListService, RegisterMangaFromMyAnimeListService>();
         services.AddScoped<IAuthenticationService, AuthenticationService>();
 
-        services.AddScoped<IMangaLivreApi, MangaLivreApiService>();
-        services.AddScoped<IMangaLivreService, MangaLivreService>();
-
         services.AddScoped<IMangaDexApi, MangaDexApiService>();
+        
         services.AddScoped<IExternalSourceService, ExternalSourceService>();
 
         services.AddAutoMapper(typeof(MappingProfile));
