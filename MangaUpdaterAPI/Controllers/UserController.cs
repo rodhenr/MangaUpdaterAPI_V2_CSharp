@@ -4,6 +4,7 @@ using Swashbuckle.AspNetCore.Annotations;
 using MangaUpdater.Application.DTOs;
 using MangaUpdater.Application.Interfaces;
 using MangaUpdater.API.Controllers.Shared;
+using MangaUpdater.Application.Interfaces.Background;
 
 namespace MangaUpdater.API.Controllers;
 
@@ -11,15 +12,14 @@ public class UserController : BaseController
 {
     private string? UserId => User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
     private readonly IUserMangaChapterService _userMangaChapterService;
-    private readonly IChapterService _chapterService;
     private readonly IUserMangaService _userMangaService;
+    private readonly IMangaUpdateQueue _mangaUpdateQueue;
 
-    public UserController(IUserMangaChapterService userMangaChapterService, IChapterService chapterService,
-        IUserMangaService userMangaService)
+    public UserController(IUserMangaChapterService userMangaChapterService, IUserMangaService userMangaService, IMangaUpdateQueue mangaUpdateQueue)
     {
         _userMangaChapterService = userMangaChapterService;
-        _chapterService = chapterService;
         _userMangaService = userMangaService;
+        _mangaUpdateQueue = mangaUpdateQueue;
     }
 
     /// <summary>
@@ -105,6 +105,25 @@ public class UserController : BaseController
     public async Task<ActionResult> UpdateManga(int mangaId, int sourceId, [FromQuery] int chapterId)
     {
         await _userMangaChapterService.UpdateOrCreateUserChapter(UserId!, mangaId, sourceId, chapterId);
+        return Ok();
+    }
+    
+    /// <summary>
+    /// Update all mangas followed by an user
+    /// </summary>
+    /// <response code="200">Success.</response>
+    /// <response code="400">Error.</response>
+    [SwaggerOperation("A logged-in request the update of his followed mangas")]
+    [HttpGet("mangas/update")]
+    public async Task<ActionResult> QueueMangasToUpdate()
+    {
+        var mangasToUpdateChapters = await _userMangaService.GetMangasToUpdateChapters(UserId!);
+        
+        foreach (var manga in mangasToUpdateChapters)
+        {
+            await _mangaUpdateQueue.EnqueueAsync(manga);
+        }
+        
         return Ok();
     }
 }

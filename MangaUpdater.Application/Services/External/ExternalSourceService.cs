@@ -3,7 +3,6 @@ using MangaUpdater.Application.Interfaces;
 using MangaUpdater.Application.Interfaces.External;
 using MangaUpdater.Application.Interfaces.External.MangaDex;
 using MangaUpdater.Application.Models.External;
-using MangaUpdater.Domain.Entities;
 
 namespace MangaUpdater.Application.Services.External;
 

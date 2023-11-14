@@ -1,4 +1,6 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using System.Globalization;
+using MangaUpdater.Application.Models.External;
+using Microsoft.EntityFrameworkCore;
 using MangaUpdater.Domain.Entities;
 using MangaUpdater.Domain.Interfaces;
 using MangaUpdater.Infra.Data.Context;
@@ -47,5 +49,30 @@ public class UserMangaRepository : BaseRepository<UserManga>, IUserMangaReposito
     {
         Context.Entry(userManga).Property(x => x.Id).IsModified = false;
         await Context.SaveChangesAsync();
+    }
+
+    public async Task<IEnumerable<UserManga>> GetMangasToUpdateChaptersAsync(string userId)
+    {
+        var result = await Get()
+            .AsNoTracking()
+            .Include(um => um.UserChapter)
+            .ThenInclude(ms => ms.Source)
+            .Include(um => um.Manga)
+            .ThenInclude(m => m.Chapters)
+            .Include(um => um.Manga)
+            .ThenInclude(m => m.MangaSources)
+            .Where(um => um.UserId == userId)
+            .ToListAsync();
+        
+        result.ForEach(um =>
+        {
+            um.Manga.Chapters = um.Manga.Chapters
+                .Where(ch => ch.MangaId == um.MangaId)
+                .OrderByDescending(ch => float.Parse(ch.Number, CultureInfo.InvariantCulture))
+                .Take(1)
+                .ToList();
+        });
+
+        return result;
     }
 }

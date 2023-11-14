@@ -1,11 +1,13 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using MangaUpdater.Application.Interfaces;
 using MangaUpdater.Application.Interfaces.Authentication;
+using MangaUpdater.Application.Interfaces.Background;
 using MangaUpdater.Application.Interfaces.External;
 using MangaUpdater.Application.Interfaces.External.MangaDex;
 using MangaUpdater.Application.Interfaces.External.MyAnimeList;
 using MangaUpdater.Application.Mappings;
 using MangaUpdater.Application.Services;
+using MangaUpdater.Application.Services.Background;
 using MangaUpdater.Application.Services.External;
 using MangaUpdater.Application.Services.External.MyAnimeList;
 using MangaUpdater.Domain.Interfaces;
@@ -53,5 +55,7 @@ public static class ServicesInjection
         services.AddScoped<IExternalSourceService, ExternalSourceService>();
 
         services.AddAutoMapper(typeof(MappingProfile));
+        services.AddSingleton<IMangaUpdateQueue, MangaUpdateQueue>();
+        services.AddHostedService<MangaChapterUpdateService>();
     }
 }

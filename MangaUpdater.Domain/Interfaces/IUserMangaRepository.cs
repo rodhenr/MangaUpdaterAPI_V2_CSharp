@@ -8,4 +8,5 @@ public interface IUserMangaRepository : IBaseRepository<UserManga>
     Task<UserManga?> GetByMangaIdAndUserIdAsync(int mangaId, string userId);
     Task DeleteAsync(int mangaId, string userId);
     Task SaveChangesAsync(UserManga userManga);
+    Task<IEnumerable<UserManga>> GetMangasToUpdateChaptersAsync(string userId);
 }

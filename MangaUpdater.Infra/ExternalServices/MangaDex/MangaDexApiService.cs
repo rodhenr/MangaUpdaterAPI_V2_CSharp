@@ -44,7 +44,7 @@ public class MangaDexApiService : IMangaDexApi
             {
                 var chapterNumber = float.Parse(chapter.Attributes.Chapter, CultureInfo.InvariantCulture);
 
-                if (chapterNumber < float.Parse(initialChapter ?? "0", CultureInfo.InvariantCulture)) continue;
+                if (chapterNumber <= float.Parse(initialChapter ?? "0", CultureInfo.InvariantCulture)) continue;
 
                 _list.Add(new Chapter
                 {

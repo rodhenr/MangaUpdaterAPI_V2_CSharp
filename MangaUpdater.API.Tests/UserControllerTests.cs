@@ -5,6 +5,7 @@ using MangaUpdater.API.Controllers;
 using MangaUpdater.Application.DTOs;
 using MangaUpdater.Application.Interfaces;
 using MangaUpdater.Application.Interfaces.Authentication;
+using MangaUpdater.Application.Interfaces.Background;
 using MangaUpdater.Application.Models.Login;
 using MangaUpdater.Application.Models.Register;
 using MangaUpdater.Domain.Entities;
@@ -15,8 +16,8 @@ public class UserControllerTests
 {
     private readonly UserController _userController;
     private readonly Mock<IUserMangaChapterService> _userMangaChapterService;
-    private readonly Mock<IChapterService> _chapterService;
     private readonly Mock<IUserMangaService> _userMangaService;
+    private readonly Mock<IMangaUpdateQueue> _mangaUpdateQueue;
 
     public UserControllerTests()
     {
@@ -24,11 +25,11 @@ public class UserControllerTests
         var user = new ClaimsPrincipal(new ClaimsIdentity(claims, "test"));
 
         _userMangaChapterService = new Mock<IUserMangaChapterService>();
-        _chapterService = new Mock<IChapterService>();
         _userMangaService = new Mock<IUserMangaService>();
+        _mangaUpdateQueue = new Mock<IMangaUpdateQueue>();
 
-        _userController = new UserController(_userMangaChapterService.Object, _chapterService.Object,
-            _userMangaService.Object)
+        _userController = new UserController(_userMangaChapterService.Object, _userMangaService.Object,
+            _mangaUpdateQueue.Object)
         {
             ControllerContext = new ControllerContext
             {
