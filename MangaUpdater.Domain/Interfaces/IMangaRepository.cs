@@ -11,4 +11,5 @@ public interface IMangaRepository : IBaseRepository<Manga>
     Task<Manga?> GetByIdOrderedDescAsync(int id);
     Task<Manga?> GetByIdAndUserIdOrderedDescAsync(int id, string userId);
     Task<IEnumerable<Manga>> GetHighlightedAsync(int currentMangaId, int quantity);
+    Task<IEnumerable<Manga>> GetMangasToUpdateChaptersAsync();
 }

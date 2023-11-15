@@ -2,6 +2,7 @@
 using MangaUpdater.Application.DTOs;
 using MangaUpdater.Application.Helpers;
 using MangaUpdater.Application.Interfaces;
+using MangaUpdater.Application.Models.External;
 using MangaUpdater.Domain.Entities;
 using MangaUpdater.Domain.Interfaces;
 using Microsoft.EntityFrameworkCore;
@@ -32,8 +33,9 @@ public class MangaService : IMangaService
         return manga is not null;
     }
 
-    public async Task<MangaDataWithPagesDto> GetWithFilter(int page, int pageSize, string? orderBy, List<int>? sourceIdList, List<int>? genreIdList, string? input)
-    { 
+    public async Task<MangaDataWithPagesDto> GetWithFilter(int page, int pageSize, string? orderBy,
+        List<int>? sourceIdList, List<int>? genreIdList, string? input)
+    {
         var query = _mangaRepository.GetWithFiltersQueryable(orderBy, sourceIdList, genreIdList, input);
 
         var mangaUserDtoList = await query
@@ -42,11 +44,11 @@ public class MangaService : IMangaService
             .Select(manga =>
                 new MangaUserDto(manga.Id, manga.CoverUrl, manga.MangaTitles!.First().Name))
             .ToListAsync();
-        
+
         var numberOfMangas = await query
             .Select(m => m.Id)
             .ToListAsync();
-        
+
         var numberOfPages = (int)Math.Ceiling((double)numberOfMangas.Count / pageSize);
 
         return new MangaDataWithPagesDto(mangaUserDtoList, numberOfPages);
@@ -58,7 +60,7 @@ public class MangaService : IMangaService
         ValidationHelper.ValidateEntity(manga);
 
         var mangaDto = _mapper.Map<MangaDto>(manga);
-        
+
         var highlightedMangas = await _mangaRepository.GetHighlightedAsync(id, quantity);
         var highlightedMangasDto = _mapper.Map<IEnumerable<MangaUserDto>>(highlightedMangas);
 
@@ -69,12 +71,32 @@ public class MangaService : IMangaService
     {
         var manga = await _mangaRepository.GetByIdAndUserIdOrderedDescAsync(id, userId);
         ValidationHelper.ValidateEntity(manga);
-        
-        var mangaDto= _mapper.Map<MangaDto>(manga);
+
+        var mangaDto = _mapper.Map<MangaDto>(manga);
 
         var highlightedMangas = await _mangaRepository.GetHighlightedAsync(id, quantity);
         var highlightedMangasDto = _mapper.Map<IEnumerable<MangaUserDto>>(highlightedMangas);
 
-        return new MangaDataWithHighlightedMangasDto(mangaDto,highlightedMangasDto);
+        return new MangaDataWithHighlightedMangasDto(mangaDto, highlightedMangasDto);
+    }
+
+    public async Task<List<MangaInfoToUpdateChapters>> GetMangasToUpdateChapters()
+    {
+        var mangaList = await _mangaRepository.GetMangasToUpdateChaptersAsync();
+
+        var mangasToUpdateChapters = mangaList
+            .Where(m => m.Chapters!.Any() && m.MangaSources!.Any())
+            .Select(m =>
+            {
+                var chapter = m.Chapters!.First();
+                var mangaSource = m.MangaSources!.First();
+                
+                return new MangaInfoToUpdateChapters(m.Id, chapter.SourceId,
+                    m.MangaSources!.First(ms => ms.MangaId == m.Id && ms.SourceId == chapter.SourceId).Url,
+                    mangaSource.Source!.BaseUrl, mangaSource.Source.Name, chapter.Number);
+            })
+            .ToList();
+
+        return mangasToUpdateChapters;
     }
 }

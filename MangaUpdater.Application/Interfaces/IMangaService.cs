@@ -1,4 +1,5 @@
 ﻿using MangaUpdater.Application.DTOs;
+using MangaUpdater.Application.Models.External;
 using MangaUpdater.Domain.Entities;
 
 namespace MangaUpdater.Application.Interfaces;
@@ -13,4 +14,5 @@ public interface IMangaService
     Task<bool> CheckIfMangaIsRegistered(int myAnimeListId);
     Task<MangaDataWithHighlightedMangasDto> GetByIdNotLogged(int id, int quantity);
     Task<MangaDataWithHighlightedMangasDto> GetByIdAndUserId(int id, string userId, int quantity);
+    Task<List<MangaInfoToUpdateChapters>> GetMangasToUpdateChapters();
 }

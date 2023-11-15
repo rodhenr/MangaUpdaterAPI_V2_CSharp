@@ -1,4 +1,5 @@
 ﻿using System.Security.Claims;
+using Hangfire;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
 using MangaUpdater.Application.DTOs;
@@ -13,13 +14,15 @@ public class UserController : BaseController
     private string? UserId => User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
     private readonly IUserMangaChapterService _userMangaChapterService;
     private readonly IUserMangaService _userMangaService;
-    private readonly IMangaUpdateQueue _mangaUpdateQueue;
+    private readonly IMangaService _mangaService;
+    private readonly IHangfireService _hangfireService;
 
-    public UserController(IUserMangaChapterService userMangaChapterService, IUserMangaService userMangaService, IMangaUpdateQueue mangaUpdateQueue)
+    public UserController(IUserMangaChapterService userMangaChapterService, IUserMangaService userMangaService, IMangaService mangaService, IHangfireService hangfireService)
     {
         _userMangaChapterService = userMangaChapterService;
         _userMangaService = userMangaService;
-        _mangaUpdateQueue = mangaUpdateQueue;
+        _mangaService = mangaService;
+        _hangfireService = hangfireService;
     }
 
     /// <summary>
@@ -117,12 +120,8 @@ public class UserController : BaseController
     [HttpGet("mangas/update")]
     public async Task<ActionResult> QueueMangasToUpdate()
     {
-        var mangasToUpdateChapters = await _userMangaService.GetMangasToUpdateChapters(UserId!);
-        
-        foreach (var manga in mangasToUpdateChapters)
-        {
-            await _mangaUpdateQueue.EnqueueAsync(manga);
-        }
+        await _hangfireService.AddHangfireJobs();
+        RecurringJob.TriggerJob("JobForMangaId_4_SourceId_3");
         
         return Ok();
     }

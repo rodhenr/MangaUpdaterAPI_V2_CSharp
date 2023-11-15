@@ -1,7 +1,5 @@
-﻿using System.Globalization;
-using AutoMapper;
+﻿using AutoMapper;
 using MangaUpdater.Application.DTOs;
-using MangaUpdater.Application.Helpers;
 using MangaUpdater.Application.Interfaces;
 using MangaUpdater.Application.Models.External;
 using MangaUpdater.Domain.Entities;

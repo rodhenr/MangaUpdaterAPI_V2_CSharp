@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using Hangfire;
+using Microsoft.Extensions.DependencyInjection;
 using MangaUpdater.Application.Interfaces;
 using MangaUpdater.Application.Interfaces.Authentication;
 using MangaUpdater.Application.Interfaces.Background;
@@ -15,12 +16,13 @@ using MangaUpdater.Infra.Data.ExternalServices.MangaDex;
 using MangaUpdater.Infra.Data.ExternalServices.MyAnimeList;
 using MangaUpdater.Infra.Data.Identity;
 using MangaUpdater.Infra.Data.Repositories;
+using Microsoft.Extensions.Configuration;
 
 namespace MangaUpdater.Infra.IoC;
 
 public static class ServicesInjection
 {
-    public static void AddInfrastructure(this IServiceCollection services)
+    public static void AddInfrastructure(this IServiceCollection services, IConfiguration configuration)
     {
         services.AddScoped<IChapterRepository, ChapterRepository>();
         services.AddScoped<IGenreRepository, GenreRepository>();
@@ -32,7 +34,7 @@ public static class ServicesInjection
         services.AddScoped<IMangaAuthorRepository, MangaAuthorRepository>();
         services.AddScoped<IMangaTitleRepository, MangaTitleRepository>();
         services.AddScoped<IUserChapterRepository, UserChapterRepository>();
-        
+
         services.AddScoped<IChapterService, ChapterService>();
         services.AddScoped<IGenreService, GenreService>();
         services.AddScoped<IMangaGenreService, MangaGenreService>();
@@ -45,17 +47,21 @@ public static class ServicesInjection
         services.AddScoped<IMangaAuthorService, MangaAuthorService>();
         services.AddScoped<IMangaTitleService, MangaTitleService>();
         services.AddScoped<IUserChapterService, UserChapterService>();
-        
+
         services.AddScoped<IMyAnimeListApiService, MyAnimeListApiService>();
         services.AddScoped<IRegisterMangaFromMyAnimeListService, RegisterMangaFromMyAnimeListService>();
         services.AddScoped<IAuthenticationService, AuthenticationService>();
 
         services.AddScoped<IMangaDexApi, MangaDexApiService>();
-        
+
         services.AddScoped<IExternalSourceService, ExternalSourceService>();
 
         services.AddAutoMapper(typeof(MappingProfile));
-        services.AddSingleton<IMangaUpdateQueue, MangaUpdateQueue>();
-        services.AddHostedService<MangaChapterUpdateService>();
+
+        services.AddHangfire(c => c.UseSqlServerStorage(configuration.GetConnectionString("DefaultConnection")));
+
+        services.AddHangfireServer();
+
+        services.AddScoped<IHangfireService, HangfireService>();
     }
 }
