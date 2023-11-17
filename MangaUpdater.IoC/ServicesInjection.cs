@@ -1,4 +1,5 @@
 ﻿using Hangfire;
+using Hangfire.SqlServer;
 using Microsoft.Extensions.DependencyInjection;
 using MangaUpdater.Application.Interfaces;
 using MangaUpdater.Application.Interfaces.Authentication;
@@ -58,10 +59,14 @@ public static class ServicesInjection
 
         services.AddAutoMapper(typeof(MappingProfile));
 
-        services.AddHangfire(c => c.UseSqlServerStorage(configuration.GetConnectionString("DefaultConnection")));
+        services.AddScoped<IHangfireService, HangfireService>();
+
+        services.AddHangfire(c => c
+            .SetDataCompatibilityLevel(CompatibilityLevel.Version_180)
+            .UseSimpleAssemblyNameTypeSerializer()
+            .UseRecommendedSerializerSettings()
+            .UseSqlServerStorage(configuration.GetConnectionString("DefaultConnection")));
 
         services.AddHangfireServer();
-
-        services.AddScoped<IHangfireService, HangfireService>();
     }
 }

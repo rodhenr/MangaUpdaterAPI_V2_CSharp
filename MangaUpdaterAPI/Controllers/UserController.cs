@@ -121,7 +121,6 @@ public class UserController : BaseController
     public async Task<ActionResult> QueueMangasToUpdate()
     {
         await _hangfireService.AddHangfireJobs();
-        RecurringJob.TriggerJob("JobForMangaId_4_SourceId_3");
         
         return Ok();
     }

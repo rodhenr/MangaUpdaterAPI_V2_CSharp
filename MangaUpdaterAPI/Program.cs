@@ -1,4 +1,6 @@
 using System.Text.Json.Serialization;
+using Hangfire;
+using Hangfire.Dashboard;
 using Microsoft.OpenApi.Models;
 using MangaUpdater.API;
 using MangaUpdater.API.Exceptions;
@@ -82,6 +84,8 @@ if (app.Environment.IsDevelopment())
 app.UseCors();
 
 app.UseHttpsRedirection();
+
+app.UseHangfireDashboard();
 
 app.UseAuthorization();
 
