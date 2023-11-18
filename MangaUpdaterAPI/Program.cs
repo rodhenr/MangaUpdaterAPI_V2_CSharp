@@ -1,9 +1,10 @@
 using System.Text.Json.Serialization;
 using Hangfire;
-using Hangfire.Dashboard;
 using Microsoft.OpenApi.Models;
 using MangaUpdater.API;
 using MangaUpdater.API.Exceptions;
+using MangaUpdater.Application.Interfaces;
+using MangaUpdater.Application.Interfaces.External;
 using MangaUpdater.Infra.IoC;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -90,6 +91,19 @@ app.UseHangfireDashboard();
 app.UseAuthorization();
 
 app.UseMiddleware<ExceptionMiddleware>();
+
+using (var serviceScope = app.Services.CreateScope())
+{
+    var services = serviceScope.ServiceProvider;
+    var mangaService = services.GetRequiredService<IMangaService>();
+    var mangas = await mangaService.GetMangasToUpdateChapters();
+
+    foreach (var manga in mangas)
+    {
+        RecurringJob.AddOrUpdate<IExternalSourceService>($"JobForMangaId_{manga.MangaId}_SourceId_{manga.SourceId}",
+            task => task.UpdateChapters(manga), "5 * * * *");
+    }
+}
 
 app.MapControllers();
 

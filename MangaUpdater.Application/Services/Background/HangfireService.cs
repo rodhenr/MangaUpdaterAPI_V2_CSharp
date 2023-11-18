@@ -23,7 +23,7 @@ public class HangfireService : IHangfireService
         foreach (var manga in mangas)
         {
             RecurringJob.AddOrUpdate($"JobForMangaId_{manga.MangaId}_SourceId_{manga.SourceId}",
-                () => _externalSourceService.UpdateChapters(manga), "*/36 * * * *");
+                () => _externalSourceService.UpdateChapters(manga), "5 * * * *");
         }
     }
 }
