@@ -3,4 +3,5 @@
 public interface IHangfireService
 {
     Task AddHangfireJobs();
+    void ScheduleNextInvocation(DateTime dateJobStarted);
 }

@@ -8,22 +8,34 @@ namespace MangaUpdater.Application.Services.Background;
 public class HangfireService : IHangfireService
 {
     private readonly IMangaService _mangaService;
-    private readonly IExternalSourceService _externalSourceService;
 
-    public HangfireService(IMangaService mangaService, IExternalSourceService externalSourceService)
+    public HangfireService(IMangaService mangaService)
     {
         _mangaService = mangaService;
-        _externalSourceService = externalSourceService;
     }
 
     public async Task AddHangfireJobs()
     {
         var mangas = await _mangaService.GetMangasToUpdateChapters();
+        
+        string? lastJobId = null;
+        var startTime = DateTime.Now;
 
         foreach (var manga in mangas)
         {
-            RecurringJob.AddOrUpdate($"JobForMangaId_{manga.MangaId}_SourceId_{manga.SourceId}",
-                () => _externalSourceService.UpdateChapters(manga), "5 * * * *");
+            lastJobId = BackgroundJob.Enqueue<IExternalSourceService>(job => job.UpdateChapters(manga));
         }
+
+        BackgroundJob.ContinueJobWith<IHangfireService>(lastJobId, job => job.ScheduleNextInvocation(startTime));
+    }
+
+    public void ScheduleNextInvocation(DateTime startTime)
+    {
+        var timeDifference = DateTime.Now - startTime;
+        
+        BackgroundJob.Schedule<IHangfireService>(job => job.AddHangfireJobs(),
+            timeDifference.Seconds >= 1800
+                ? TimeSpan.FromSeconds(1)
+                : TimeSpan.FromSeconds(1800 - timeDifference.TotalSeconds));
     }
 }

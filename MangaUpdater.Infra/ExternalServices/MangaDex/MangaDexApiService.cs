@@ -27,7 +27,7 @@ public class MangaDexApiService : IMangaDexApi
 
         while (true)
         {
-            var options = $"feed?translatedLanguage[]=en&limit=199&order[chapter]=asc&offset={offset}";
+            var options = $"feed?translatedLanguage[]=en&limit=199&order[chapter]=asc&limit=500&offset={offset}";
             var url = $"{sourceUrl}{mangaUrl}/{options}";
 
             var response = await httpClient.GetAsync(url);

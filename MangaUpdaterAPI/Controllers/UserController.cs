@@ -14,15 +14,11 @@ public class UserController : BaseController
     private string? UserId => User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
     private readonly IUserMangaChapterService _userMangaChapterService;
     private readonly IUserMangaService _userMangaService;
-    private readonly IMangaService _mangaService;
-    private readonly IHangfireService _hangfireService;
 
-    public UserController(IUserMangaChapterService userMangaChapterService, IUserMangaService userMangaService, IMangaService mangaService, IHangfireService hangfireService)
+    public UserController(IUserMangaChapterService userMangaChapterService, IUserMangaService userMangaService)
     {
         _userMangaChapterService = userMangaChapterService;
         _userMangaService = userMangaService;
-        _mangaService = mangaService;
-        _hangfireService = hangfireService;
     }
 
     /// <summary>
@@ -108,20 +104,6 @@ public class UserController : BaseController
     public async Task<ActionResult> UpdateManga(int mangaId, int sourceId, [FromQuery] int chapterId)
     {
         await _userMangaChapterService.UpdateOrCreateUserChapter(UserId!, mangaId, sourceId, chapterId);
-        return Ok();
-    }
-    
-    /// <summary>
-    /// Update all mangas followed by an user
-    /// </summary>
-    /// <response code="200">Success.</response>
-    /// <response code="400">Error.</response>
-    [SwaggerOperation("A logged-in request the update of his followed mangas")]
-    [HttpGet("mangas/update")]
-    public async Task<ActionResult> QueueMangasToUpdate()
-    {
-        await _hangfireService.AddHangfireJobs();
-        
         return Ok();
     }
 }
