@@ -1,4 +1,6 @@
-﻿namespace MangaUpdater.Application.Interfaces.Background;
+﻿using Hangfire;
+
+namespace MangaUpdater.Application.Interfaces.Background;
 
 public interface IHangfireService
 {

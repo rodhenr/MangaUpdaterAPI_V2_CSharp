@@ -1,5 +1,4 @@
 ﻿using Hangfire;
-using Hangfire.SqlServer;
 using Microsoft.Extensions.DependencyInjection;
 using MangaUpdater.Application.Interfaces;
 using MangaUpdater.Application.Interfaces.Authentication;

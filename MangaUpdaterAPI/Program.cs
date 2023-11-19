@@ -1,11 +1,10 @@
 using System.Text.Json.Serialization;
 using Hangfire;
+using Hangfire.Dashboard.BasicAuthorization;
 using Microsoft.OpenApi.Models;
 using MangaUpdater.API;
 using MangaUpdater.API.Exceptions;
-using MangaUpdater.Application.Interfaces;
 using MangaUpdater.Application.Interfaces.Background;
-using MangaUpdater.Application.Interfaces.External;
 using MangaUpdater.Infra.IoC;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -87,7 +86,27 @@ app.UseCors();
 
 app.UseHttpsRedirection();
 
-app.UseHangfireDashboard();
+app.UseHangfireDashboard("/hangfire", new DashboardOptions
+{
+    Authorization = new[]
+    {
+        new BasicAuthAuthorizationFilter(
+            new BasicAuthAuthorizationFilterOptions()
+            {
+                RequireSsl = false,
+                SslRedirect = false,
+                LoginCaseSensitive = true,
+                Users = new[]
+                {
+                    new BasicAuthAuthorizationUser
+                    {
+                        Login = "Admin",
+                        PasswordClear = "123"
+                    }
+                }
+            })
+    }
+});
 
 app.UseAuthorization();
 
