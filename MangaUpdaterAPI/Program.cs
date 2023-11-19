@@ -112,6 +112,14 @@ app.UseAuthorization();
 
 app.UseMiddleware<ExceptionMiddleware>();
 
+var monitoringApi = JobStorage.Current.GetMonitoringApi();
+var scheduledJobs = monitoringApi.ScheduledJobs(0, int.MaxValue);
+
+foreach (var job in scheduledJobs)
+{
+    BackgroundJob.Delete(job.Key);
+}
+
 BackgroundJob.Enqueue<IHangfireService>(task => task.AddHangfireJobs());
 
 app.MapControllers();
