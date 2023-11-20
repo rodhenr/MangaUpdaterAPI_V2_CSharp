@@ -1,6 +1,5 @@
 ﻿using System.Globalization;
 using MangaUpdater.Application.Interfaces.External.MangaDex;
-using MangaUpdater.Application.Models.External.MangaDex;
 using MangaUpdater.Domain.Entities;
 using MangaUpdater.Domain.Exceptions;
 using MangaUpdater.Infra.Data.Extensions;

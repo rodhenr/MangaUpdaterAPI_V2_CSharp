@@ -128,7 +128,7 @@ public class MangaController : BaseController
         // TODO: Add validation
         _mangaSourceService.Add(new MangaSource { MangaId = mangaId, SourceId = sourceId, Url = mangaUrl });
         await _mangaSourceService.SaveChanges();
-        
+
         return Ok();
     }
 
