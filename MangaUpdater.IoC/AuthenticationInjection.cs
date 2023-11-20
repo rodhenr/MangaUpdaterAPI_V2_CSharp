@@ -54,6 +54,7 @@ public static class AuthenticationInjection
                 .RequireClaim("Typ", "Bearer")
                 .Build();
             options.AddPolicy("RefreshToken", policy => policy.RequireClaim("typ", "Refresh"));
+            options.AddPolicy("Admin", policy => policy.RequireRole("Admin"));
         });
     }
 }

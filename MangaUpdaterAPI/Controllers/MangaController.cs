@@ -121,6 +121,8 @@ public class MangaController : BaseController
     /// </summary>
     /// <response code="200">Success.</response>
     /// <response code="400">Error.</response>
+    /// <response code="403">Unauthorized</response>
+    [Authorize(Policy="Admin")]
     [SwaggerOperation("Register a new source for a manga.")]
     [HttpPost("/{mangaId:int}/source/{sourceId:int}")]
     public async Task<ActionResult> AddSourceToManga(int mangaId, int sourceId, string mangaUrl)
@@ -137,6 +139,8 @@ public class MangaController : BaseController
     /// </summary>
     /// <response code="200">Success.</response>
     /// <response code="400">Error.</response>
+    /// <response code="403">Unauthorized</response>
+    [Authorize(Policy="Admin")]
     [SwaggerOperation("Update chapters from a combination of manga and source.")]
     [HttpPost("/{mangaId:int}/source/{sourceId:int}/chapters")]
     public async Task<ActionResult> UpdateChaptersFromSource(int mangaId, int sourceId)
