@@ -43,7 +43,7 @@ public class UserControllerTests
         };
 
         _userMangaChapterService
-            .Setup(s => s.GetUserMangasWithThreeLastChapterByUserId("testUser"))
+            .Setup(s => s.GetUserMangasWithThreeLastChapterByUserId("testUser", 1, 10))
             .ReturnsAsync(mangaUserDtoList);
 
         // Act

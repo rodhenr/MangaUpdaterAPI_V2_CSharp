@@ -76,7 +76,7 @@ public class UserMangaChapterServiceTests
         // Arrange
         const string userId = "testUser";
         const int mangaId = 1;
-        
+
         var sampleUserSourceList = Enumerable.Empty<UserSourceDto>();
         var sourceList = new List<int> { 1 };
         var sampleUserManga = new UserManga { Id = 1, MangaId = mangaId, UserId = userId };
@@ -84,7 +84,7 @@ public class UserMangaChapterServiceTests
         _userMangaRepository
             .Setup(service => service.GetByMangaIdAndUserIdAsync(It.IsAny<int>(), It.IsAny<string>()))
             .ReturnsAsync(sampleUserManga);
-        
+
         _userSourceService
             .Setup(service => service.GetUserSourcesByMangaId(It.IsAny<int>(), It.IsAny<int>()))
             .ReturnsAsync(sampleUserSourceList);
@@ -120,7 +120,8 @@ public class UserMangaChapterServiceTests
                     MyAnimeListId = 1,
                     MangaTitles = new List<MangaTitle> { new() { Id = 1, MangaId = 1, Name = "Manga1" } }
                 },
-                UserChapter = new UserChapter { UserMangaId = 1, SourceId = 1, ChapterId = 2, Source = baseSource, }
+                UserChapter = new List<UserChapter>
+                    { new() { UserMangaId = 1, SourceId = 1, ChapterId = 2, Source = baseSource } }
             },
         };
         var chaptersSample = new List<Chapter>
@@ -165,15 +166,18 @@ public class UserMangaChapterServiceTests
                 {
                     new()
                     {
-                        ChapterId = 1, SourceId = 1, SourceName = "Source1", Date = date, Number = "1", Read = true, IsUserAllowedToRead = true
+                        ChapterId = 1, SourceId = 1, SourceName = "Source1", Date = date, Number = "1", Read = true,
+                        IsUserAllowedToRead = true
                     },
                     new()
                     {
-                        ChapterId = 2, SourceId = 1, SourceName = "Source1", Date = date, Number = "2", Read = true, IsUserAllowedToRead = true
+                        ChapterId = 2, SourceId = 1, SourceName = "Source1", Date = date, Number = "2", Read = true,
+                        IsUserAllowedToRead = true
                     },
                     new()
                     {
-                        ChapterId = 3, SourceId = 1, SourceName = "Source1", Date = date, Number = "3", Read = false, IsUserAllowedToRead = true
+                        ChapterId = 3, SourceId = 1, SourceName = "Source1", Date = date, Number = "3", Read = false,
+                        IsUserAllowedToRead = true
                     },
                 }
             }
@@ -187,7 +191,9 @@ public class UserMangaChapterServiceTests
             .ReturnsAsync(chaptersSample);
 
         // Act
-        var result = await _service.GetUserMangasWithThreeLastChapterByUserId(It.IsAny<string>());
+        var result =
+            await _service.GetUserMangasWithThreeLastChapterByUserId(It.IsAny<string>(), It.IsAny<int>(),
+                It.IsAny<int>());
 
         // Assert
         _userMangaRepository.Verify(repo => repo.GetAllByUserIdAsync(It.IsAny<string>()), Times.Once);
@@ -220,18 +226,18 @@ public class UserMangaChapterServiceTests
                 MangaTitles = Enumerable.Empty<MangaTitle>()
             }
         };
-        
+
         _userMangaRepository
             .Setup(repo => repo.GetByMangaIdAndUserIdAsync(It.IsAny<int>(), It.IsAny<string>()))
             .ReturnsAsync(sampleUserManga);
-        
+
         // Act
         await _service.DeleteUserMangasByMangaId(It.IsAny<int>(), It.IsAny<string>());
 
         // Assert
         _userChapterRepository.Verify(repo => repo.DeleteAsync(It.IsAny<int>()), Times.Once());
     }
-    
+
     [Fact]
     public async Task DeleteUserMangasByMangaId_Should_Call_Repository_Delete_Method_Using_()
     {
@@ -251,7 +257,7 @@ public class UserMangaChapterServiceTests
         _userMangaRepository
             .Setup(service => service.GetByMangaIdAndUserIdAsync(It.IsAny<int>(), It.IsAny<string>()))
             .ReturnsAsync(sampleUserManga);
-        
+
         // Act
         await _service.DeleteUserMangaByMangaIdAndSourceId(1, It.IsAny<int>(), "user1");
 
@@ -259,23 +265,24 @@ public class UserMangaChapterServiceTests
         _userChapterRepository.Verify(repo => repo.DeleteAsync(It.IsAny<int>(), It.IsAny<int>()),
             Times.Once());
     }
-    
+
     [Fact]
     public async Task UpdateOrCreateUserChapter_Should_Throw_BadRequestException_When_UserManga_Is_Null()
     {
         // Arrange
         UserManga? sampleUserManga = null;
-        
+
         _userMangaRepository
             .Setup(repo => repo.GetByMangaIdAndUserIdAsync(It.IsAny<int>(), It.IsAny<string>()))
             .ReturnsAsync(sampleUserManga);
-        
+
         // Act and Assert
-        await Assert.ThrowsAsync<BadRequestException>(() => _service.UpdateOrCreateUserChapter(It.IsAny<string>(),It.IsAny<int>(),It.IsAny<int>(),It.IsAny<int>()));
-        _userMangaRepository.Verify(repo => repo.GetByMangaIdAndUserIdAsync(It.IsAny<int>(), It.IsAny<string>()), Times.Once);
-        
-    } 
-    
+        await Assert.ThrowsAsync<BadRequestException>(() =>
+            _service.UpdateOrCreateUserChapter(It.IsAny<string>(), It.IsAny<int>(), It.IsAny<int>(), It.IsAny<int>()));
+        _userMangaRepository.Verify(repo => repo.GetByMangaIdAndUserIdAsync(It.IsAny<int>(), It.IsAny<string>()),
+            Times.Once);
+    }
+
     [Fact]
     public async Task UpdateOrCreateUserChapter_Should_Throw_BadRequestException_When_Chapter_Is_Null()
     {
@@ -300,21 +307,23 @@ public class UserMangaChapterServiceTests
             }
         };
         Chapter? sampleChapter = null;
-        
+
         _userMangaRepository
             .Setup(repo => repo.GetByMangaIdAndUserIdAsync(It.IsAny<int>(), It.IsAny<string>()))
             .ReturnsAsync(sampleUserManga);
-        
+
         _chapterRepository
             .Setup(repo => repo.GetByIdAndMangaIdAsync(It.IsAny<int>(), It.IsAny<int>()))
             .ReturnsAsync(sampleChapter);
-        
+
         // Act and Assert
-        await Assert.ThrowsAsync<BadRequestException>(() => _service.UpdateOrCreateUserChapter(It.IsAny<string>(),It.IsAny<int>(),It.IsAny<int>(),It.IsAny<int>()));
-        _userMangaRepository.Verify(repo => repo.GetByMangaIdAndUserIdAsync(It.IsAny<int>(), It.IsAny<string>()), Times.Once);
+        await Assert.ThrowsAsync<BadRequestException>(() =>
+            _service.UpdateOrCreateUserChapter(It.IsAny<string>(), It.IsAny<int>(), It.IsAny<int>(), It.IsAny<int>()));
+        _userMangaRepository.Verify(repo => repo.GetByMangaIdAndUserIdAsync(It.IsAny<int>(), It.IsAny<string>()),
+            Times.Once);
         _chapterRepository.Verify(repo => repo.GetByIdAndMangaIdAsync(It.IsAny<int>(), It.IsAny<int>()), Times.Once);
-    }     
-    
+    }
+
     [Fact]
     public async Task UpdateOrCreateUserChapter_Should_Update_UserChapter_And_SaveChanges()
     {
@@ -349,30 +358,32 @@ public class UserMangaChapterServiceTests
         var sampleUserChapter = new UserChapter
         {
             Id = 1,
-            SourceId = sourceId, 
-            UserMangaId = 1, 
+            SourceId = sourceId,
+            UserMangaId = 1,
             ChapterId = chapterId
         };
-        
+
         _userMangaRepository
             .Setup(repo => repo.GetByMangaIdAndUserIdAsync(It.IsAny<int>(), It.IsAny<string>()))
             .ReturnsAsync(sampleUserManga);
-        
+
         _chapterRepository
             .Setup(repo => repo.GetByIdAndMangaIdAsync(It.IsAny<int>(), It.IsAny<int>()))
             .ReturnsAsync(sampleChapter);
-        
+
         _userChapterRepository
-            .Setup(repo => repo.GetByUserMangaIdAndSourceIdAsync(It.IsAny<int>(),It.IsAny<int>()))
+            .Setup(repo => repo.GetByUserMangaIdAndSourceIdAsync(It.IsAny<int>(), It.IsAny<int>()))
             .ReturnsAsync(sampleUserChapter);
-        
+
         // Act
-        await _service.UpdateOrCreateUserChapter(It.IsAny<string>(),It.IsAny<int>(),It.IsAny<int>(),It.IsAny<int>());
+        await _service.UpdateOrCreateUserChapter(It.IsAny<string>(), It.IsAny<int>(), It.IsAny<int>(), It.IsAny<int>());
 
         // Assert
-        _userMangaRepository.Verify(repo => repo.GetByMangaIdAndUserIdAsync(It.IsAny<int>(), It.IsAny<string>()), Times.Once);
+        _userMangaRepository.Verify(repo => repo.GetByMangaIdAndUserIdAsync(It.IsAny<int>(), It.IsAny<string>()),
+            Times.Once);
         _chapterRepository.Verify(repo => repo.GetByIdAndMangaIdAsync(It.IsAny<int>(), It.IsAny<int>()), Times.Once);
-        _userChapterRepository.Verify(repo => repo.GetByUserMangaIdAndSourceIdAsync(It.IsAny<int>(),It.IsAny<int>()), Times.Once);
+        _userChapterRepository.Verify(repo => repo.GetByUserMangaIdAndSourceIdAsync(It.IsAny<int>(), It.IsAny<int>()),
+            Times.Once);
         _userChapterRepository.Verify(repo => repo.SaveAsync(), Times.Once);
-    } 
+    }
 }

@@ -127,27 +127,12 @@ public class MangaRepository : BaseRepository<Manga>, IMangaRepository
 
     public async Task<IEnumerable<Manga>> GetMangasToUpdateChaptersAsync()
     {
-        var result = await Get()
+        return await Get()
             .AsNoTracking()
+            .Where(m => m.MangaSources!.Any())
             .Include(m => m.Chapters)
             .Include(m => m.MangaSources)!
             .ThenInclude(ms => ms.Source)
             .ToListAsync();
-
-        result.ForEach(m =>
-        {
-            if (m.MangaSources is not null && m.MangaSources.Any())
-                m.MangaSources = m.MangaSources
-                    .Where(ms => ms.MangaId == m.Id);
-
-            // TODO: Group by SourceId and then get the last one
-            if (m.Chapters is not null && m.Chapters.Any())
-                m.Chapters = m.Chapters
-                    .Where(ch => ch.MangaId == m.Id)
-                    .OrderByDescending(ch => float.Parse(ch.Number, CultureInfo.InvariantCulture))
-                    .Take(1);
-        });
-
-        return result;
     }
 }

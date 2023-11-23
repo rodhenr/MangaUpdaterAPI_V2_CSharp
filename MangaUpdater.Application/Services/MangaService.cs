@@ -1,4 +1,5 @@
-﻿using AutoMapper;
+﻿using System.Globalization;
+using AutoMapper;
 using MangaUpdater.Application.DTOs;
 using MangaUpdater.Application.Helpers;
 using MangaUpdater.Application.Interfaces;
@@ -85,15 +86,15 @@ public class MangaService : IMangaService
         var mangaList = await _mangaRepository.GetMangasToUpdateChaptersAsync();
 
         var mangasToUpdateChapters = mangaList
-            .Where(m => m.MangaSources is not null && m.MangaSources.Any())
-            .Select(m =>
+            .SelectMany(m => m.MangaSources!, (m, ms) =>
             {
-                // TODO: Change the implementation to not get the wrong sourceId
-                var mangaSource = m.MangaSources!.First();
+                var lastChapter = m.Chapters!
+                    .Where(ch => ch.SourceId == ms.SourceId)
+                    .OrderByDescending(ch => float.Parse(ch.Number, CultureInfo.InvariantCulture))
+                    .FirstOrDefault();
 
-                return new MangaInfoToUpdateChapters(m.Id, mangaSource.SourceId, mangaSource.Url,
-                    mangaSource.Source!.BaseUrl, mangaSource.Source.Name,
-                    m.Chapters!.Any() ? m.Chapters!.First().Number : "0");
+                return new MangaInfoToUpdateChapters(m.Id, ms.SourceId, ms.Url, ms.Source!.BaseUrl, ms.Source.Name,
+                    lastChapter is null ? "0" : lastChapter.Number);
             })
             .ToList();
 

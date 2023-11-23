@@ -49,7 +49,7 @@ public class MangaServiceTests
         // Assert
         Assert.True(result);
     }
-    
+
     [Fact]
     public async Task GetWithFilter_Should_Return_MangaDataWithPagesDto()
     {
@@ -105,7 +105,7 @@ public class MangaServiceTests
                 }
             },
         }.AsQueryable();
-    
+
         var expected =
             new MangaDataWithPagesDto(
                 new List<MangaUserDto>
@@ -115,16 +115,17 @@ public class MangaServiceTests
                     new(3, "", "Manga3"),
                     new(4, "", "Manga4"),
                 }, 1);
-    
+
         _repository
-            .Setup(repo => repo.GetWithFiltersQueryable(It.IsAny<string>(), It.IsAny<List<int>>(), It.IsAny<List<int>>(),
+            .Setup(repo => repo.GetWithFiltersQueryable(It.IsAny<string>(), It.IsAny<List<int>>(),
+                It.IsAny<List<int>>(),
                 It.IsAny<string>()))
             .Returns(sampleMangaList);
-    
+
         // Act
         var result = await _service.GetWithFilter(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<string>(),
             It.IsAny<List<int>>(), It.IsAny<List<int>>(), It.IsAny<string>());
-    
+
         // Assert
         result.Should().BeEquivalentTo(expected);
     }
@@ -180,7 +181,7 @@ public class MangaServiceTests
                     Id = 1,
                     UserId = "1",
                     MangaId = 1,
-                    UserChapter = new UserChapter { UserMangaId = 1, SourceId = 1, ChapterId = 1 }
+                    UserChapter = new List<UserChapter> { new() { UserMangaId = 1, SourceId = 1, ChapterId = 1 } }
                 }
             },
             MangaGenres = new List<MangaGenre>
@@ -336,7 +337,7 @@ public class MangaServiceTests
                     Id = 1,
                     UserId = "1",
                     MangaId = 1,
-                    UserChapter = new UserChapter { UserMangaId = 1, SourceId = 1, ChapterId = 1 }
+                    UserChapter = new List<UserChapter> { new() { UserMangaId = 1, SourceId = 1, ChapterId = 1 } }
                 }
             },
             MangaGenres = new List<MangaGenre>
