@@ -75,6 +75,8 @@ public class MangaController : BaseController
     /// <returns>Manga data, if success.</returns>
     /// <response code="200">Returns the registered manga data.</response>
     /// <response code="400">Error.</response>
+    /// <response code="403">Unauthorized</response>
+    [Authorize(Policy="Admin")]
     [SwaggerOperation("Register a new manga using a MyAnimeList id")]
     [HttpPost]
     public async Task<ActionResult<Manga>> RegisterManga(int malId)
@@ -124,7 +126,7 @@ public class MangaController : BaseController
     /// <response code="403">Unauthorized</response>
     [Authorize(Policy="Admin")]
     [SwaggerOperation("Register a new source for a manga.")]
-    [HttpPost("/{mangaId:int}/source/{sourceId:int}")]
+    [HttpPost("{mangaId:int}/source/{sourceId:int}")]
     public async Task<ActionResult> AddSourceToManga(int mangaId, int sourceId, string mangaUrl)
     {
         // TODO: Add validation

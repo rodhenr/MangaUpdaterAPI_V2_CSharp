@@ -9,13 +9,14 @@ public class UserAuthenticateResponse
         ErrorList = new List<string>();
     }
 
-    public UserAuthenticateResponse(string? usernName, string? userAvatar, string? accessToken, string? refreshToken) :
-        this()
+    public UserAuthenticateResponse(string? userName, string? userAvatar, string? accessToken, string? refreshToken,
+        bool isAdmin) : this()
     {
         AccessToken = accessToken;
         RefreshToken = refreshToken;
-        UserName = usernName;
+        UserName = userName;
         UserAvatar = userAvatar;
+        IsAdmin = isAdmin;
     }
 
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
@@ -29,6 +30,9 @@ public class UserAuthenticateResponse
 
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public string? RefreshToken { get; private set; }
+
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public bool? IsAdmin { get; private set; }
 
     [JsonIgnore] public bool IsSuccess => ErrorList.Count == 0;
 

@@ -98,7 +98,9 @@ public class AuthenticationService : IAuthenticationService
         var accessToken = GenerateToken(accessTokenClaims, accessTokenExpirationData);
         var refreshToken = GenerateToken(refreshTokenClaims, refreshTokenExpirationData);
 
-        return new UserAuthenticateResponse(user.UserName, user.Avatar, accessToken, refreshToken);
+        var isUserAdmin = await IsUserAdmin(user);
+        
+        return new UserAuthenticateResponse(user.UserName, user.Avatar, accessToken, refreshToken, isUserAdmin);
     }
 
     private string GenerateToken(IEnumerable<Claim> claims, DateTime expirationDate)
@@ -145,5 +147,12 @@ public class AuthenticationService : IAuthenticationService
         claims.AddRange(roles.Select(role => new Claim("role", role)));
 
         return claims;
+    }
+
+    private async Task<bool> IsUserAdmin(AppUser user)
+    {
+        var userRoles= await _userManager.GetRolesAsync(user);
+
+        return userRoles.Any(ur => ur == "Admin");
     }
 }

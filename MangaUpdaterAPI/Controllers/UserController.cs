@@ -30,8 +30,8 @@ public class UserController : BaseController
     [SwaggerOperation(
         "Get all followed manga for a logged-in user with 3 last released chapters from the sources followed")]
     [HttpGet("mangas")]
-    public async Task<ActionResult<IEnumerable<MangaUserLoggedDto>>> GetLoggedUserMangas() =>
-        Ok(await _userMangaChapterService.GetUserMangasWithThreeLastChapterByUserId(UserId!));
+    public async Task<ActionResult<IEnumerable<MangaUserLoggedDto>>> GetLoggedUserMangas([FromQuery] int page = 1, [FromQuery] int limit = 20) =>
+        Ok(await _userMangaChapterService.GetUserMangasWithThreeLastChapterByUserId(UserId!, page, limit));
 
     /// <summary>
     /// Get all followed manga for a logged-in user.

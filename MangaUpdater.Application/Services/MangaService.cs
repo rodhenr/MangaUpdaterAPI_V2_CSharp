@@ -85,15 +85,15 @@ public class MangaService : IMangaService
         var mangaList = await _mangaRepository.GetMangasToUpdateChaptersAsync();
 
         var mangasToUpdateChapters = mangaList
-            .Where(m => m.Chapters!.Any() && m.MangaSources!.Any())
+            .Where(m => m.MangaSources is not null && m.MangaSources.Any())
             .Select(m =>
             {
-                var chapter = m.Chapters!.First();
+                // TODO: Change the implementation to not get the wrong sourceId
                 var mangaSource = m.MangaSources!.First();
-                
-                return new MangaInfoToUpdateChapters(m.Id, chapter.SourceId,
-                    m.MangaSources!.First(ms => ms.MangaId == m.Id && ms.SourceId == chapter.SourceId).Url,
-                    mangaSource.Source!.BaseUrl, mangaSource.Source.Name, chapter.Number);
+
+                return new MangaInfoToUpdateChapters(m.Id, mangaSource.SourceId, mangaSource.Url,
+                    mangaSource.Source!.BaseUrl, mangaSource.Source.Name,
+                    m.Chapters!.Any() ? m.Chapters!.First().Number : "0");
             })
             .ToList();
 

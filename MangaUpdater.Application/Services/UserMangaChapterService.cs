@@ -68,49 +68,34 @@ public class UserMangaChapterService : IUserMangaChapterService
             await _userChapterRepository.DeleteRangeAsync(userManga.Id, sourceIdListToRemove);
     }
 
-    public async Task<IEnumerable<MangaUserLoggedDto>> GetUserMangasWithThreeLastChapterByUserId(string userId)
+    public async Task<IEnumerable<MangaUserLoggedDto>> GetUserMangasWithThreeLastChapterByUserId(string userId,
+        int page, int limit)
     {
-        var userMangas = await _userMangaRepository.GetAllByUserIdAsync(userId);
+        var userMangas = await _userMangaRepository.GetAllByUserIdWithPageLimitAsync(userId, page, limit);
 
-        var userMangasByMangaId = userMangas
-            .Where(um => um.UserChapter is not null)
-            .GroupBy(um => um.MangaId)
-            .Select(group =>
-                new UserMangaGroupByMangaDto(group.Select(us => us.Manga).FirstOrDefault()!,
-                    group.Select(um =>
-                        {
-                            if (um.UserChapter != null)
-                                return new SourceWithLastChapterRead(um.UserChapter.SourceId,
-                                    um.UserChapter.Source!.Name,
-                                    um.UserChapter!.ChapterId);
+        var userMangasFiltered = userMangas
+            .Select(um => new MangaUserLoggedDto
+            {
+                Id = um.MangaId,
+                CoverUrl = um.Manga!.CoverUrl,
+                Name = um.Manga!.MangaTitles!.First().Name,
+                Chapters = um.Manga!.Chapters!.OrderByDescending(ch => ch.Date).Take(3).Select(ch =>
+                {
+                    var userChapter = um.UserChapter!.FirstOrDefault(uc => uc.SourceId == ch.SourceId && uc.ChapterId is not null);
+                    return new ChapterDto
+                    {
+                        ChapterId = ch.Id,
+                        SourceId = ch.SourceId,
+                        SourceName = ch.Source!.Name,
+                        Date = ch.Date,
+                        Number = ch.Number,
+                        IsUserAllowedToRead = true,
+                        Read = userChapter is not null && float.Parse(userChapter.Chapter!.Number) >= float.Parse(ch.Number)
+                    };
+                })
+            });
 
-                            return null;
-                        })
-                        .ToList()))
-            .ToList();
-
-        foreach (var userManga in userMangasByMangaId)
-        {
-            var sourceList = userManga.SourcesWithLastChapterRead
-                .Select(sch => sch.SourceId)
-                .ToList();
-
-            var chapters =
-                await _chapterRepository.GetThreeLastByMangaIdAndSourceListAsync(userManga.Manga.Id, sourceList);
-
-            userManga.Manga.Chapters = chapters;
-        }
-
-        userMangasByMangaId.Sort((x, y) =>
-        {
-            if (y.Manga.Chapters != null)
-                return x.Manga.Chapters != null
-                    ? y.Manga.Chapters.FirstOrDefault()!.Date.CompareTo(x.Manga.Chapters.FirstOrDefault()!.Date)
-                    : 1;
-            return 0;
-        });
-
-        return _mapper.Map<List<MangaUserLoggedDto>>(userMangasByMangaId);
+        return userMangasFiltered;
     }
 
     public async Task DeleteUserMangasByMangaId(int mangaId, string userId)

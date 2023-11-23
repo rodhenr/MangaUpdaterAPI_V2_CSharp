@@ -33,8 +33,8 @@ public class MappingProfile : Profile
 
                 var userSourceChapterList =
                     src.UserMangas?
-                        .Where(um => um.UserChapter is not null)
-                        .Select(um => new { um.UserChapter!.SourceId, um.UserChapter!.ChapterId })
+                        .Where(um => um.UserChapter is not null && um.UserChapter.Any())
+                        .Select(um => new { um.UserChapter!.First().SourceId, um.UserChapter!.First().ChapterId })
                         .ToList();
 
                 return src.Chapters
@@ -57,26 +57,6 @@ public class MappingProfile : Profile
                                            chapterListRead.SourceId == ch.SourceId)
                                        .ChapterId
                         };
-                    });
-            }));
-
-        CreateMap<UserMangaGroupByMangaDto, MangaUserLoggedDto>()
-            .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Manga.Id))
-            .ForMember(dest => dest.CoverUrl, opt => opt.MapFrom(src => src.Manga.CoverUrl))
-            .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.Manga!.MangaTitles!.First().Name))
-            .ForMember(dest => dest.Chapters, opt => opt.MapFrom((src, _, _, _) =>
-            {
-                return src.Manga.Chapters?
-                    .Select(ch => new ChapterDto
-                    {
-                        ChapterId = ch.Id,
-                        SourceId = ch.SourceId,
-                        SourceName = ch.Source!.Name,
-                        Date = ch.Date,
-                        Number = ch.Number,
-                        IsUserAllowedToRead = src.SourcesWithLastChapterRead.Any(b => b.SourceId == ch.SourceId),
-                        Read = src.SourcesWithLastChapterRead.Any(b => b.SourceId == ch.SourceId) && ch.Id <=
-                            src.SourcesWithLastChapterRead.First(c => c.SourceId == ch.SourceId).LastChapterRead
                     });
             }));
 

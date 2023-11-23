@@ -136,12 +136,12 @@ public class MangaRepository : BaseRepository<Manga>, IMangaRepository
 
         result.ForEach(m =>
         {
-            if (m.MangaSources != null)
+            if (m.MangaSources is not null && m.MangaSources.Any())
                 m.MangaSources = m.MangaSources
                     .Where(ms => ms.MangaId == m.Id);
 
             // TODO: Group by SourceId and then get the last one
-            if (m.Chapters != null)
+            if (m.Chapters is not null && m.Chapters.Any())
                 m.Chapters = m.Chapters
                     .Where(ch => ch.MangaId == m.Id)
                     .OrderByDescending(ch => float.Parse(ch.Number, CultureInfo.InvariantCulture))

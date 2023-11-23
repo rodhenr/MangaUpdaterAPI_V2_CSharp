@@ -1,4 +1,5 @@
-﻿using AutoMapper;
+﻿using System.Globalization;
+using AutoMapper;
 using MangaUpdater.Application.DTOs;
 using MangaUpdater.Application.Interfaces;
 using MangaUpdater.Application.Models.External;
@@ -34,20 +35,5 @@ public class UserMangaService : IUserMangaService
     {
         _userMangaRepository.Update(userManga);
         await _userMangaRepository.SaveChangesAsync(userManga);
-    }
-
-    public async Task<List<MangaInfoToUpdateChapters>> GetMangasToUpdateChapters(string userId)
-    {
-        var userMangaList = await _userMangaRepository.GetMangasToUpdateChaptersAsync(userId);
-
-        var mangasToUpdateChapters = userMangaList
-            .Where(um => um.UserChapter is not null && um.Manga?.MangaSources is not null)
-            .Select(um => new MangaInfoToUpdateChapters(um.MangaId, um.UserChapter!.SourceId,
-                um.Manga!.MangaSources!.First(ms => ms.MangaId == um.MangaId && ms.SourceId == um.UserChapter.SourceId)
-                    .Url, um.UserChapter!.Source!.BaseUrl, um.UserChapter.Source.Name,
-                um.Manga?.Chapters?.First().Number))
-            .ToList();
-
-        return mangasToUpdateChapters;
     }
 }

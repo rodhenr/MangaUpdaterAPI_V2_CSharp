@@ -8,5 +8,5 @@ public sealed class UserManga: Entity
     public required int MangaId { get; set; }
     
     [JsonIgnore] public Manga? Manga { get; set; }
-    [JsonIgnore] public UserChapter? UserChapter { get; set; }
+    [JsonIgnore] public IEnumerable<UserChapter>? UserChapter { get; set; }
 }
