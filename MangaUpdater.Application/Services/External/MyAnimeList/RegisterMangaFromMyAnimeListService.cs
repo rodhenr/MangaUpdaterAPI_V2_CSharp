@@ -40,7 +40,7 @@ public class RegisterMangaFromMyAnimeListService : IRegisterMangaFromMyAnimeList
 
         var genreList = apiData!.Genres.Select(g => new MangaGenre { GenreId = (int)g.MalId, MangaId = manga.Id });
         var authorList = apiData.Authors.Select(a => new MangaAuthor { MangaId = manga.Id, Name = a.Name });
-        var titleList = apiData.Titles.Select(t => new MangaTitle { MangaId = manga.Id, Name = t.Title });
+        var titleList = apiData.Titles.Select(t => new MangaTitle { MangaId = manga.Id, Name = t.Title }).Distinct();
 
         _mangaGenreService.BulkCreate(genreList);
         _mangaAuthorService.BulkCreate(authorList);

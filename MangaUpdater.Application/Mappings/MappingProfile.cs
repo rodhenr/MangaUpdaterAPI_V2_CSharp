@@ -1,4 +1,5 @@
-﻿using AutoMapper;
+﻿using System.Globalization;
+using AutoMapper;
 using MangaUpdater.Application.DTOs;
 using MangaUpdater.Application.Models.External.MyAnimeList;
 using MangaUpdater.Domain.Entities;
@@ -31,15 +32,21 @@ public class MappingProfile : Profile
                 if (src.Chapters is null || !src.Chapters.Any())
                     return Enumerable.Empty<ChapterDto>();
 
-                var userSourceChapterList =
-                    src.UserMangas?
-                        .Where(um => um.UserChapter is not null && um.UserChapter.Any())
-                        .Select(um => new { um.UserChapter!.First().SourceId, um.UserChapter!.First().ChapterId })
-                        .ToList();
-
                 return src.Chapters
                     .Select(ch =>
                     {
+                        var chaptersFiltered = src.Chapters
+                            .Where(chapterListRead =>
+                                chapterListRead.SourceId == ch.SourceId &&
+                                chapterListRead.MangaId == ch.MangaId)
+                            .OrderByDescending(chapter => float.Parse(chapter.Number, CultureInfo.InvariantCulture))
+                            .ToList();
+
+                        var isRead = float.Parse(ch.Number, CultureInfo.InvariantCulture) <=
+                                     float.Parse(
+                                         chaptersFiltered.Select(a => a.Number).FirstOrDefault() ?? string.Empty,
+                                         CultureInfo.InvariantCulture);
+
                         return new ChapterDto
                         {
                             ChapterId = ch.Id,
@@ -47,15 +54,8 @@ public class MappingProfile : Profile
                             SourceName = ch.Source.Name,
                             Date = ch.Date,
                             Number = ch.Number,
-                            IsUserAllowedToRead = userSourceChapterList is not null &&
-                                                  userSourceChapterList.Any(chapterList =>
-                                                      chapterList.SourceId == ch.SourceId),
-                            Read = userSourceChapterList is not null &&
-                                   userSourceChapterList.Any(chapterList => chapterList.SourceId == ch.SourceId) &&
-                                   ch.Id <=
-                                   userSourceChapterList.First(chapterListRead =>
-                                           chapterListRead.SourceId == ch.SourceId)
-                                       .ChapterId
+                            IsUserAllowedToRead = chaptersFiltered.Any(),
+                            Read = chaptersFiltered.Any() && isRead
                         };
                     });
             }));
