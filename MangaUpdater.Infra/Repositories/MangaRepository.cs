@@ -94,9 +94,10 @@ public class MangaRepository : BaseRepository<Manga>, IMangaRepository
     public async Task<Manga?> GetByIdAndUserIdOrderedDescAsync(int id, string userId)
     {
         var manga = await Get()
+            .AsNoTracking()
             .Include(m => m.UserMangas!.Where(um => um.UserId == userId))
-            .ThenInclude(um => um.UserChapter)
-            .ThenInclude(uc => uc!.Source)
+            .ThenInclude(um => um.UserChapter!)
+            .ThenInclude(uc => uc.Chapter)
             .Include(m => m.MangaGenres)!
             .ThenInclude(m => m.Genre)
             .Include(m => m.MangaSources)!
@@ -105,7 +106,6 @@ public class MangaRepository : BaseRepository<Manga>, IMangaRepository
             .ThenInclude(ms => ms.Source)
             .Include(m => m.MangaAuthors)
             .Include(m => m.MangaTitles)
-            .AsNoTracking()
             .SingleOrDefaultAsync(m => m.Id == id);
 
         if (manga is not null)

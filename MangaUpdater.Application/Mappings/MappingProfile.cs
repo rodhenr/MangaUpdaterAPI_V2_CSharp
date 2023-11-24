@@ -30,22 +30,30 @@ public class MappingProfile : Profile
             .ForMember(dest => dest.Chapters, opt => opt.MapFrom((src, _, _, _) =>
             {
                 if (src.Chapters is null || !src.Chapters.Any())
+                {
                     return Enumerable.Empty<ChapterDto>();
+                }
+
+                var userMangaInfo = src.UserMangas?
+                    .SelectMany((um) => um.UserChapter!, (um, uc) => new
+                    {
+                        um.MangaId,
+                        uc.SourceId,
+                        uc.ChapterId,
+                        uc.Chapter?.Number
+                    })
+                    .ToList();
 
                 return src.Chapters
                     .Select(ch =>
                     {
-                        var chaptersFiltered = src.Chapters
-                            .Where(chapterListRead =>
-                                chapterListRead.SourceId == ch.SourceId &&
-                                chapterListRead.MangaId == ch.MangaId)
-                            .OrderByDescending(chapter => float.Parse(chapter.Number, CultureInfo.InvariantCulture))
-                            .ToList();
+                        var chapterInfo = userMangaInfo?
+                            .FirstOrDefault(um =>
+                                um.SourceId == ch.SourceId &&
+                                um.MangaId == ch.MangaId);
 
                         var isRead = float.Parse(ch.Number, CultureInfo.InvariantCulture) <=
-                                     float.Parse(
-                                         chaptersFiltered.Select(a => a.Number).FirstOrDefault() ?? string.Empty,
-                                         CultureInfo.InvariantCulture);
+                                     float.Parse(chapterInfo?.Number ?? "0", CultureInfo.InvariantCulture);
 
                         return new ChapterDto
                         {
@@ -54,8 +62,8 @@ public class MappingProfile : Profile
                             SourceName = ch.Source.Name,
                             Date = ch.Date,
                             Number = ch.Number,
-                            IsUserAllowedToRead = chaptersFiltered.Any(),
-                            Read = chaptersFiltered.Any() && isRead
+                            IsUserAllowedToRead = chapterInfo is not null,
+                            Read = chapterInfo is not null && isRead
                         };
                     });
             }));
