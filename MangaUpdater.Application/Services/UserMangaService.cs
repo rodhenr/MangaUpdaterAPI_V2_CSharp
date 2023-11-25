@@ -29,6 +29,13 @@ public class UserMangaService : IUserMangaService
         return await _userMangaRepository.GetByMangaIdAndUserIdAsync(mangaId, userId);
     }
 
+    public async Task<UsersFollowingMangaDto> GetTotalNumberOfUsersFollowingById(int mangaId)
+    {
+        var numberOfFollowers = await _userMangaRepository.GetTotalNumberOfUsersFollowingByIdAsync(mangaId);
+
+        return new UsersFollowingMangaDto(mangaId, numberOfFollowers);
+    }
+
     public async Task Update(UserManga userManga)
     {
         _userMangaRepository.Update(userManga);

@@ -13,16 +13,13 @@ public class UserMangaChapterService : IUserMangaChapterService
     private readonly IChapterRepository _chapterRepository;
     private readonly IUserSourceService _userSourceService;
     private readonly IUserChapterRepository _userChapterRepository;
-    private readonly IMapper _mapper;
 
-    public UserMangaChapterService(IUserMangaRepository userMangaRepository,
-        IChapterRepository chapterRepository,
-        IUserSourceService userSourceService, IMapper mapper, IUserChapterRepository userChapterRepository)
+    public UserMangaChapterService(IUserMangaRepository userMangaRepository, IChapterRepository chapterRepository,
+        IUserSourceService userSourceService, IUserChapterRepository userChapterRepository)
     {
         _userMangaRepository = userMangaRepository;
         _chapterRepository = chapterRepository;
         _userSourceService = userSourceService;
-        _mapper = mapper;
         _userChapterRepository = userChapterRepository;
     }
 
@@ -81,7 +78,8 @@ public class UserMangaChapterService : IUserMangaChapterService
                 Name = um.Manga!.MangaTitles!.First(mt => mt.IsMainTitle).Name,
                 Chapters = um.Manga!.Chapters!.OrderByDescending(ch => ch.Date).Take(3).Select(ch =>
                 {
-                    var userChapter = um.UserChapter!.FirstOrDefault(uc => uc.SourceId == ch.SourceId && uc.ChapterId is not null);
+                    var userChapter =
+                        um.UserChapter!.FirstOrDefault(uc => uc.SourceId == ch.SourceId && uc.ChapterId is not null);
                     return new ChapterDto
                     {
                         ChapterId = ch.Id,
@@ -90,7 +88,8 @@ public class UserMangaChapterService : IUserMangaChapterService
                         Date = ch.Date,
                         Number = ch.Number,
                         IsUserAllowedToRead = true,
-                        Read = userChapter is not null && float.Parse(userChapter.Chapter!.Number) >= float.Parse(ch.Number)
+                        Read = userChapter is not null &&
+                               float.Parse(userChapter.Chapter!.Number) >= float.Parse(ch.Number)
                     };
                 })
             });
@@ -124,7 +123,18 @@ public class UserMangaChapterService : IUserMangaChapterService
 
         var userChapter = await _userChapterRepository.GetByUserMangaIdAndSourceIdAsync(userManga.Id, sourceId);
 
-        if (userChapter != null) userChapter.ChapterId = chapterId;
+        if (userChapter != null)
+        {
+            if (userChapter.ChapterId == chapterId)
+            {
+                var previousChapter = await _chapterRepository.GetPreviousChapterAsync(mangaId, sourceId, chapterId);
+                userChapter.ChapterId = previousChapter?.Id;
+            }
+            else
+            {
+                userChapter.ChapterId = chapterId;
+            }
+        }
 
         await _userChapterRepository.SaveAsync();
     }

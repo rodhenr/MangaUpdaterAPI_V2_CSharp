@@ -91,6 +91,14 @@ public class UserMangaRepository : BaseRepository<UserManga>, IUserMangaReposito
             .Include(um => um.Manga)
             .ThenInclude(m => m!.MangaSources)
             .Where(um => um.UserId == userId)
-            .ToListAsync(); ;
+            .ToListAsync();
+        ;
+    }
+
+    public async Task<int> GetTotalNumberOfUsersFollowingByIdAsync(int mangaId)
+    {
+        return await Get()
+            .Where(um => um.MangaId == mangaId)
+            .CountAsync();
     }
 }

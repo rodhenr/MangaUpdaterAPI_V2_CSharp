@@ -76,7 +76,7 @@ public class MangaController : BaseController
     /// <response code="200">Returns the registered manga data.</response>
     /// <response code="400">Error.</response>
     /// <response code="403">Unauthorized</response>
-    [Authorize(Policy="Admin")]
+    [Authorize(Policy = "Admin")]
     [SwaggerOperation("Register a new manga using a MyAnimeList id")]
     [HttpPost]
     public async Task<ActionResult<Manga>> RegisterManga(int malId)
@@ -124,7 +124,7 @@ public class MangaController : BaseController
     /// <response code="200">Success.</response>
     /// <response code="400">Error.</response>
     /// <response code="403">Unauthorized</response>
-    [Authorize(Policy="Admin")]
+    [Authorize(Policy = "Admin")]
     [SwaggerOperation("Register a new source for a manga.")]
     [HttpPost("{mangaId:int}/source/{sourceId:int}")]
     public async Task<ActionResult> AddSourceToManga(int mangaId, int sourceId, string mangaUrl)
@@ -142,7 +142,7 @@ public class MangaController : BaseController
     /// <response code="200">Success.</response>
     /// <response code="400">Error.</response>
     /// <response code="403">Unauthorized</response>
-    [Authorize(Policy="Admin")]
+    [Authorize(Policy = "Admin")]
     [SwaggerOperation("Update chapters from a combination of manga and source.")]
     [HttpPost("/{mangaId:int}/source/{sourceId:int}/chapters")]
     public async Task<ActionResult> UpdateChaptersFromSource(int mangaId, int sourceId)
@@ -156,4 +156,15 @@ public class MangaController : BaseController
 
         return Ok();
     }
+
+    /// <summary>
+    /// Retrieves the total number of users who are currently following a specific manga
+    /// </summary>
+    /// <response code="200">Returns the total number of users who are currently following a manga.</response>
+    /// <response code="400">Error.</response>
+    [AllowAnonymous]
+    [SwaggerOperation("Get the total number of users who are currently following a manga")]
+    [HttpGet("{mangaId:int}/follows")]
+    public async Task<ActionResult<UsersFollowingMangaDto>> GetUsersFollowingByMangaId(int mangaId) =>
+        Ok(await _userMangaService.GetTotalNumberOfUsersFollowingById(mangaId));
 }

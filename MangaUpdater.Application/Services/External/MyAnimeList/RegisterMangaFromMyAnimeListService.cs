@@ -1,7 +1,6 @@
 ﻿using AutoMapper;
 using MangaUpdater.Application.Interfaces;
 using MangaUpdater.Application.Interfaces.External.MyAnimeList;
-using MangaUpdater.Application.Models.External.MyAnimeList;
 using MangaUpdater.Domain.Entities;
 using MangaUpdater.Domain.Exceptions;
 
@@ -40,7 +39,16 @@ public class RegisterMangaFromMyAnimeListService : IRegisterMangaFromMyAnimeList
 
         var genreList = apiData!.Genres.Select(g => new MangaGenre { GenreId = (int)g.MalId, MangaId = manga.Id });
         var authorList = apiData.Authors.Select(a => new MangaAuthor { MangaId = manga.Id, Name = a.Name });
-        var titleList = apiData.Titles.Select(t => new MangaTitle { MangaId = manga.Id, Name = t.Title }).Distinct();
+        var titleList = apiData.Titles
+            .Select(i => i.Title)
+            .Distinct()
+            .Select((title, index) =>
+                new MangaTitle
+                {
+                    MangaId = manga.Id,
+                    Name = title,
+                    IsMainTitle = index == 0
+                });
 
         _mangaGenreService.BulkCreate(genreList);
         _mangaAuthorService.BulkCreate(authorList);

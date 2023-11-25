@@ -19,16 +19,12 @@ public class UserMangaChapterServiceTests
 
     public UserMangaChapterServiceTests()
     {
-        var profile = new MappingProfile();
-        var configuration = new MapperConfiguration(cfg => cfg.AddProfile(profile));
-        var mapper = new Mapper(configuration);
-
         _userMangaRepository = new Mock<IUserMangaRepository>();
         _userChapterRepository = new Mock<IUserChapterRepository>();
         _chapterRepository = new Mock<IChapterRepository>();
         _userSourceService = new Mock<IUserSourceService>();
         _service = new UserMangaChapterService(_userMangaRepository.Object, _chapterRepository.Object,
-            _userSourceService.Object, mapper, _userChapterRepository.Object);
+            _userSourceService.Object, _userChapterRepository.Object);
     }
 
     [Fact]
@@ -38,9 +34,6 @@ public class UserMangaChapterServiceTests
         const string userId = "testUser";
         const int mangaId = 1;
 
-        var sampleChapter1 = new Chapter { Id = 1, MangaId = 1, SourceId = 1, Date = DateTime.Now, Number = "1" };
-        var sampleChapter2 = new Chapter { Id = 2, MangaId = 1, SourceId = 2, Date = DateTime.Now, Number = "1" };
-        var sampleChapter3 = new Chapter { Id = 3, MangaId = 1, SourceId = 3, Date = DateTime.Now, Number = "1" };
         var sampleUserSourceList = new List<UserSourceDto>
         {
             new(1, "Source1", false),

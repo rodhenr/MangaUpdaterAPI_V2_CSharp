@@ -68,4 +68,25 @@ public class ChapterRepository : BaseRepository<Chapter>, IChapterRepository
             .AsNoTracking()
             .FirstOrDefaultAsync();
     }
+
+    public async Task<Chapter?> GetPreviousChapterAsync(int mangaId, int sourceId, int chapterId)
+    {
+        var chapterList = await Get()
+            .Where(ch => ch.MangaId == mangaId && ch.SourceId == sourceId)
+            .ToListAsync();
+
+        chapterList
+            .Sort((x, y) => float.Parse(y.Number, CultureInfo.InvariantCulture)
+                .CompareTo(float.Parse(x.Number, CultureInfo.InvariantCulture)));
+
+        var chapterNumber = await Get()
+            .Where(ch => ch.Id == chapterId)
+            .Select(ch => ch.Number)
+            .SingleOrDefaultAsync() ?? "0";
+
+        return chapterList
+            .FirstOrDefault(ch =>
+                float.Parse(ch.Number, CultureInfo.InvariantCulture) <
+                float.Parse(chapterNumber, CultureInfo.InvariantCulture));
+    }
 }
