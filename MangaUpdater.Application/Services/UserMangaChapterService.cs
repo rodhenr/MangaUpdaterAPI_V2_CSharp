@@ -78,7 +78,7 @@ public class UserMangaChapterService : IUserMangaChapterService
             {
                 Id = um.MangaId,
                 CoverUrl = um.Manga!.CoverUrl,
-                Name = um.Manga!.MangaTitles!.First().Name,
+                Name = um.Manga!.MangaTitles!.First(mt => mt.IsMainTitle).Name,
                 Chapters = um.Manga!.Chapters!.OrderByDescending(ch => ch.Date).Take(3).Select(ch =>
                 {
                     var userChapter = um.UserChapter!.FirstOrDefault(uc => uc.SourceId == ch.SourceId && uc.ChapterId is not null);

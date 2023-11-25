@@ -43,7 +43,7 @@ public class MangaService : IMangaService
             .Skip((page - 1) * pageSize)
             .Take(pageSize)
             .Select(manga =>
-                new MangaUserDto(manga.Id, manga.CoverUrl, manga.MangaTitles!.First().Name))
+                new MangaUserDto(manga.Id, manga.CoverUrl, manga.MangaTitles!.First(mt => mt.IsMainTitle).Name))
             .ToListAsync();
 
         var numberOfMangas = await query

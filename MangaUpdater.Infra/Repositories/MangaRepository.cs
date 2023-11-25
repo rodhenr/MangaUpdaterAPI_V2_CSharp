@@ -42,7 +42,7 @@ public class MangaRepository : BaseRepository<Manga>, IMangaRepository
         query = orderBy switch
         {
             "alphabet" => query
-                .OrderBy(m => m.MangaTitles!.First().Name),
+                .OrderBy(m => m.MangaTitles!.First(mt => mt.IsMainTitle).Name),
             "latest" => query
                 .OrderByDescending(m => m.Id),
             _ => query

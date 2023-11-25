@@ -1,5 +1,4 @@
-﻿using MangaUpdater.Application.DTOs;
-using MangaUpdater.Application.Helpers;
+﻿using MangaUpdater.Application.Helpers;
 using MangaUpdater.Application.Interfaces;
 using MangaUpdater.Domain.Entities;
 using MangaUpdater.Domain.Interfaces;

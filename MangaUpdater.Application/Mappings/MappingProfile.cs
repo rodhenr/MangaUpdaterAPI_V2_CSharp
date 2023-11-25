@@ -12,10 +12,10 @@ public class MappingProfile : Profile
     {
         CreateMap<Manga, MangaDto>()
             .ForMember(dest => dest.MangaId, opt => opt.MapFrom(src => src.Id))
-            .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.MangaTitles!.First().Name))
+            .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.MangaTitles!.First(mt => mt.IsMainTitle).Name))
             .ForMember(dest => dest.AlternativeName,
                 opt => opt.MapFrom(src =>
-                    src.MangaTitles!.Count() > 1 ? src.MangaTitles!.ElementAt(1).Name : src.MangaTitles!.First().Name))
+                    src.MangaTitles!.Count() > 1 ? src.MangaTitles!.First(mt => !mt.IsMainTitle).Name : src.MangaTitles!.First().Name))
             .ForMember(dest => dest.Author, opt => opt.MapFrom(src => src.MangaAuthors!.First().Name))
             .ForMember(dest => dest.IsUserFollowing,
                 opt => opt.MapFrom(src => src.UserMangas != null && src.UserMangas.Any()))
@@ -75,6 +75,6 @@ public class MappingProfile : Profile
         CreateMap<Manga, MangaUserDto>()
             .ForCtorParam("MangaId", opt => opt.MapFrom(src => src.Id))
             .ForCtorParam("CoverUrl", opt => opt.MapFrom(src => src.CoverUrl))
-            .ForCtorParam("MangaName", opt => opt.MapFrom(src => src.MangaTitles!.First().Name));
+            .ForCtorParam("MangaName", opt => opt.MapFrom(src => src.MangaTitles!.First(mt => mt.IsMainTitle).Name));
     }
 }

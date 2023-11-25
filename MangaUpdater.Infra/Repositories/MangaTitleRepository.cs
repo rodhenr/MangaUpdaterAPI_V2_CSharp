@@ -1,7 +1,6 @@
 ﻿using MangaUpdater.Domain.Entities;
 using MangaUpdater.Domain.Interfaces;
 using MangaUpdater.Infra.Data.Context;
-using Microsoft.EntityFrameworkCore;
 
 namespace MangaUpdater.Infra.Data.Repositories;
 
