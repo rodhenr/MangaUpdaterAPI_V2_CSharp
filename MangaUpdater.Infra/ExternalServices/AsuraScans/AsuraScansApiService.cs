@@ -56,12 +56,19 @@ public partial class AsuraScansApiService : IAsuraScansApi
     {
         var match = MyRegex().Match(input);
 
-        if (!match.Success) throw new InvalidOperationException("No numeric part found in the input string.");
+        if (!match.Success) return "0";
 
         var numericPart = match.Groups[1].Value;
 
-        if (float.TryParse(numericPart, out var floatResult)) return floatResult.ToString(CultureInfo.InvariantCulture);
-        if (int.TryParse(numericPart, out var intResult)) return intResult.ToString(CultureInfo.InvariantCulture);
+        if (float.TryParse(numericPart, NumberStyles.Float, CultureInfo.InvariantCulture, out var floatResult))
+        {
+            return floatResult.ToString(CultureInfo.InvariantCulture);
+        }
+
+        if (int.TryParse(numericPart, NumberStyles.Integer, CultureInfo.InvariantCulture, out var intResult))
+        {
+            return intResult.ToString(CultureInfo.InvariantCulture);
+        }
 
         throw new InvalidOperationException("Failed to parse the numeric part as either float or int.");
     }
