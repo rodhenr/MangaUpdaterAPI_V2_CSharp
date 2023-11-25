@@ -30,7 +30,7 @@ public class AuthenticationService : IAuthenticationService
     {
         var appUser = new AppUser
         {
-            UserName = userRegister.Email,
+            UserName = userRegister.UserName,
             Email = userRegister.Email,
             EmailConfirmed = true,
             Avatar = ""
@@ -51,8 +51,15 @@ public class AuthenticationService : IAuthenticationService
 
     public async Task<UserAuthenticateResponse> Authenticate(UserAuthenticate userAuthenticate)
     {
+        var user = await _userManager.FindByEmailAsync(userAuthenticate.Email);
+
+        if (user?.Email is null)
+        {
+            throw new AuthenticationException("User not found");
+        }
+
         var result =
-            await _signInManager.PasswordSignInAsync(userAuthenticate.Email, userAuthenticate.Password, false, false);
+            await _signInManager.PasswordSignInAsync(user.UserName!, userAuthenticate.Password, false, false);
 
         if (result.Succeeded)
             return await GenerateCredentials(userAuthenticate.Email);
@@ -99,7 +106,7 @@ public class AuthenticationService : IAuthenticationService
         var refreshToken = GenerateToken(refreshTokenClaims, refreshTokenExpirationData);
 
         var isUserAdmin = await IsUserAdmin(user);
-        
+
         return new UserAuthenticateResponse(user.UserName, user.Avatar, accessToken, refreshToken, isUserAdmin);
     }
 
@@ -151,7 +158,7 @@ public class AuthenticationService : IAuthenticationService
 
     private async Task<bool> IsUserAdmin(AppUser user)
     {
-        var userRoles= await _userManager.GetRolesAsync(user);
+        var userRoles = await _userManager.GetRolesAsync(user);
 
         return userRoles.Any(ur => ur == "Admin");
     }

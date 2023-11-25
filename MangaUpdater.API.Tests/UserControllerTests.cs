@@ -12,6 +12,7 @@ public class UserControllerTests
     private readonly UserController _userController;
     private readonly Mock<IUserMangaChapterService> _userMangaChapterService;
     private readonly Mock<IUserMangaService> _userMangaService;
+    private readonly Mock<IUserAccountService> _userAccountService;
 
     public UserControllerTests()
     {
@@ -20,8 +21,10 @@ public class UserControllerTests
 
         _userMangaChapterService = new Mock<IUserMangaChapterService>();
         _userMangaService = new Mock<IUserMangaService>();
+        _userAccountService = new Mock<IUserAccountService>();
 
-        _userController = new UserController(_userMangaChapterService.Object, _userMangaService.Object)
+        _userController = new UserController(_userMangaChapterService.Object, _userMangaService.Object,
+            _userAccountService.Object)
         {
             ControllerContext = new ControllerContext
             {

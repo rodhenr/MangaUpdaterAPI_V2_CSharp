@@ -49,6 +49,7 @@ public static class ServicesInjection
         services.AddScoped<IMangaAuthorService, MangaAuthorService>();
         services.AddScoped<IMangaTitleService, MangaTitleService>();
         services.AddScoped<IUserChapterService, UserChapterService>();
+        services.AddScoped<IUserAccountService, UserAccountService>();
 
         services.AddScoped<IMyAnimeListApiService, MyAnimeListApiService>();
         services.AddScoped<IRegisterMangaFromMyAnimeListService, RegisterMangaFromMyAnimeListService>();

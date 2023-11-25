@@ -1,11 +1,9 @@
 ﻿using System.Security.Claims;
-using Hangfire;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
 using MangaUpdater.Application.DTOs;
 using MangaUpdater.Application.Interfaces;
 using MangaUpdater.API.Controllers.Shared;
-using MangaUpdater.Application.Interfaces.Background;
 
 namespace MangaUpdater.API.Controllers;
 
@@ -14,11 +12,14 @@ public class UserController : BaseController
     private string? UserId => User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
     private readonly IUserMangaChapterService _userMangaChapterService;
     private readonly IUserMangaService _userMangaService;
+    private readonly IUserAccountService _userAccountService;
 
-    public UserController(IUserMangaChapterService userMangaChapterService, IUserMangaService userMangaService)
+    public UserController(IUserMangaChapterService userMangaChapterService, IUserMangaService userMangaService,
+        IUserAccountService userAccountService)
     {
         _userMangaChapterService = userMangaChapterService;
         _userMangaService = userMangaService;
+        _userAccountService = userAccountService;
     }
 
     /// <summary>
@@ -30,7 +31,8 @@ public class UserController : BaseController
     [SwaggerOperation(
         "Get all followed manga for a logged-in user with 3 last released chapters from the sources followed")]
     [HttpGet("mangas")]
-    public async Task<ActionResult<IEnumerable<MangaUserLoggedDto>>> GetLoggedUserMangas([FromQuery] int page = 1, [FromQuery] int limit = 20) =>
+    public async Task<ActionResult<IEnumerable<MangaUserLoggedDto>>> GetLoggedUserMangas([FromQuery] int page = 1,
+        [FromQuery] int limit = 20) =>
         Ok(await _userMangaChapterService.GetUserMangasWithThreeLastChapterByUserId(UserId!, page, limit));
 
     /// <summary>
@@ -104,6 +106,54 @@ public class UserController : BaseController
     public async Task<ActionResult> UpdateManga(int mangaId, int sourceId, [FromQuery] int chapterId)
     {
         await _userMangaChapterService.UpdateOrCreateUserChapter(UserId!, mangaId, sourceId, chapterId);
+        return Ok();
+    }
+
+    /// <summary>
+    /// Get information about the logged user.
+    /// </summary>
+    /// <response code="200">Success.</response>
+    /// <response code="400">Error.</response>
+    [SwaggerOperation("Get information about the logged user")]
+    [HttpGet("profile")]
+    public async Task<ActionResult<UserProfileDto>> GetLoggedUserInfo() =>
+        Ok(await _userAccountService.GetUserInfo(UserId!));
+
+    /// <summary>
+    /// Changes email for the logged user.
+    /// </summary>
+    /// <response code="200">Success.</response>
+    /// <response code="400">Error.</response>
+    [SwaggerOperation("Changes email for the logged user")]
+    [HttpPost("profile/email")]
+    public async Task<ActionResult> ChangeLoggedUserEmail(string newEmail)
+    {
+        var result = await _userAccountService.ChangeUserEmailAsync(UserId!, newEmail);
+
+        if (!result.Succeeded)
+        {
+            return BadRequest();
+        }
+
+        return Ok();
+    }
+
+    /// <summary>
+    /// Changes password for the logged user.
+    /// </summary>
+    /// <response code="200">Success.</response>
+    /// <response code="400">Error.</response>
+    [SwaggerOperation("Changes password for the logged user")]
+    [HttpPost("profile/password")]
+    public async Task<ActionResult> ChangeLoggedUserPassword(string password, string oldPassword)
+    {
+        var result = await _userAccountService.ChangeUserPasswordAsync(UserId!, password, oldPassword);
+
+        if (!result.Succeeded)
+        {
+            return BadRequest();
+        }
+
         return Ok();
     }
 }
