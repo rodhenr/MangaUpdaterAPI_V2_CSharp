@@ -234,9 +234,7 @@ namespace MangaUpdater.Infra.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ChapterId")
-                        .IsUnique()
-                        .HasFilter("[ChapterId] IS NOT NULL");
+                    b.HasIndex("ChapterId");
 
                     b.HasIndex("SourceId");
 
@@ -558,8 +556,8 @@ namespace MangaUpdater.Infra.Data.Migrations
             modelBuilder.Entity("MangaUpdater.Domain.Entities.UserChapter", b =>
                 {
                     b.HasOne("MangaUpdater.Domain.Entities.Chapter", "Chapter")
-                        .WithOne("UserChapter")
-                        .HasForeignKey("MangaUpdater.Domain.Entities.UserChapter", "ChapterId");
+                        .WithMany("UserChapter")
+                        .HasForeignKey("ChapterId");
 
                     b.HasOne("MangaUpdater.Domain.Entities.Source", "Source")
                         .WithMany("UserChapter")

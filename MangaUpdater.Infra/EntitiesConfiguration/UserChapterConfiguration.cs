@@ -24,7 +24,7 @@ public class UserChapterConfiguration : IEntityTypeConfiguration<UserChapter>
 
         builder
             .HasOne(uc => uc.Chapter)
-            .WithOne(um => um.UserChapter)
-            .HasForeignKey<UserChapter>(uc => uc.ChapterId);
+            .WithMany(um => um.UserChapter)
+            .HasForeignKey(uc => uc.ChapterId);
     }
 }
