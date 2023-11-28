@@ -4,6 +4,7 @@ using Swashbuckle.AspNetCore.Annotations;
 using MangaUpdater.Application.DTOs;
 using MangaUpdater.Application.Interfaces;
 using MangaUpdater.API.Controllers.Shared;
+using MangaUpdater.Application.Models;
 
 namespace MangaUpdater.API.Controllers;
 
@@ -126,9 +127,11 @@ public class UserController : BaseController
     /// <response code="400">Error.</response>
     [SwaggerOperation("Changes email for the logged user")]
     [HttpPost("profile/email")]
-    public async Task<ActionResult> ChangeLoggedUserEmail(string newEmail)
+    public async Task<ActionResult> ChangeLoggedUserEmail(ChangeEmailQuery data)
     {
-        var result = await _userAccountService.ChangeUserEmailAsync(UserId!, newEmail);
+        if (!data.password.Equals(data.confirmationPassword)) return BadRequest();
+        
+        var result = await _userAccountService.ChangeUserEmailAsync(UserId!, data.newEmail, data.password);
 
         if (!result.Succeeded)
         {

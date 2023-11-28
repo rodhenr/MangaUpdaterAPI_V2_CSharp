@@ -28,10 +28,17 @@ public class UserAccountService : IUserAccountService
         return new UserProfileDto(user.Avatar, user.UserName!, user.Id, user.Email!);
     }
 
-    public async Task<IdentityResult> ChangeUserEmailAsync(string userId, string newEmail)
+    public async Task<IdentityResult> ChangeUserEmailAsync(string userId, string newEmail, string password)
     {
         var user = await _userManager.FindByIdAsync(userId);
         if (user is null) throw new AuthenticationException("User not found");
+        
+        var passwordVerificationResult = await _userManager.CheckPasswordAsync(user, password);
+        
+        if (!passwordVerificationResult)
+        {
+            return IdentityResult.Failed(new IdentityError { Description = "Password is incorrect." });
+        }
 
         var changeEmailToken = await _userManager.GenerateChangeEmailTokenAsync(user, newEmail);
         
