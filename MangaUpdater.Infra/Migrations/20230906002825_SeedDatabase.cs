@@ -10,11 +10,9 @@ namespace MangaUpdater.Infra.Data.Migrations
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.Sql("INSERT INTO Sources(Name,BaseUrl) " +
-                "VALUES('Manga Livre','https://mangalivre.net/serie/')");
-
-            migrationBuilder.Sql("INSERT INTO Sources(Name,BaseUrl) " +
-                "VALUES('Asura Scans','https://asuracomics.com/manga/')");
+            migrationBuilder.Sql("INSERT INTO Sources(Name,BaseUrl) VALUES('MangaDex','https://api.mangadex.org/manga/')");
+            
+            migrationBuilder.Sql("INSERT INTO Sources(Name,BaseUrl) VALUES('AsuraScans','https://asuratoon.com/manga/')");
         }
 
         /// <inheritdoc />

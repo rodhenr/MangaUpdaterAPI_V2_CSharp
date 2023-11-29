@@ -1,5 +1,4 @@
 ﻿using Hangfire;
-using Hangfire.Storage;
 using MangaUpdater.Application.Interfaces;
 using MangaUpdater.Application.Interfaces.Background;
 using MangaUpdater.Application.Interfaces.External;
@@ -15,13 +14,19 @@ public class HangfireService : IHangfireService
         _mangaService = mangaService;
     }
 
-    [DisableConcurrentExecution(timeoutInSeconds: Timeout.Infinite)]
     public async Task AddHangfireJobs()
     {
         var mangas = await _mangaService.GetMangasToUpdateChapters();
 
-        string? lastJobId = null;
         var startTime = DateTime.Now;
+        
+        if (!mangas.Any())
+        {
+            ScheduleNextInvocation(startTime);
+            return;
+        }
+        
+        string? lastJobId = null;
 
         foreach (var manga in mangas)
         {

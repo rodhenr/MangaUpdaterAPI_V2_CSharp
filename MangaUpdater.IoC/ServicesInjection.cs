@@ -70,6 +70,6 @@ public static class ServicesInjection
             .UseRecommendedSerializerSettings()
             .UseSqlServerStorage(configuration.GetConnectionString("DefaultConnection")));
 
-        services.AddHangfireServer();
+        services.AddHangfireServer(options => options.WorkerCount = 2);
     }
 }

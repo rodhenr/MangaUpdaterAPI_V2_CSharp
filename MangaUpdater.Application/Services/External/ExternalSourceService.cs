@@ -27,8 +27,7 @@ public class ExternalSourceService : IExternalSourceService
             case "MangaDex":
             {
                 var chapters = await _mangaDexApi.GetChaptersAsync(mangaInfo.MangaId, mangaInfo.SourceId,
-                    mangaInfo.MangaUrl,
-                    mangaInfo.SourceBaseUrl, mangaInfo?.LastSavedChapter);
+                    mangaInfo.MangaUrl, mangaInfo.SourceBaseUrl, mangaInfo?.LastSavedChapter);
 
                 _chapterService.BulkCreate(chapters.Distinct(new ChapterEqualityComparer()).ToList());
                 break;
@@ -36,8 +35,7 @@ public class ExternalSourceService : IExternalSourceService
             case "AsuraScans":
             {
                 var chapters = await _asuraScansApi.GetChaptersAsync(mangaInfo.MangaId, mangaInfo.SourceId,
-                    mangaInfo.MangaUrl,
-                    mangaInfo.SourceBaseUrl, mangaInfo?.LastSavedChapter);
+                    mangaInfo.MangaUrl, mangaInfo.SourceBaseUrl, mangaInfo?.LastSavedChapter);
 
                 _chapterService.BulkCreate(chapters.Distinct(new ChapterEqualityComparer()).ToList());
                 break;

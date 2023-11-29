@@ -121,7 +121,7 @@ foreach (var job in scheduledJobs)
     BackgroundJob.Delete(job.Key);
 }
 
-// BackgroundJob.Enqueue<IHangfireService>(task => task.AddHangfireJobs());
+BackgroundJob.Enqueue<IHangfireService>(task => task.AddHangfireJobs());
 
 app.MapControllers();
 
