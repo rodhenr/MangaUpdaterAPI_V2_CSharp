@@ -19,14 +19,14 @@ public partial class AsuraScansApiService : IAsuraScansApi
     public async Task<List<Chapter>> GetChaptersAsync(int mangaId, int sourceId, string mangaUrl, string sourceUrl,
         string? initialChapter)
     {
-        var htmlDoc = new HtmlDocument();
-        var httpClient = _clientFactory.CreateClient();
-
+        using var httpClient = _clientFactory.CreateClient();
         var html = await httpClient.GetStringAsync($"{sourceUrl}{mangaUrl}");
+
+        var htmlDoc = new HtmlDocument();
         htmlDoc.LoadHtml(html);
-
+        
         var chapterNodes = htmlDoc.GetElementbyId("chapterlist").Descendants("li");
-
+        
         foreach (var chapterNode in chapterNodes)
         {
             var chapterNumberString = chapterNode.SelectSingleNode(".//span[@class='chapternum']").InnerText
@@ -48,7 +48,7 @@ public partial class AsuraScansApiService : IAsuraScansApi
 
             _list.Add(chapter);
         }
-
+        
         return _list;
     }
 

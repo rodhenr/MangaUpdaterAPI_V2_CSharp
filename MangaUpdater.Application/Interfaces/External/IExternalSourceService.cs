@@ -1,5 +1,4 @@
 ﻿using MangaUpdater.Application.Models.External;
-using MangaUpdater.Domain.Entities;
 
 namespace MangaUpdater.Application.Interfaces.External;
 

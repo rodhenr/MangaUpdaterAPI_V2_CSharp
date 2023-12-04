@@ -41,6 +41,8 @@ public class ExternalSourceService : IExternalSourceService
                 break;
             }
         }
+        
+        GC.Collect();
 
         await _chapterService.SaveChanges();
     }
