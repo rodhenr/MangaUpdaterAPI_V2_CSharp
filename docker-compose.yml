@@ -1,0 +1,47 @@
+version: "3.8"
+
+services:
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2019-latest
+    environment:
+      - ACCEPT_EULA=Y
+      - SA_PASSWORD=Aa123456
+      - MSSQL_PID=Developer
+    ports:
+      - 1433:1433
+    restart: always
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "/opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P Aa123456 -Q 'SELECT 1' || exit 1",
+        ]
+      interval: 10s
+      retries: 10
+      start_period: 10s
+      timeout: 3s
+  sqlserver.configurator:
+    image: mcr.microsoft.com/mssql/server:2019-latest
+    volumes:
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+    depends_on:
+      sqlserver:
+        condition: service_healthy
+    command: >
+      bash -c '
+      /opt/mssql-tools/bin/sqlcmd -S sqlserver -U sa -P Aa123456 -d master -i docker-entrypoint-initdb.d/init.sql;
+      echo "All done!";
+      '
+  mangaupdater:
+    image: mangaupdater
+    build:
+      context: .
+      dockerfile: Dockerfile # Use the Dockerfile in the current directory
+    restart: always
+    ports:
+      - "8080:80" # Map container port 80 to host port 8080
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production # Example environment variable
+      - ConnectionStrings__DefaultConnection=server=sqlserver;database=MangaUpdater;User Id=sa;Password=Aa123456;TrustServerCertificate=True # Replace with your actual database connection string
+    depends_on:
+      - sqlserver.configurator
