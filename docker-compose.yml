@@ -14,7 +14,7 @@ services:
       test:
         [
           "CMD-SHELL",
-          "/opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P Aa123456 -Q 'SELECT 1' || exit 1",
+          "/opt/mssql-tools/bin/sqlcmd -S sqlserver -U sa -P Aa123456 -Q 'SELECT 1' || exit 1",
         ]
       interval: 10s
       retries: 10
@@ -32,16 +32,22 @@ services:
       /opt/mssql-tools/bin/sqlcmd -S sqlserver -U sa -P Aa123456 -d master -i docker-entrypoint-initdb.d/init.sql;
       echo "All done!";
       '
+  migrations:
+    image: migrations
+    build:
+      context: .
+      dockerfile: migrations.Dockerfile
+    depends_on:
+      - sqlserver.configurator
   mangaupdater:
     image: mangaupdater
     build:
       context: .
-      dockerfile: Dockerfile # Use the Dockerfile in the current directory
+      dockerfile: Dockerfile
     restart: always
     ports:
-      - "8080:80" # Map container port 80 to host port 8080
+      - "8080:80"
     environment:
-      - ASPNETCORE_ENVIRONMENT=Production # Example environment variable
-      - ConnectionStrings__DefaultConnection=server=sqlserver;database=MangaUpdater;User Id=sa;Password=Aa123456;TrustServerCertificate=True # Replace with your actual database connection string
+      - ConnectionStrings__DefaultConnection=Server=sqlserver,1433;Database=MangaUpdater;User ID=sa;Password=Aa123456;TrustServerCertificate=True
     depends_on:
-      - sqlserver.configurator
+      - migrations
