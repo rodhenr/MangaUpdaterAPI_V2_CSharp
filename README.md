@@ -18,7 +18,30 @@ For this project, the following technologies were used:
 
 ## :dvd: How to Replicate This Project
 
-To replicate this project, follow the instructions bellow:
--
--
--
+1. To replicate this project, make sure you have Docker installed.
+
+2. Clone this repository to your local machine:
+
+   ```bash
+   git clone https://github.com/your-username/MangaUpdaterAPI_V2_CSharp.git
+   ```
+
+3. Open your terminal and navigate to the project folder:
+
+   ```bash
+   cd MangaUpdaterAPI_V2_CSharp
+   ```
+
+4. Use the following Docker Compose command to start the project:
+
+   ```bash
+   docker-compose -f docker-compose.yml up -d
+   ```
+
+   Wait until all the containers are running.
+
+5. You can test the API using the base url [http://localhost:8080](http://localhost:8080).
+
+## :desktop_computer: Getting the Frontend Project
+
+To get the frontend project, you can access the following link: [MangaUpdaterAPI_V2_React](https://github.com/rodhenr/MangaUpdaterAPI_V2_React).
