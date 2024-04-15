@@ -1,4 +1,4 @@
-FROM mcr.microsoft.com/dotnet/sdk:7.0-alpine AS Build
+FROM mcr.microsoft.com/dotnet/sdk:8.0-alpine AS Build
 
 # Initial configuration
 WORKDIR /app
@@ -7,12 +7,12 @@ COPY *.csproj .
 
 # Install dotnet tools
 ENV PATH $PATH:/root/.dotnet/tools
-RUN dotnet tool install -g dotnet-ef  --version 7.0.10
+RUN dotnet tool install -g dotnet-ef --version 8.0.4
 
 # Create dotnet migration bundle
 RUN dotnet ef migrations bundle -p MangaUpdater.Infra/MangaUpdater.Infra.Data.csproj -s MangaUpdaterAPI/MangaUpdater.API.csproj -o bundle --verbose --self-contained
 
-FROM mcr.microsoft.com/dotnet/aspnet:7.0-alpine AS runtime
+FROM mcr.microsoft.com/dotnet/aspnet:8.0-alpine AS runtime
 WORKDIR /app
 COPY --from=build /app/MangaUpdaterAPI/appsettings.json .
 COPY --from=build /app/bundle .
