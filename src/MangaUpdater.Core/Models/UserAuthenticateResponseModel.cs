@@ -1,15 +1,15 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace MangaUpdater.Application.Models.Login;
+namespace MangaUpdater.Core.Models;
 
-public class UserAuthenticateResponse
+public class UserAuthenticateResponseModel
 {
-    public UserAuthenticateResponse()
+    public UserAuthenticateResponseModel()
     {
         ErrorList = new List<string>();
     }
 
-    public UserAuthenticateResponse(string? userName, string? userAvatar, string? accessToken, string? refreshToken,
+    public UserAuthenticateResponseModel(string? userName, string? userAvatar, string? accessToken, string? refreshToken,
         bool isAdmin) : this()
     {
         AccessToken = accessToken;

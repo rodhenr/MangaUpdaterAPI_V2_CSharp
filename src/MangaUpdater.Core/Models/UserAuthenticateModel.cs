@@ -1,8 +1,8 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace MangaUpdater.Application.Models.Login;
+namespace MangaUpdater.Core.Models;
 
-public class UserAuthenticate
+public class UserAuthenticateModel
 {
     [Required(ErrorMessage = "Required field")]
     [EmailAddress(ErrorMessage = "Invalid field")]

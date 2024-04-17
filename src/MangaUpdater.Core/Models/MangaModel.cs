@@ -1,4 +1,16 @@
-﻿namespace MangaUpdater.Core.Dtos;
+﻿namespace MangaUpdater.Core.Models;
+
+public record SourceDto(int Id, string Name, string BaseUrl);
+public record ChapterDto
+{
+    public required int ChapterId { get; init; }
+    public required int SourceId { get; init; }
+    public required string SourceName { get; init; }
+    public required DateTime Date { get; init; }
+    public required string Number { get; init; }
+    public required bool IsUserAllowedToRead { get; init; }
+    public required bool Read { get; init; }
+};
 
 public record MangaModel
 {

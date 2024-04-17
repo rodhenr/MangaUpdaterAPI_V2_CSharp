@@ -1,11 +1,18 @@
 ﻿using System.Security.Authentication;
-using MangaUpdater.Core.Dtos;
-using MangaUpdater.Application.Interfaces;
+using MangaUpdater.Data.Entities;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
-using MangaUpdater.Data.Entities;
 
-namespace MangaUpdater.Core.Auth;
+namespace MangaUpdater.Core.Features.Auth;
+
+public record UserProfileDto(string Avatar, string Username, string UserId, string Email);
+
+public interface IUserAccountService
+{
+    Task<UserProfileDto> GetUserInfo(string userId);
+    Task<IdentityResult> ChangeUserEmailAsync(string userId, string newEmail, string password);
+    Task<IdentityResult> ChangeUserPasswordAsync(string userId, string currentPassword, string newPassword);
+}
 
 public class UserAccountService : IUserAccountService
 {

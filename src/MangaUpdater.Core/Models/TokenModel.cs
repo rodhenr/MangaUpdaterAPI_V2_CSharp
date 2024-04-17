@@ -1,4 +1,4 @@
-﻿namespace MangaUpdater.Application.Models.RefreshToken;
+﻿namespace MangaUpdater.Core.Models;
 
 public class TokenModel
 {

@@ -1,4 +1,4 @@
-using MangaUpdater.Core.Dtos;
+using MangaUpdater.Core.Models;
 using MangaUpdater.Data.Entities.Models;
 using Riok.Mapperly.Abstractions;
 

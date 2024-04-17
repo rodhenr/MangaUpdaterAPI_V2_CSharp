@@ -1,7 +1,7 @@
 ﻿using System.Globalization;
 using AutoMapper;
-using MangaUpdater.Core.Dtos;
 using MangaUpdater.Application.Models.External.MyAnimeList;
+using MangaUpdater.Core.Models;
 using MangaUpdater.Data.Entities;
 
 namespace MangaUpdater.Application.Mappings;

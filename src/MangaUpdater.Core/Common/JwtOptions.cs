@@ -1,6 +1,6 @@
 ﻿using Microsoft.IdentityModel.Tokens;
 
-namespace MangaUpdater.Core.Auth;
+namespace MangaUpdater.Core.Features.Auth;
 
 public class JwtOptions
 {

@@ -1,87 +1,39 @@
 ﻿using System.Globalization;
-using System.Security.Claims;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Authentication;
-using Microsoft.Extensions.Options;
+using System.Security.Claims;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
-using MangaUpdater.Application.Interfaces.Authentication;
-using MangaUpdater.Application.Models.Login;
-using MangaUpdater.Application.Models.Register;
-using MangaUpdater.Core.Common.Exceptions;
+using Microsoft.Extensions.Options;
+using Microsoft.AspNetCore.Mvc;
+using MediatR;
+using MangaUpdater.Core.Models;
+using MangaUpdater.Core.Services;
 using MangaUpdater.Data.Entities;
 
-namespace MangaUpdater.Core.Auth;
+namespace MangaUpdater.Core.Features.Auth;
 
-public class AuthenticationService : IAuthenticationService
+public record GetTokenQuery([FromQuery] UserAuthenticateModel UserAuthenticateModel) : IRequest<GetTokenResponse>;
+public record GetTokenResponse(UserAuthenticateResponseModel UserAuthenticateResponse);
+
+public sealed class GetTokenHandler : IRequestHandler<GetTokenQuery, GetTokenResponse>
 {
-    private readonly SignInManager<AppUser> _signInManager;
     private readonly UserManager<AppUser> _userManager;
     private readonly JwtOptions _jwtOptions;
-
-    public AuthenticationService(SignInManager<AppUser> signInManager, UserManager<AppUser> userManager,
-        IOptions<JwtOptions> jwtOptions)
+    private readonly CurrentUserAcessor _currentUserAcessor;
+    
+    public GetTokenHandler(UserManager<AppUser> userManager, IOptions<JwtOptions> jwtOptions, CurrentUserAcessor currentUserAcessor)
     {
-        _signInManager = signInManager;
         _userManager = userManager;
         _jwtOptions = jwtOptions.Value;
+        _currentUserAcessor = currentUserAcessor;
     }
 
-    public async Task<UserRegisterResponse> Register(UserRegister userRegister)
+    public async Task<GetTokenResponse> Handle(GetTokenQuery request, CancellationToken cancellationToken)
     {
-        var appUser = new AppUser
-        {
-            UserName = userRegister.UserName,
-            Email = userRegister.Email,
-            EmailConfirmed = true,
-            Avatar = ""
-        };
-
-        var result = await _userManager.CreateAsync(appUser, userRegister.Password);
-
-        if (result.Succeeded)
-            await _userManager.SetLockoutEnabledAsync(appUser, false);
-
-        var userResponse = new UserRegisterResponse(result.Succeeded);
-
-        if (result.Succeeded || !result.Errors.Any()) return userResponse;
-
-        userResponse.AddErrors(result.Errors.Select(r => r.Description));
-        throw new ValidationException(userResponse.ToString());
-    }
-
-    public async Task<UserAuthenticateResponse> Authenticate(UserAuthenticate userAuthenticate)
-    {
-        var user = await _userManager.FindByEmailAsync(userAuthenticate.Email);
-
-        if (user?.Email is null)
-        {
-            throw new AuthenticationException("User not found");
-        }
-
-        var result =
-            await _signInManager.PasswordSignInAsync(user.UserName!, userAuthenticate.Password, false, false);
-
-        if (result.Succeeded)
-            return await GenerateCredentials(userAuthenticate.Email);
-
-        var authResponse = new UserAuthenticateResponse();
-
-        if (result.IsLockedOut)
-            authResponse.AddError("Account blocked");
-        else if (result.IsNotAllowed)
-            authResponse.AddError("Not allowed");
-        else if (result.RequiresTwoFactor)
-            authResponse.AddError("Require two factor");
-        else
-            authResponse.AddError("Invalid user/password");
-
-        throw new AuthorizationException(authResponse.ToString());
-    }
-
-    public async Task<UserAuthenticateResponse> RefreshToken(string userId)
-    {
-        var authenticationResponse = new UserAuthenticateResponse();
+        var userId = _currentUserAcessor.UserId;
+        
+        var authenticationResponse = new UserAuthenticateResponseModel();
 
         var user = await _userManager.FindByIdAsync(userId);
 
@@ -90,8 +42,8 @@ public class AuthenticationService : IAuthenticationService
 
         return await GenerateCredentials(user.Email);
     }
-
-    private async Task<UserAuthenticateResponse> GenerateCredentials(string userEmail)
+    
+    private async Task<GetTokenResponse> GenerateCredentials(string userEmail)
     {
         var user = await _userManager.FindByEmailAsync(userEmail);
 
@@ -108,12 +60,12 @@ public class AuthenticationService : IAuthenticationService
 
         var isUserAdmin = await IsUserAdmin(user);
 
-        return new UserAuthenticateResponse(user.UserName, user.Avatar, accessToken, refreshToken, isUserAdmin);
+        return new GetTokenResponse(new UserAuthenticateResponseModel(user.UserName, user.Avatar, accessToken, refreshToken, isUserAdmin));
     }
 
     private string GenerateToken(IEnumerable<Claim> claims, DateTime expirationDate)
     {
-        var jwt = new SecurityTokenDescriptor
+        var jwt = new SecurityTokenDescriptor()
         {
             Issuer = _jwtOptions.Issuer,
             Audience = _jwtOptions.Audience,

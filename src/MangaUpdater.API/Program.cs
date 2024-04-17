@@ -6,6 +6,7 @@ using MangaUpdater.API;
 using MangaUpdater.Core.Common.Exceptions;
 using MangaUpdater.Data;
 using MangaUpdater.Core;
+using MangaUpdater.Core.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 

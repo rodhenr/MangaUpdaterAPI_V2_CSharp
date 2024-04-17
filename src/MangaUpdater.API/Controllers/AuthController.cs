@@ -4,14 +4,13 @@ using Microsoft.AspNetCore.Cors;
 using Swashbuckle.AspNetCore.Annotations;
 using MediatR;
 using MangaUpdater.API.Controllers.Shared;
+using MangaUpdater.Core.Features.Auth;
 
 namespace MangaUpdater.API.Controllers;
 
 [EnableCors]
-public class AuthController(IMediator mediator) : BaseController
+public class AuthController(ISender mediator) : BaseController
 {
-    private readonly IMediator _mediator = mediator;
-
     /// <summary>
     /// Register an user.
     /// </summary>
@@ -21,8 +20,10 @@ public class AuthController(IMediator mediator) : BaseController
     [AllowAnonymous]
     [SwaggerOperation("Register an user")]
     [HttpPost("register")]
-    public async Task<ActionResult<UserRegisterResponse>> UserRegister(UserRegister userRegister) =>
-        Ok(await _identityService.Register(userRegister));
+    public async Task<RegisterUserResponse> UserRegister([FromQuery] RegisterUserQuery request)
+    {
+        return await mediator.Send(request);
+    }
 
     /// <summary>
     /// Authenticate an user.
@@ -33,8 +34,10 @@ public class AuthController(IMediator mediator) : BaseController
     [AllowAnonymous]
     [SwaggerOperation("Authenticate an user")]
     [HttpPost("login")]
-    public async Task<ActionResult<UserAuthenticateResponse>> UserLogin(UserAuthenticate userAuthenticate) =>
-        Ok(await _identityService.Authenticate(userAuthenticate));
+    public async Task<AuthenticateUserResponse> UserLogin([FromQuery] AuthenticateUserQuery request)
+    {
+        return await mediator.Send(request);
+    }
 
     /// <summary>
     /// Refresh Token.
@@ -44,12 +47,32 @@ public class AuthController(IMediator mediator) : BaseController
     [Authorize(Policy = "RefreshToken")]
     [SwaggerOperation("Refresh Token")]
     [HttpPost("refresh")]
-    public async Task<ActionResult<UserAuthenticateResponse>> RefreshToken()
+    public async Task<AuthenticateUserResponse> RefreshToken([FromQuery] AuthenticateUserQuery request)
     {
-        var tokensData = await _identityService.RefreshToken(UserId!);
+        return await mediator.Send(request);
+    }
+    
+    /// <summary>
+    /// Changes email for the logged user.
+    /// </summary>
+    /// <response code="200">Success.</response>
+    /// <response code="400">Error.</response>
+    [SwaggerOperation("Changes email for the logged user")]
+    [HttpPost("profile/email")]
+    public async Task<UpdateUserEmailResponse> UpdateUserEmail([FromQuery] UpdateUserEmailQuery request)
+    {
+        return await mediator.Send(request);
+    }
 
-        if (tokensData.IsSuccess) return Ok(tokensData);
-
-        return Unauthorized();
+    /// <summary>
+    /// Changes password for the logged user.
+    /// </summary>
+    /// <response code="200">Success.</response>
+    /// <response code="400">Error.</response>
+    [SwaggerOperation("Changes password for the logged user")]
+    [HttpPost("profile/password")]
+    public async Task<UpdateUserPasswordResponse> ChangeLoggedUserPassword([FromQuery] UpdateUserPasswordQuery request)
+    {
+        return await mediator.Send(request);
     }
 }

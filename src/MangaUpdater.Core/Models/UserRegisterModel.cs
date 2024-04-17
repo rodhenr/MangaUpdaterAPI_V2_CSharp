@@ -1,8 +1,8 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace MangaUpdater.Application.Models.Register;
+namespace MangaUpdater.Core.Models;
 
-public class UserRegister
+public class UserRegisterModel
 {
     [Required(ErrorMessage = "Required field")]
     [StringLength(30, ErrorMessage = "The {0} field must have between 4 and 30 characters", MinimumLength = 4)]

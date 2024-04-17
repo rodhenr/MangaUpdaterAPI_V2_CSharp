@@ -1,13 +1,13 @@
-﻿namespace MangaUpdater.Application.Models.Register;
+﻿namespace MangaUpdater.Core.Models;
 
-public class UserRegisterResponse
+public class UserRegisterResponseModel
 {
-    private UserRegisterResponse()
+    private UserRegisterResponseModel()
     {
         ErrorList = new List<string>();
     }
 
-    public UserRegisterResponse(bool success = true) : this()
+    public UserRegisterResponseModel(bool success = true) : this()
     {
         Success = success;
     }

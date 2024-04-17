@@ -21,10 +21,6 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="Common\" />
-    </ItemGroup>
-
-    <ItemGroup>
       <ProjectReference Include="..\MangaUpdater.Data\MangaUpdater.Data.csproj" />
     </ItemGroup>
 
