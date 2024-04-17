@@ -6,7 +6,7 @@ using MangaUpdater.Data.Entities.Models;
 
 namespace MangaUpdater.Core.Features.Chapters;
 
-public record GetChapterQuery([FromQuery] int ChapterId) : IRequest<GetChapterResponse>;
+public record GetChapterQuery([FromQuery] int MangaId, [FromQuery] int ChapterId) : IRequest<GetChapterResponse>;
 public record GetChapterResponse(Chapter? Chapter);
 
 public sealed class GetChapterHandler : IRequestHandler<GetChapterQuery, GetChapterResponse>
@@ -22,7 +22,7 @@ public sealed class GetChapterHandler : IRequestHandler<GetChapterQuery, GetChap
     {
         var chapter = await _context.Chapters
             .AsNoTracking()
-            .Where(x => x.Id == request.ChapterId)
+            .Where(x => x.Id == request.ChapterId && x.MangaId == request.MangaId)
             .SingleOrDefaultAsync(cancellationToken);
 
         return new GetChapterResponse(chapter);

@@ -3,8 +3,8 @@ using Microsoft.AspNetCore.Authorization;
 using Swashbuckle.AspNetCore.Annotations;
 using MediatR;
 using MangaUpdater.API.Controllers.Shared;
+using MangaUpdater.Core.Features.Chapters;
 using MangaUpdater.Core.Features.Mangas;
-using MangaUpdater.Core.Features.MangaSources;
 
 namespace MangaUpdater.API.Controllers;
 
@@ -18,9 +18,9 @@ public class MangaController(ISender mediator) : BaseController
     [AllowAnonymous]
     [SwaggerOperation("Get all mangas")]
     [HttpGet]
-    public async Task<GetMangasResponse> GetMangas([FromQuery] GetMangasQuery request)
+    public async Task<GetMangasResponse> GetMangas()
     {
-        return await mediator.Send(request);
+        return await mediator.Send(new GetMangasQuery());
     }
 
     /// <summary>
@@ -74,7 +74,27 @@ public class MangaController(ISender mediator) : BaseController
     [Authorize(Policy = "Admin")]
     [SwaggerOperation("Register a new source for a manga.")]
     [HttpPost("manga/{mangaId:int}/sources")]
-    public async Task<AddMangaSourceResponse> AddSourceToManga([FromQuery] AddMangaSourceQuery request)
+    public async Task<AddMangaSourceResponse> AddSourceToManga([FromQuery] int mangaId, [FromBody] int sourceId, [FromBody] string mangaUrl)
+    {
+        return await mediator.Send(new AddMangaSourceQuery(mangaId, sourceId, mangaUrl));
+    }
+    
+    [HttpGet("/{mangaId:int}/chapter/{chapterId:int}")]
+    public async Task<GetChapterResponse> GetChaptersByIdAndMangaId([FromQuery] GetChapterQuery request)
+    {
+        return await mediator.Send(request);
+    }
+    
+    /// <summary>
+    /// Update chapters from a combination of manga and source.
+    /// </summary>
+    /// <response code="200">Success.</response>
+    /// <response code="400">Error.</response>
+    /// <response code="403">Unauthorized</response>
+    [Authorize(Policy = "Admin")]
+    [SwaggerOperation("Update chapters from a combination of manga and source.")]
+    [HttpPost("/{mangaId:int}/source/{sourceId:int}/chapters")]
+    public async Task<UpdateChaptersResponse> UpdateChaptersFromSource([FromQuery] UpdateChaptersQuery request)
     {
         return await mediator.Send(request);
     }

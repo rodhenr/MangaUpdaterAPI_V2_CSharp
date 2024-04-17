@@ -1,11 +1,10 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using MediatR;
+﻿using MediatR;
 using MangaUpdater.Data;
 using MangaUpdater.Data.Entities.Models;
 
-namespace MangaUpdater.Core.Features.MangaSources;
+namespace MangaUpdater.Core.Features.Mangas;
 
-public record AddMangaSourceQuery([FromQuery] int MangaId, [FromQuery] int SourceId, [FromQuery] string MangaUrl) : IRequest<AddMangaSourceResponse>;
+public record AddMangaSourceQuery(int MangaId, int SourceId, string MangaUrl) : IRequest<AddMangaSourceResponse>;
 public record AddMangaSourceResponse;
 
 public sealed class AddMangaSourceHandler : IRequestHandler<AddMangaSourceQuery, AddMangaSourceResponse>

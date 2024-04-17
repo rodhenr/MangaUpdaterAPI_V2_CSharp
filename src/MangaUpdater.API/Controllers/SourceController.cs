@@ -17,9 +17,9 @@ public class SourceController(ISender mediator) : BaseController
     [AllowAnonymous]
     [SwaggerOperation("Get all sources")]
     [HttpGet]
-    public async Task<GetSourcesResponse> GetSources([FromQuery] GetSourcesQuery request)    
+    public async Task<GetSourcesResponse> GetSources()    
     {
-        return await mediator.Send(request);
+        return await mediator.Send(new GetSourcesQuery());
     }
 
     /// <summary>
