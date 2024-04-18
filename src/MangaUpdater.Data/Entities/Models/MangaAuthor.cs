@@ -19,6 +19,7 @@ public sealed class MangaAuthor
     public required string Name { get; set; }
     
     [ForeignKey("MangaId")]
+    [InverseProperty("MangaAuthors")]
     [JsonIgnore] 
     public Manga? Manga { get; set; }
 }

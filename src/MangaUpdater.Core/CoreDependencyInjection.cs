@@ -18,14 +18,16 @@ public static class CoreDependencyInjection
     public static void AddInfrastructure(this IServiceCollection services, IConfiguration configuration)
     {
         services.AutoRegister();
+        
+        services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(CoreDependencyInjection).Assembly));
 
-        services.AddHangfire(c => c
-            .SetDataCompatibilityLevel(CompatibilityLevel.Version_180)
-            .UseSimpleAssemblyNameTypeSerializer()
-            .UseRecommendedSerializerSettings()
-            .UseSqlServerStorage(configuration.GetConnectionString("DefaultConnection")));
-
-        services.AddHangfireServer(options => options.WorkerCount = 2);
+        // services.AddHangfire(c => c
+        //     .SetDataCompatibilityLevel(CompatibilityLevel.Version_180)
+        //     .UseSimpleAssemblyNameTypeSerializer()
+        //     .UseRecommendedSerializerSettings()
+        //     .UseSqlServerStorage(configuration.GetConnectionString("DefaultConnection")));
+        //
+        // services.AddHangfireServer(options => options.WorkerCount = 2);
     }
     
     public static void AddIdentity(this IServiceCollection services, IConfiguration configuration)

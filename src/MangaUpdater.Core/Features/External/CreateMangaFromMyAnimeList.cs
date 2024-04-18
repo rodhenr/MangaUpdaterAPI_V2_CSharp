@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using MediatR;
 using MangaUpdater.Core.Common.Exceptions;
+using MangaUpdater.Core.Mappings;
 using MangaUpdater.Core.Models;
 using MangaUpdater.Data;
 using MangaUpdater.Data.Entities.Models;
@@ -42,7 +43,18 @@ public sealed class CreateMangaFromMyAnimeListHandler : IRequestHandler<CreateMa
         var apiResponse = content?.Data;
 
         //TODO: Create a single transaction
-        var createdManga = _context.Mangas.Add(apiResponse.MyAnimeListMapper(), cancellationToken);
+        // var mapper = new MyAnimeListMapper();
+        // var mangaDto = mapper.ToModel(apiResponse);
+
+        var mangaDto = new Manga
+        {
+            Synopsis = apiResponse?.Synopsis ?? "",
+            Type = apiResponse?.Type ?? "",
+            CoverUrl = apiResponse?.Images.JPG.LargeImageUrl ?? "",
+            MyAnimeListId = (int)apiResponse!.MalId
+        };
+        
+        var createdManga = _context.Mangas.Add(mangaDto);
         await _context.SaveChangesAsync(cancellationToken);
         
         var genreList = apiResponse.Genres.Select(g => new MangaGenre { GenreId = (int)g.MalId, MangaId = createdManga.Entity.Id });

@@ -8,8 +8,8 @@ using Microsoft.EntityFrameworkCore;
 namespace MangaUpdater.Core.Features.Users;
 
 public record GetUserMangasQuery([FromQuery] string? UserId = null, [FromQuery] int Page = 1, [FromQuery] int Limit = 20) : IRequest<GetUserMangasResponse>;
-public record GetUserMangasResponse(IEnumerable<MangaInfo> Mangas);
-public record MangaInfo(int Id, string CoverUrl, string Name);
+public record GetUserMangasResponse(IEnumerable<UserMangaInfo> Mangas);
+public record UserMangaInfo(int Id, string CoverUrl, string Name);
 
 //public record ChapterInfo(int ChapterId, int SourceId, string SourceName, DateTime Date, string Number, bool IsUserAllowedToRead, bool Read);
 
@@ -47,7 +47,7 @@ public sealed class GetUserMangasHandler : IRequestHandler<GetUserMangasQuery, G
                     .First()
             })
             .OrderByDescending(um => um.LastChapter.Date)
-            .Select(um => new MangaInfo(um.UserManga.MangaId, um.UserManga.Manga!.CoverUrl, um.UserManga.Manga.MangaTitles!.FirstOrDefault()!.Name))
+            .Select(um => new UserMangaInfo(um.UserManga.MangaId, um.UserManga.Manga!.CoverUrl, um.UserManga.Manga.MangaTitles!.FirstOrDefault()!.Name))
             .Skip(skip)
             .Take(maxLimit)
             .ToListAsync(cancellationToken);

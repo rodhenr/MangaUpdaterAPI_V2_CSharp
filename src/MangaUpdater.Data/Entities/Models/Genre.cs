@@ -15,7 +15,7 @@ public sealed class Genre
     [Unicode(false)]
     public required string Name { get; set; }
 
-    [InverseProperty("GenreId")]
+    [InverseProperty("Genre")]
     [JsonIgnore] 
     public IEnumerable<MangaGenre>? MangaGenres { get; set; }
 }

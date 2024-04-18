@@ -19,17 +19,17 @@ public sealed class UserChapter
     public int? ChapterId { get; set; }
     
     [ForeignKey("Id")]
-    [InverseProperty("UserChapterId")]
+    [InverseProperty("UserChapter")]
     [JsonIgnore] 
     public UserManga? UserManga { get; set; }
     
     [ForeignKey("Id")]
-    [InverseProperty("UserChapterId")]
+    [InverseProperty("UserChapter")]
     [JsonIgnore] 
     public Source? Source { get; set; }
     
     [ForeignKey("Id")]
-    [InverseProperty("UserChapterId")]
+    [InverseProperty("UserChapter")]
     [JsonIgnore] 
     public Chapter? Chapter { get; set; }
 }

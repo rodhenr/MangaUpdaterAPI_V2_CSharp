@@ -24,6 +24,7 @@ public sealed class MangaTitle
     public bool IsMainTitle { get; set; }
 
     [ForeignKey("MangaId")]
+    [InverseProperty("MangaTitles")]
     [JsonIgnore] 
     public Manga? Manga { get; set; }
 }

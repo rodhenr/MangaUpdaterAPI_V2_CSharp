@@ -34,7 +34,8 @@ public sealed class GetMangaHandler : IRequestHandler<GetMangaQuery, GetMangaRes
             .ThenInclude(uc => uc.Chapter)
             .AsQueryable();
         
-        var result = m1.Include(m => m.MangaGenres!)
+        // if
+        var m2 = m1.Include(m => m.MangaGenres!)
             .ThenInclude(mg => mg.Genre)
             .Include(m => m.MangaSources!)
             .ThenInclude(ms => ms.Source)
@@ -44,10 +45,14 @@ public sealed class GetMangaHandler : IRequestHandler<GetMangaQuery, GetMangaRes
             .Include(m => m.MangaTitles)
             .SingleOrDefaultAsync(m => m.Id == request.MangaId, cancellationToken);
 
-        if (result is not null)
-            result.Chapters =
-                result.Chapters?.OrderByDescending(ch => float.Parse(ch.Number, CultureInfo.InvariantCulture));
+        var result = await m2;
 
+        if (result != null)
+        {
+            result.Chapters = result.Chapters?.OrderByDescending(ch => float.Parse(ch.Number, CultureInfo.InvariantCulture));
+
+        }
+        
         return new GetMangaResponse(result);
     }
 }

@@ -14,10 +14,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MangaUpdater.API", "src\Man
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{8C52B59C-F8F7-436C-9EA5-86562E55D9C2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MangaUpdater.UnitTests", "tests\MangaUpdater.UnitTests\MangaUpdater.UnitTests.csproj", "{A24EC6F1-04A2-474B-9C36-3F6FDAAC6A98}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{01EB23E0-9746-4E99-94EA-9A7836D3DD74}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -36,10 +32,6 @@ Global
 		{74435919-C1BF-4C70-ABEA-162E8F6EBF47}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{74435919-C1BF-4C70-ABEA-162E8F6EBF47}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{74435919-C1BF-4C70-ABEA-162E8F6EBF47}.Release|Any CPU.Build.0 = Release|Any CPU
-		{A24EC6F1-04A2-474B-9C36-3F6FDAAC6A98}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{A24EC6F1-04A2-474B-9C36-3F6FDAAC6A98}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{A24EC6F1-04A2-474B-9C36-3F6FDAAC6A98}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{A24EC6F1-04A2-474B-9C36-3F6FDAAC6A98}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -48,7 +40,6 @@ Global
 		{E2623CDD-30EF-4586-81A9-E407DC634F76} = {8C52B59C-F8F7-436C-9EA5-86562E55D9C2}
 		{4BB434C0-1468-4394-A0B9-BCA76F7E7D4E} = {8C52B59C-F8F7-436C-9EA5-86562E55D9C2}
 		{74435919-C1BF-4C70-ABEA-162E8F6EBF47} = {8C52B59C-F8F7-436C-9EA5-86562E55D9C2}
-		{A24EC6F1-04A2-474B-9C36-3F6FDAAC6A98} = {01EB23E0-9746-4E99-94EA-9A7836D3DD74}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {37825D02-898E-45CF-9C77-DBD9E36FC788}

@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace MangaUpdater.Data.Entities.Models;
 
-public sealed class Manga
+public class Manga
 {
     [Key]
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
@@ -27,27 +27,27 @@ public sealed class Manga
     [DefaultValue(0)]
     public required int MyAnimeListId { get; set; }
 
-    [InverseProperty("MangaId")]
+    [InverseProperty("Manga")]
     [JsonIgnore] 
     public IEnumerable<Chapter>? Chapters { get; set; }
     
-    [InverseProperty("MangaId")]
+    [InverseProperty("Manga")]
     [JsonIgnore] 
     public IEnumerable<UserManga>? UserMangas { get; set; }
     
-    [InverseProperty("MangaId")]
+    [InverseProperty("Manga")]
     [JsonIgnore] 
     public IEnumerable<MangaAuthor>? MangaAuthors { get; set; }
     
-    [InverseProperty("MangaId")]
+    [InverseProperty("Manga")]
     [JsonIgnore] 
     public IEnumerable<MangaGenre>? MangaGenres { get; set; }
     
-    [InverseProperty("MangaId")]
+    [InverseProperty("Manga")]
     [JsonIgnore] 
     public IEnumerable<MangaSource>? MangaSources { get; set; }
     
-    [InverseProperty("MangaId")]
+    [InverseProperty("Manga")]
     [JsonIgnore] 
     public IEnumerable<MangaTitle>? MangaTitles { get; set; }
 }

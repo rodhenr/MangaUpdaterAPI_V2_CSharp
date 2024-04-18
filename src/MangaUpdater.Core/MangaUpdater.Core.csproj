@@ -24,4 +24,8 @@
       <ProjectReference Include="..\MangaUpdater.Data\MangaUpdater.Data.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Folder Include="Features\Hangfire\" />
+    </ItemGroup>
+
 </Project>

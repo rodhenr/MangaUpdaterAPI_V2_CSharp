@@ -19,10 +19,11 @@ public sealed class UserManga
     public required int MangaId { get; set; }
     
     [ForeignKey("MangaId")]
+    [InverseProperty("UserMangas")]
     [JsonIgnore]
     public Manga? Manga { get; set; }
     
-    [InverseProperty("UserMangaId")]
+    [InverseProperty("UserManga")]
     [JsonIgnore] 
     public IEnumerable<UserChapter>? UserChapter { get; set; }
 }

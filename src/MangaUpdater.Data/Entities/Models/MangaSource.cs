@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Runtime.InteropServices;
 using System.Text.Json.Serialization;
 using Microsoft.EntityFrameworkCore;
 
@@ -21,10 +22,12 @@ public sealed class MangaSource
     public required string Url { get; set; }
     
     [ForeignKey("MangaId")]
+    [InverseProperty("MangaSources")]
     [JsonIgnore] 
     public Manga? Manga { get; set; }
     
     [ForeignKey("SourceId")]
+    [InverseProperty("MangaSources")]
     [JsonIgnore] 
     public Source? Source { get; set; }
 }

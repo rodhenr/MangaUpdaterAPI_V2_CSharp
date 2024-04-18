@@ -16,6 +16,8 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddHttpClient();
 builder.Services.ConfigureInjection();
+
+
 builder.Services.AddSwaggerGen(options =>
 {
     options.EnableAnnotations();
@@ -65,8 +67,7 @@ builder.Services.AddJwtAuthentication(builder.Configuration);
 builder.Services.AddInfrastructure(builder.Configuration);
 builder.Services.AddIdentity(builder.Configuration);
 
-builder.Services.AddControllers()
-    .AddJsonOptions(x => x.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles);
+builder.Services.AddControllers().AddJsonOptions(x => x.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles);
 
 builder.Services.AddCors(options =>
 {
@@ -90,43 +91,43 @@ if (app.Environment.IsDevelopment())
 app.UseCors();
 
 app.UseHttpsRedirection();
-
-app.UseHangfireDashboard("/hangfire", new DashboardOptions
-{
-    Authorization = new[]
-    {
-        new BasicAuthAuthorizationFilter(
-            new BasicAuthAuthorizationFilterOptions()
-            {
-                RequireSsl = false,
-                SslRedirect = false,
-                LoginCaseSensitive = true,
-                Users = new[]
-                {
-                    new BasicAuthAuthorizationUser
-                    {
-                        Login = "Admin",
-                        PasswordClear = "123"
-                    }
-                }
-            })
-    }
-});
+//
+// app.UseHangfireDashboard("/hangfire", new DashboardOptions
+// {
+//     Authorization = new[]
+//     {
+//         new BasicAuthAuthorizationFilter(
+//             new BasicAuthAuthorizationFilterOptions()
+//             {
+//                 RequireSsl = false,
+//                 SslRedirect = false,
+//                 LoginCaseSensitive = true,
+//                 Users = new[]
+//                 {
+//                     new BasicAuthAuthorizationUser
+//                     {
+//                         Login = "Admin",
+//                         PasswordClear = "123"
+//                     }
+//                 }
+//             })
+//     }
+// });
 
 app.UseAuthorization();
 
 app.UseMiddleware<ExceptionMiddleware>();
 
-var monitoringApi = JobStorage.Current.GetMonitoringApi();
-
-var scheduledJobs = monitoringApi.ScheduledJobs(0, int.MaxValue);
-
-foreach (var job in scheduledJobs)
-{
-    BackgroundJob.Delete(job.Key);
-}
-
-BackgroundJob.Enqueue<IHangfireService>(task => task.AddHangfireJobs());
+// var monitoringApi = JobStorage.Current.GetMonitoringApi();
+//
+// var scheduledJobs = monitoringApi.ScheduledJobs(0, int.MaxValue);
+//
+// foreach (var job in scheduledJobs)
+// {
+//     BackgroundJob.Delete(job.Key);
+// }
+//
+// BackgroundJob.Enqueue<IHangfireService>(task => task.AddHangfireJobs());
 
 app.MapControllers();
 

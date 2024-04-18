@@ -5,6 +5,7 @@ using MediatR;
 using MangaUpdater.API.Controllers.Shared;
 using MangaUpdater.Core.Features.Chapters;
 using MangaUpdater.Core.Features.Mangas;
+using MangaUpdater.Core.Features.MangaSources;
 
 namespace MangaUpdater.API.Controllers;
 
@@ -74,9 +75,9 @@ public class MangaController(ISender mediator) : BaseController
     [Authorize(Policy = "Admin")]
     [SwaggerOperation("Register a new source for a manga.")]
     [HttpPost("manga/{mangaId:int}/sources")]
-    public async Task<AddMangaSourceResponse> AddSourceToManga([FromQuery] int mangaId, [FromBody] int sourceId, [FromBody] string mangaUrl)
+    public async Task<AddMangaSourceResponse> AddSourceToManga([FromQuery] AddMangaSourceQuery request)
     {
-        return await mediator.Send(new AddMangaSourceQuery(mangaId, sourceId, mangaUrl));
+        return await mediator.Send(request);
     }
     
     [HttpGet("/{mangaId:int}/chapter/{chapterId:int}")]

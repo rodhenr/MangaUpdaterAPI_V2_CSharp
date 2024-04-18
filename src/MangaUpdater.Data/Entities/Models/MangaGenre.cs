@@ -16,10 +16,12 @@ public sealed class MangaGenre
     public required int GenreId { get; set; }
     
     [ForeignKey("MangaId")]
+    [InverseProperty("MangaGenres")]
     [JsonIgnore] 
     public Manga? Manga { get; set; }
     
     [ForeignKey("GenreId")]
+    [InverseProperty("MangaGenres")]
     [JsonIgnore] 
     public Genre? Genre { get; set; }
 }

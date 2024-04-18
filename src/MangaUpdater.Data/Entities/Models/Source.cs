@@ -19,15 +19,15 @@ public sealed class Source
     [Unicode(false)]
     public required string BaseUrl { get; set; }
 
-    [InverseProperty("SourceId")]
+    [InverseProperty("Source")]
     [JsonIgnore] 
     public IEnumerable<UserChapter>? UserChapter { get; set; }
     
-    [InverseProperty("SourceId")]
+    [InverseProperty("Source")]
     [JsonIgnore] 
     public IEnumerable<MangaSource>? MangaSources { get; set; }
     
-    [InverseProperty("SourceId")]
+    [InverseProperty("Source")]
     [JsonIgnore] 
     public IEnumerable<Chapter>? Chapters { get; set; }
 }
