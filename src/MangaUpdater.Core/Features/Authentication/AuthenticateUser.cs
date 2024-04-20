@@ -1,5 +1,4 @@
 ﻿using MangaUpdater.Core.Common.Exceptions;
-using MangaUpdater.Core.Models;
 using MangaUpdater.Data.Entities;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
@@ -8,9 +7,9 @@ using SignInResult = Microsoft.AspNetCore.Identity.SignInResult;
 
 namespace MangaUpdater.Core.Features.Authentication;
 
-public record AuthenticateUserQuery([FromBody] UserAuthenticateModel UserAuthenticateModel) : IRequest<AuthenticateUserResponse>;
+public record AuthenticateUserQuery(string Email, string Password) : IRequest<AuthenticateUserResponse>;
 
-public record AuthenticateUserResponse(UserAuthenticateResponseModel UserAuthenticateResponse);
+public record AuthenticateUserResponse(string UserName, string UserAvatar, string AccessToken, string RefreshToken, bool IsAdmin);
 
 public sealed class AuthenticateUserHandler : IRequestHandler<AuthenticateUserQuery, AuthenticateUserResponse>
 {
@@ -27,13 +26,13 @@ public sealed class AuthenticateUserHandler : IRequestHandler<AuthenticateUserQu
 
     public async Task<AuthenticateUserResponse> Handle(AuthenticateUserQuery request, CancellationToken cancellationToken)
     {
-            var user = await _userManager.FindByEmailAsync(request.UserAuthenticateModel.Email) ?? throw new ValidationException("User not found");
+        var user = await _userManager.FindByEmailAsync(request.Email) ?? throw new UserNotFoundException("User not found");
 
-            var result = await _signInManager.PasswordSignInAsync(user.UserName, request.UserAuthenticateModel.Password, false, false);
+        var result = await _signInManager.PasswordSignInAsync(user.UserName, request.Password, false, false);
 
-            if (result.Succeeded) return await GetAuthenticateUserInfo(user, cancellationToken);
+        if (result.Succeeded) return await GetAuthenticateUserInfo(user, cancellationToken);
 
-            throw new AuthorizationException(GetErrorMessage(result));
+        throw new BadRequestException(GetErrorMessage(result));
     }
 
     private async Task<AuthenticateUserResponse> GetAuthenticateUserInfo(AppUser user, CancellationToken cancellationToken)
@@ -41,22 +40,17 @@ public sealed class AuthenticateUserHandler : IRequestHandler<AuthenticateUserQu
         var tokens = await _mediator.Send(new GenerateTokenQuery(user), cancellationToken);
         var userInfo = await _mediator.Send(new GetUserInfoQuery(user.Id), cancellationToken);
                 
-        return new AuthenticateUserResponse(new UserAuthenticateResponseModel(userInfo.Name, userInfo.Avatar, tokens.AccessToken, tokens.RefreshToken, userInfo.IsAdmin));
+        return new AuthenticateUserResponse(userInfo.Name, userInfo.Avatar, tokens.AccessToken, tokens.RefreshToken, userInfo.IsAdmin);
     }
 
     private static string GetErrorMessage(SignInResult result)
     {
-        var errorMessage = result switch
+        return result switch
         {
             _ when result.IsLockedOut => "Account blocked",
             _ when result.IsNotAllowed => "Not allowed",
             _ when result.RequiresTwoFactor => "Require two factor",
             _ => "Invalid user/password"
         };
-
-        var authResponse = new UserAuthenticateResponseModel();
-        authResponse.AddError(errorMessage);
-
-        return authResponse.ToString();
     }
 }

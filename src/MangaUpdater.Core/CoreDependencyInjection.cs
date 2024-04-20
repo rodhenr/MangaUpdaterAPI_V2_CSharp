@@ -1,26 +1,34 @@
-﻿using System.Text;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Configuration;
+﻿using System.Reflection;
+using System.Text;
+using FluentValidation;
+using MangaUpdater.Core.Common.Behaviors;
+using MangaUpdater.Core.Features.Authentication;
+using MangaUpdater.Data;
+using MangaUpdater.Data.Entities;
+using MediatR;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
-using Hangfire;
-using MangaUpdater.Core.Common;
-using MangaUpdater.Core.Features.Authentication;
-using MangaUpdater.Data;
-using MangaUpdater.Data.Entities;
 
 namespace MangaUpdater.Core;
 
 public static class CoreDependencyInjection
 {
-    public static void AddInfrastructure(this IServiceCollection services, IConfiguration configuration)
+    public static IServiceCollection AddCoreServices(this IServiceCollection services)
     {
         services.AutoRegister();
-        
-        services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(CoreDependencyInjection).Assembly));
+
+        var executingAssembly = Assembly.GetExecutingAssembly();
+        services.AddMediatR(cfg =>
+        {
+            cfg.RegisterServicesFromAssembly(executingAssembly);
+            cfg.AddBehavior(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
+        });
+        services.AddValidatorsFromAssembly(executingAssembly);
 
         // services.AddHangfire(c => c
         //     .SetDataCompatibilityLevel(CompatibilityLevel.Version_180)
@@ -29,9 +37,11 @@ public static class CoreDependencyInjection
         //     .UseSqlServerStorage(configuration.GetConnectionString("DefaultConnection")));
         //
         // services.AddHangfireServer(options => options.WorkerCount = 2);
+
+        return services;
     }
     
-    public static void AddIdentity(this IServiceCollection services, IConfiguration configuration)
+    public static IServiceCollection AddIdentityServices(this IServiceCollection services, IConfiguration configuration)
     {
         services.AddDbContext<AppDbContextIdentity>(options =>
             options.UseSqlServer(configuration.GetConnectionString("DefaultConnection"
@@ -50,14 +60,14 @@ public static class CoreDependencyInjection
             options.Password.RequireUppercase = true;
             options.Password.RequiredLength = 8;
         });
+
+        return services;
     }
     
-    public static void AddJwtAuthentication(this IServiceCollection services, IConfiguration configuration)
+    public static IServiceCollection AddJwtAuthenticationServices(this IServiceCollection services, IConfiguration configuration)
     {
         var jwtAppSettingsOptions = configuration.GetSection(nameof(JwtOptions));
-        var securityKey =
-            new SymmetricSecurityKey(
-                Encoding.ASCII.GetBytes(configuration.GetSection("JwtOptions:SecurityKey").Value!));
+        var securityKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(configuration.GetSection("JwtOptions:SecurityKey").Value!));
 
         services.Configure<JwtOptions>(options =>
         {
@@ -96,5 +106,7 @@ public static class CoreDependencyInjection
                 .Build())
             .AddPolicy("RefreshToken", policy => policy.RequireClaim("typ", "Refresh"))
             .AddPolicy("Admin", policy => policy.RequireRole("Admin"));
+
+        return services;
     }
 }

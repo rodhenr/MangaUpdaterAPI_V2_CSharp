@@ -21,7 +21,7 @@ public sealed class UpdateUserPasswordHandler : IRequestHandler<UpdateUserPasswo
 
     public async Task Handle(UpdateUserPasswordCommand request, CancellationToken cancellationToken)
     {
-        var user = await _mediator.Send(new GetAndVerifyUserQuery(request.Password), cancellationToken);
+        var user = await _mediator.Send(new GetAndVerifyUserQuery(request.OldPassword), cancellationToken);
 
         var result = await _userManager.ChangePasswordAsync(user.User, request.OldPassword, request.Password);
 

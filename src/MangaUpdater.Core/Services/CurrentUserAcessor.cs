@@ -1,4 +1,5 @@
 using System.Security.Claims;
+using MangaUpdater.Core.Common.Exceptions;
 using Microsoft.AspNetCore.Http;
 
 namespace MangaUpdater.Core.Services;
@@ -13,5 +14,5 @@ public class CurrentUserAccessor
         _httpContextAccessor = httpContextAccessor;
     }
 
-    public string? UserId => _httpContextAccessor.HttpContext?.User.FindFirstValue(ClaimTypes.NameIdentifier);
+    public string UserId => _httpContextAccessor.HttpContext?.User.FindFirstValue(ClaimTypes.NameIdentifier) ?? throw new UserNotFoundException("User not found");
 }

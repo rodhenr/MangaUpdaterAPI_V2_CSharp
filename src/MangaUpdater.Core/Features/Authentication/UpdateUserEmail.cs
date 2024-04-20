@@ -1,4 +1,5 @@
 ﻿using MangaUpdater.Core.Common.Exceptions;
+using MangaUpdater.Core.Services;
 using MangaUpdater.Data.Entities;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
@@ -6,25 +7,28 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace MangaUpdater.Core.Features.Authentication;
 
-public record UpdateUserEmailCommand([FromBody] string Email, [FromBody] string Password, [FromBody] string ConfirmationPassword) : IRequest;
+public record UpdateUserEmailCommand([FromBody] string Email) : IRequest;
 
 public sealed class UpdateUserEmailHandler : IRequestHandler<UpdateUserEmailCommand>
 {
     private readonly UserManager<AppUser> _userManager;
     private readonly IMediator _mediator;
+    private readonly CurrentUserAccessor _currentUserAccessor;
     
-    public UpdateUserEmailHandler(UserManager<AppUser> userManager, IMediator mediator)
+    public UpdateUserEmailHandler(UserManager<AppUser> userManager, IMediator mediator, CurrentUserAccessor currentUserAccessor)
     {
         _userManager = userManager;
         _mediator = mediator;
+        _currentUserAccessor = currentUserAccessor;
     }
 
     public async Task Handle(UpdateUserEmailCommand request, CancellationToken cancellationToken)
     {
-        var user = await _mediator.Send(new GetAndVerifyUserQuery(request.Password), cancellationToken);
+        var userId = _currentUserAccessor.UserId;
+        var user = await _userManager.FindByIdAsync(userId) ?? throw new UserNotFoundException("User not found");
         
-        var changeEmailToken = await _userManager.GenerateChangeEmailTokenAsync(user.User, request.Email);
-        var result = await _userManager.ChangeEmailAsync(user.User, request.Email, changeEmailToken);
+        var changeEmailToken = await _userManager.GenerateChangeEmailTokenAsync(user, request.Email);
+        var result = await _userManager.ChangeEmailAsync(user, request.Email, changeEmailToken);
         
         if (!result.Succeeded) throw new BadRequestException("Failed to update email");
     }

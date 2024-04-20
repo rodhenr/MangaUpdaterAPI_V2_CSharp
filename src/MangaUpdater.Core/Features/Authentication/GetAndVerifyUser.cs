@@ -21,11 +21,11 @@ public sealed class GetAndVerifyUserHandler : IRequestHandler<GetAndVerifyUserQu
 
     public async Task<GetAndVerifyUserResponse> Handle(GetAndVerifyUserQuery request, CancellationToken cancellationToken)
     {
-        var userId = _currentUserAccessor.UserId ?? throw new ValidationException("Invalid credentials");
-        var user = await _userManager.FindByIdAsync(userId) ?? throw new ValidationException("User not found");
+        var userId = _currentUserAccessor.UserId;
+        var user = await _userManager.FindByIdAsync(userId) ?? throw new UserNotFoundException("User not found");
         
         var isPasswordCorrect = await _userManager.CheckPasswordAsync(user, request.Password);
-        if (!isPasswordCorrect) throw new ValidationException("Invalid credentials");
+        if (!isPasswordCorrect) throw new AuthorizationException("Invalid credentials");
 
         return new GetAndVerifyUserResponse(user);
     }

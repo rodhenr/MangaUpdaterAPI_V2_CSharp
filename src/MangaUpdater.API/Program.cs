@@ -1,85 +1,30 @@
 using System.Text.Json.Serialization;
-using Microsoft.OpenApi.Models;
-using Hangfire;
-using Hangfire.Dashboard.BasicAuthorization;
 using MangaUpdater.API;
+using MangaUpdater.Core;
 using MangaUpdater.Core.Common.Exceptions;
 using MangaUpdater.Data;
-using MangaUpdater.Core;
-using MangaUpdater.Core.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-builder.Services.AddHttpClient();
-builder.Services.AddControllers();
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddHttpClient();
-builder.Services.ConfigureInjection();
-
-
-builder.Services.AddSwaggerGen(options =>
-{
-    options.EnableAnnotations();
-
-    options.SwaggerDoc("v1", new OpenApiInfo
-    {
-        Title = "MangaUpdater API",
-        Description = "An API to follow your favorite mangas and track their released chapters",
-        Contact = new OpenApiContact() { Name = "Rodrigo", Email = "https://github.com/rodhenr" }
-    });
-
-    options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
-    {
-        Description = """
-                      JWT Authorization header using Bearer scheme.
-                                              Enter 'Bearer' [space] and then your token.
-                                              Example: 'Bearer 123456789abcdefgh'
-                      """,
-        Name = "Authorization",
-        In = ParameterLocation.Header,
-        Type = SecuritySchemeType.ApiKey,
-        Scheme = "Bearer"
-    });
-
-    options.AddSecurityRequirement(new OpenApiSecurityRequirement()
-    {
-        {
-            new OpenApiSecurityScheme
-            {
-                Reference = new OpenApiReference
-                {
-                    Type = ReferenceType.SecurityScheme,
-                    Id = "Bearer"
-                },
-                Scheme = "oauth2",
-                Name = "Bearer",
-                In = ParameterLocation.Header
-            },
-            new List<string>()
-        }
-    });
-});
-
-builder.Services.AddDataService();
-
-builder.Services.AddJwtAuthentication(builder.Configuration);
-builder.Services.AddInfrastructure(builder.Configuration);
-builder.Services.AddIdentity(builder.Configuration);
-
 builder.Services.AddControllers().AddJsonOptions(x => x.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles);
+builder.Services.AddHttpClient();
+builder.Services.AddCors();
 
-builder.Services.AddCors(options =>
-{
-    options.AddDefaultPolicy(b =>
-    {
-        b.AllowAnyOrigin()
-            .AllowAnyMethod()
-            .AllowAnyHeader();
-    });
-});
+// Swagger
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
+
+// Injections
+builder.Services.AddApiServices()
+    .AddCoreServices()
+    .AddDataService();
+builder.Services.AddJwtAuthenticationServices(builder.Configuration);
+builder.Services.AddIdentityServices(builder.Configuration);
 
 var app = builder.Build();
+
+app.UseMiddleware<ValidationExceptionHandlingMiddleware>();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
@@ -88,10 +33,10 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.UseCors();
-
+app.UseCors(b => b.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
 app.UseHttpsRedirection();
-//
+app.UseAuthorization();
+
 // app.UseHangfireDashboard("/hangfire", new DashboardOptions
 // {
 //     Authorization = new[]
@@ -114,19 +59,15 @@ app.UseHttpsRedirection();
 //     }
 // });
 
-app.UseAuthorization();
-
-app.UseMiddleware<ExceptionMiddleware>();
-
 // var monitoringApi = JobStorage.Current.GetMonitoringApi();
-//
+
 // var scheduledJobs = monitoringApi.ScheduledJobs(0, int.MaxValue);
-//
+
 // foreach (var job in scheduledJobs)
 // {
 //     BackgroundJob.Delete(job.Key);
 // }
-//
+
 // BackgroundJob.Enqueue<IHangfireService>(task => task.AddHangfireJobs());
 
 app.MapControllers();

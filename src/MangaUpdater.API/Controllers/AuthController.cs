@@ -20,9 +20,9 @@ public class AuthController(ISender mediator) : BaseController
     [AllowAnonymous]
     [SwaggerOperation("Register an user")]
     [HttpPost("register")]
-    public async Task<RegisterUserResponse> UserRegister([FromBody] RegisterUserCommand request)
+    public async Task UserRegister([FromBody] RegisterUserCommand request)
     {
-        return await mediator.Send(request);
+        await mediator.Send(request);
     }
 
     /// <summary>
@@ -47,7 +47,7 @@ public class AuthController(ISender mediator) : BaseController
     [Authorize(Policy = "RefreshToken")]
     [SwaggerOperation("Refresh Token")]
     [HttpPost("refresh")]
-    public async Task<AuthenticateUserResponse> RefreshToken([FromBody] AuthenticateUserQuery request)
+    public async Task<RefreshTokenResponse> RefreshToken([FromBody] RefreshTokenQuery request)
     {
         return await mediator.Send(request);
     }
