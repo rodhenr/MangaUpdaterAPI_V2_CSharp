@@ -13,7 +13,7 @@ public class UserRegisterResponseModel
     }
 
     public bool Success { get; set; }
-    public List<string> ErrorList { get; }
+    private List<string> ErrorList { get; }
 
     public void AddErrors(IEnumerable<string> errors) => ErrorList.AddRange(errors);
 

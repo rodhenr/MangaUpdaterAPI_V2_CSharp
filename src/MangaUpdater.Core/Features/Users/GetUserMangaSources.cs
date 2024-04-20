@@ -16,17 +16,17 @@ public record UserMangaSources(int SourceId, string SourceName, bool IsFollowing
 public sealed class GetUserMangaSourcesHandler : IRequestHandler<GetUserMangaSourcesQuery, GetUserMangaSourcesResponse>
 {
     private readonly AppDbContextIdentity _context;
-    private readonly CurrentUserAcessor _currentUserAcessor;
+    private readonly CurrentUserAccessor _currentUserAccessor;
     
-    public GetUserMangaSourcesHandler(AppDbContextIdentity context, CurrentUserAcessor currentUserAcessor)
+    public GetUserMangaSourcesHandler(AppDbContextIdentity context, CurrentUserAccessor currentUserAccessor)
     {
         _context = context;
-        _currentUserAcessor = currentUserAcessor;
+        _currentUserAccessor = currentUserAccessor;
     }
 
     public async Task<GetUserMangaSourcesResponse> Handle(GetUserMangaSourcesQuery request, CancellationToken cancellationToken)
     {
-        var userId = _currentUserAcessor.UserId;
+        var userId = _currentUserAccessor.UserId;
         
         // TODO: Refactor
         var userManga = await _context.UserMangas

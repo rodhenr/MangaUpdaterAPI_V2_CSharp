@@ -14,17 +14,17 @@ public record UpdateChapterResponse;
 public sealed class UpdateChapterHandler : IRequestHandler<UpdateChapterQuery, UpdateChapterResponse>
 {
     private readonly AppDbContextIdentity _context;
-    private readonly CurrentUserAcessor _currentUserAcessor;
+    private readonly CurrentUserAccessor _currentUserAccessor;
     
-    public UpdateChapterHandler(AppDbContextIdentity context, CurrentUserAcessor currentUserAcessor)
+    public UpdateChapterHandler(AppDbContextIdentity context, CurrentUserAccessor currentUserAccessor)
     {
         _context = context;
-        _currentUserAcessor = currentUserAcessor;
+        _currentUserAccessor = currentUserAccessor;
     }
 
     public async Task<UpdateChapterResponse> Handle(UpdateChapterQuery request, CancellationToken cancellationToken)
     {
-        var userId = _currentUserAcessor.UserId;
+        var userId = _currentUserAccessor.UserId;
         
         var userManga = await _context.UserMangas
             .AsNoTracking()

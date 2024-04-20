@@ -2,7 +2,7 @@
 
 public class BadRequestException: Exception
 {
-    public BadRequestException(): base("Resource not found")
+    public BadRequestException(): base("Bad Request")
     {
     }
     

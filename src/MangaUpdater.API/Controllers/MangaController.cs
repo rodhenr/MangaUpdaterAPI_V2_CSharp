@@ -1,11 +1,11 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Authorization;
-using Swashbuckle.AspNetCore.Annotations;
-using MediatR;
-using MangaUpdater.API.Controllers.Shared;
+﻿using MangaUpdater.API.Controllers.Shared;
 using MangaUpdater.Core.Features.Chapters;
 using MangaUpdater.Core.Features.Mangas;
 using MangaUpdater.Core.Features.MangaSources;
+using MediatR;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Swashbuckle.AspNetCore.Annotations;
 
 namespace MangaUpdater.API.Controllers;
 
@@ -19,9 +19,9 @@ public class MangaController(ISender mediator) : BaseController
     [AllowAnonymous]
     [SwaggerOperation("Get all mangas")]
     [HttpGet]
-    public async Task<GetMangasResponse> GetMangas()
+    public async Task<GetMangasResponse> GetMangas([FromQuery] int page = 1,  [FromQuery] int pageSize = 20, [FromQuery] string? orderBy = null, [FromQuery] List<int>? sourceIds = null, [FromQuery] List<int>? genreIds = null, [FromQuery] string? input = null)
     {
-        return await mediator.Send(new GetMangasQuery());
+        return await mediator.Send(new GetMangasQuery(page, pageSize, orderBy, sourceIds, genreIds, input));
     }
 
     /// <summary>

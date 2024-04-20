@@ -14,17 +14,17 @@ public record DeleteSourceResponse;
 public sealed class DeleteSourceHandler : IRequestHandler<DeleteSourceQuery, DeleteSourceResponse>
 {
     private readonly AppDbContextIdentity _context;
-    private readonly CurrentUserAcessor _currentUserAcessor;
+    private readonly CurrentUserAccessor _currentUserAccessor;
     
-    public DeleteSourceHandler(AppDbContextIdentity context, CurrentUserAcessor currentUserAcessor)
+    public DeleteSourceHandler(AppDbContextIdentity context, CurrentUserAccessor currentUserAccessor)
     {
         _context = context;
-        _currentUserAcessor = currentUserAcessor;
+        _currentUserAccessor = currentUserAccessor;
     }
 
     public async Task<DeleteSourceResponse> Handle(DeleteSourceQuery request, CancellationToken cancellationToken)
     {
-        var userId = _currentUserAcessor.UserId;
+        var userId = _currentUserAccessor.UserId;
         
         var userManga = await _context.UserMangas
             .AsNoTracking()

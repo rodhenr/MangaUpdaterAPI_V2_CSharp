@@ -12,17 +12,17 @@ public record UnfollowMangaResponse;
 public sealed class UnfollowMangaHandler : IRequestHandler<UnfollowMangaQuery, UnfollowMangaResponse>
 {
     private readonly AppDbContextIdentity _context;
-    private readonly CurrentUserAcessor _currentUserAcessor;
+    private readonly CurrentUserAccessor _currentUserAccessor;
     
-    public UnfollowMangaHandler(AppDbContextIdentity context, CurrentUserAcessor currentUserAcessor)
+    public UnfollowMangaHandler(AppDbContextIdentity context, CurrentUserAccessor currentUserAccessor)
     {
         _context = context;
-        _currentUserAcessor = currentUserAcessor;
+        _currentUserAccessor = currentUserAccessor;
     }
 
     public async Task<UnfollowMangaResponse> Handle(UnfollowMangaQuery request, CancellationToken cancellationToken)
     {
-        var userId = _currentUserAcessor.UserId;
+        var userId = _currentUserAccessor.UserId;
         
         var userManga = await _context.UserMangas
             .AsNoTracking()

@@ -1,11 +1,10 @@
 ﻿using Microsoft.IdentityModel.Tokens;
 
-namespace MangaUpdater.Core.Features.Auth;
+namespace MangaUpdater.Core.Features.Authentication;
 
 public class JwtOptions
 {
     public const string Section = "JwtOptions";
-
     public required string Issuer { get; set; }
     public required string Audience { get; set; }
     public required SigningCredentials SigningCredentials { get; set; }

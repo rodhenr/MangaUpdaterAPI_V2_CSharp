@@ -12,17 +12,17 @@ public record UpdateFollowedSourcesResponse;
 public sealed class UpdateFollowedSourcesHandler : IRequestHandler<UpdateFollowedSourcesQuery, UpdateFollowedSourcesResponse>
 {
     private readonly AppDbContextIdentity _context;
-    private readonly CurrentUserAcessor _currentUserAcessor;
+    private readonly CurrentUserAccessor _currentUserAccessor;
     
-    public UpdateFollowedSourcesHandler(AppDbContextIdentity context, CurrentUserAcessor currentUserAcessor)
+    public UpdateFollowedSourcesHandler(AppDbContextIdentity context, CurrentUserAccessor currentUserAccessor)
     {
         _context = context;
-        _currentUserAcessor = currentUserAcessor;
+        _currentUserAccessor = currentUserAccessor;
     }
 
     public async Task<UpdateFollowedSourcesResponse> Handle(UpdateFollowedSourcesQuery request, CancellationToken cancellationToken)
     {
-        var userId = _currentUserAcessor.UserId;
+        var userId = _currentUserAccessor.UserId;
         
         // Check userId
         

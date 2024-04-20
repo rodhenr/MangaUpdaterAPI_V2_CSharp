@@ -2,15 +2,9 @@
 
 namespace MangaUpdater.Core.Models;
 
-public class UserAuthenticateResponseModel
+public class UserAuthenticateResponseModel()
 {
-    public UserAuthenticateResponseModel()
-    {
-        ErrorList = new List<string>();
-    }
-
-    public UserAuthenticateResponseModel(string? userName, string? userAvatar, string? accessToken, string? refreshToken,
-        bool isAdmin) : this()
+    public UserAuthenticateResponseModel(string? userName, string? userAvatar, string? accessToken, string? refreshToken, bool isAdmin) : this()
     {
         AccessToken = accessToken;
         RefreshToken = refreshToken;
@@ -33,20 +27,25 @@ public class UserAuthenticateResponseModel
 
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public bool? IsAdmin { get; private set; }
+    
+    [JsonIgnore] 
+    private List<string> ErrorList { get; } = [];
 
-    [JsonIgnore] public bool IsSuccess => ErrorList.Count == 0;
+    [JsonIgnore] 
+    public bool IsSuccess => ErrorList.Count == 0;
 
     [JsonPropertyName("IsSuccess")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public bool? SerializationIsSuccess => IsSuccess ? null : false;
 
-    [JsonIgnore] public List<string> ErrorList { get; }
-
     [JsonPropertyName("ErrorList")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public List<string>? SerializationErrorList => ErrorList.Count > 0 ? ErrorList : null;
 
-    public void AddError(string error) => ErrorList.Add(error);
+    public void AddError(string error)
+    {
+        ErrorList.Add(error);
+    }
 
     public override string ToString()
     {

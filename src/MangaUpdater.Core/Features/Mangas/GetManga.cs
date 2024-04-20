@@ -14,18 +14,18 @@ public record GetMangaResponse(Manga? Manga);
 public sealed class GetMangaHandler : IRequestHandler<GetMangaQuery, GetMangaResponse>
 {
     private readonly AppDbContextIdentity _context;
-    private readonly CurrentUserAcessor _currentUserAcessor;
+    private readonly CurrentUserAccessor _currentUserAccessor;
     
-    public GetMangaHandler(AppDbContextIdentity context, CurrentUserAcessor currentUserAcessor)
+    public GetMangaHandler(AppDbContextIdentity context, CurrentUserAccessor currentUserAccessor)
     {
         _context = context;
-        _currentUserAcessor = currentUserAcessor;
+        _currentUserAccessor = currentUserAccessor;
     }
 
     public async Task<GetMangaResponse> Handle(GetMangaQuery request, CancellationToken cancellationToken)
     {
         // I WAS RETURNING HIGHLIGHTED MANGAS HERE, I THINK I SHOULD NOT RETURN IT ANYMORE
-        var userId = _currentUserAcessor.UserId;
+        var userId = _currentUserAccessor.UserId;
 
         var m1 = _context.Mangas
             .AsNoTracking()

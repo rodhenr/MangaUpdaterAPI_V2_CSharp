@@ -16,17 +16,17 @@ public record UserMangaInfo(int Id, string CoverUrl, string Name);
 public sealed class GetUserMangasHandler : IRequestHandler<GetUserMangasQuery, GetUserMangasResponse>
 {
     private readonly AppDbContextIdentity _context;
-    private readonly CurrentUserAcessor _currentUserAcessor;
+    private readonly CurrentUserAccessor _currentUserAccessor;
     
-    public GetUserMangasHandler(AppDbContextIdentity context, CurrentUserAcessor currentUserAcessor)
+    public GetUserMangasHandler(AppDbContextIdentity context, CurrentUserAccessor currentUserAccessor)
     {
         _context = context;
-        _currentUserAcessor = currentUserAcessor;
+        _currentUserAccessor = currentUserAccessor;
     }
 
     public async Task<GetUserMangasResponse> Handle(GetUserMangasQuery request, CancellationToken cancellationToken)
     {
-        var userId = request.UserId ?? _currentUserAcessor.UserId;
+        var userId = request.UserId ?? _currentUserAccessor.UserId;
         
         var maxLimit = request.Limit > 100 ? 100 : request.Limit;
         var skip = (request.Page - 1) * request.Limit;

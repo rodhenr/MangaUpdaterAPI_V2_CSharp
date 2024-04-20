@@ -4,11 +4,11 @@ using Microsoft.AspNetCore.Http;
 namespace MangaUpdater.Core.Services;
 
 [RegisterScoped]
-public class CurrentUserAcessor
+public class CurrentUserAccessor
 {
     private readonly IHttpContextAccessor _httpContextAccessor;
 
-    public CurrentUserAcessor(IHttpContextAccessor httpContextAccessor)
+    public CurrentUserAccessor(IHttpContextAccessor httpContextAccessor)
     {
         _httpContextAccessor = httpContextAccessor;
     }

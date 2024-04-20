@@ -1,9 +1,11 @@
 ﻿using System.Security.Authentication;
+using MangaUpdater.Core.Common;
+using MangaUpdater.Core.Features.Authentication;
 using MangaUpdater.Data.Entities;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
 
-namespace MangaUpdater.Core.Features.Auth;
+namespace MangaUpdater.Core.Features.Users;
 
 public record UserProfileDto(string Avatar, string Username, string UserId, string Email);
 

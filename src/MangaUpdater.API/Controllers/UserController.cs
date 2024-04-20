@@ -95,15 +95,15 @@ public class UserController(ISender mediator) : BaseController
         return await mediator.Send(new UpdateChapterQuery(mangaId, sourceId, chapterId));
     }
 
-    /// <summary>
-    /// Get information about the logged user.
-    /// </summary>
-    /// <response code="200">Success.</response>
-    /// <response code="400">Error.</response>
-    [SwaggerOperation("Get information about the logged user")]
-    [HttpGet("profile")]
-    public async Task<GetUserInfoResponse> GetLoggedUserInfo()
-    {
-        return await mediator.Send(new GetUserInfoQuery());
-    }
+    // /// <summary>
+    // /// Get information about the logged user.
+    // /// </summary>
+    // /// <response code="200">Success.</response>
+    // /// <response code="400">Error.</response>
+    // [SwaggerOperation("Get information about the logged user")]
+    // [HttpGet("profile")]
+    // public async Task<GetUserInfoResponse> GetLoggedUserInfo()
+    // {
+    //     return await mediator.Send(new GetUserInfoQuery());
+    // }
 }

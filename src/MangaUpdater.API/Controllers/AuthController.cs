@@ -1,10 +1,10 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using MangaUpdater.API.Controllers.Shared;
+using MangaUpdater.Core.Features.Authentication;
+using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Cors;
+using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
-using MediatR;
-using MangaUpdater.API.Controllers.Shared;
-using MangaUpdater.Core.Features.Auth;
 
 namespace MangaUpdater.API.Controllers;
 
@@ -14,13 +14,13 @@ public class AuthController(ISender mediator) : BaseController
     /// <summary>
     /// Register an user.
     /// </summary>
-    /// <param name="userRegister">Data to register an user.</param>
+    /// <param name="request">Data to register an user.</param>
     /// <response code="200">Returns success.</response>
     /// <response code="400">Returns all validation errors.</response>
     [AllowAnonymous]
     [SwaggerOperation("Register an user")]
     [HttpPost("register")]
-    public async Task<RegisterUserResponse> UserRegister([FromQuery] RegisterUserQuery request)
+    public async Task<RegisterUserResponse> UserRegister([FromBody] RegisterUserCommand request)
     {
         return await mediator.Send(request);
     }
@@ -28,13 +28,13 @@ public class AuthController(ISender mediator) : BaseController
     /// <summary>
     /// Authenticate an user.
     /// </summary>
-    /// <param name="userAuthenticate">Data to authenticate an user.</param>
+    /// <param name="request">Data to authenticate an user.</param>
     /// <response code="200">Returns token.</response>
     /// <response code="400">Returns all validation errors.</response>
     [AllowAnonymous]
     [SwaggerOperation("Authenticate an user")]
     [HttpPost("login")]
-    public async Task<AuthenticateUserResponse> UserLogin([FromQuery] AuthenticateUserQuery request)
+    public async Task<AuthenticateUserResponse> UserLogin([FromBody] AuthenticateUserQuery request)
     {
         return await mediator.Send(request);
     }
@@ -47,7 +47,7 @@ public class AuthController(ISender mediator) : BaseController
     [Authorize(Policy = "RefreshToken")]
     [SwaggerOperation("Refresh Token")]
     [HttpPost("refresh")]
-    public async Task<AuthenticateUserResponse> RefreshToken([FromQuery] AuthenticateUserQuery request)
+    public async Task<AuthenticateUserResponse> RefreshToken([FromBody] AuthenticateUserQuery request)
     {
         return await mediator.Send(request);
     }
@@ -59,9 +59,10 @@ public class AuthController(ISender mediator) : BaseController
     /// <response code="400">Error.</response>
     [SwaggerOperation("Changes email for the logged user")]
     [HttpPost("profile/email")]
-    public async Task<UpdateUserEmailResponse> UpdateUserEmail([FromQuery] UpdateUserEmailQuery request)
+    public async Task<ActionResult> UpdateUserEmail([FromBody] UpdateUserEmailCommand request)
     {
-        return await mediator.Send(request);
+        await mediator.Send(request);
+        return Ok();
     }
 
     /// <summary>
@@ -71,8 +72,9 @@ public class AuthController(ISender mediator) : BaseController
     /// <response code="400">Error.</response>
     [SwaggerOperation("Changes password for the logged user")]
     [HttpPost("profile/password")]
-    public async Task<UpdateUserPasswordResponse> ChangeLoggedUserPassword([FromQuery] UpdateUserPasswordQuery request)
+    public async Task<ActionResult> ChangeLoggedUserPassword([FromBody] UpdateUserPasswordCommand request)
     {
-        return await mediator.Send(request);
+        await mediator.Send(request);
+        return Ok();
     }
 }

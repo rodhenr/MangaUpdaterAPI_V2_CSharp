@@ -7,7 +7,8 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Hangfire;
-using MangaUpdater.Core.Features.Auth;
+using MangaUpdater.Core.Common;
+using MangaUpdater.Core.Features.Authentication;
 using MangaUpdater.Data;
 using MangaUpdater.Data.Entities;
 
