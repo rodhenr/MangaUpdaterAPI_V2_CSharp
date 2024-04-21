@@ -9,7 +9,7 @@ using Swashbuckle.AspNetCore.Annotations;
 
 namespace MangaUpdater.API.Controllers;
 
-public class MangaController(ISender mediator) : BaseController
+public class MangaController(IMediator mediator) : BaseController
 {
     /// <summary>
     /// Get all manga.
@@ -19,9 +19,24 @@ public class MangaController(ISender mediator) : BaseController
     [AllowAnonymous]
     [SwaggerOperation("Get all mangas")]
     [HttpGet]
-    public async Task<GetMangasResponse> GetMangas([FromQuery] int page = 1,  [FromQuery] int pageSize = 20, [FromQuery] string? orderBy = null, [FromQuery] List<int>? sourceIds = null, [FromQuery] List<int>? genreIds = null, [FromQuery] string? input = null)
+    public async Task<GetMangasResponse> GetMangas([FromQuery] GetMangasQuery request)
     {
-        return await mediator.Send(new GetMangasQuery(page, pageSize, orderBy, sourceIds, genreIds, input));
+        return await mediator.Send(request);
+    }
+    
+    /// <summary>
+    /// Register a new manga using a MyAnimeList id.
+    /// </summary>
+    /// <returns>Manga data, if success.</returns>
+    /// <response code="200">Returns the registered manga data.</response>
+    /// <response code="400">Error.</response>
+    /// <response code="403">Unauthorized</response>
+    [Authorize(Policy = "Admin")]
+    [SwaggerOperation("Register a new manga using a MyAnimeList id")]
+    [HttpPost]
+    public async Task RegisterManga([FromBody] AddMangaCommand request)
+    {
+        await mediator.Send(request);
     }
 
     /// <summary>
@@ -39,21 +54,6 @@ public class MangaController(ISender mediator) : BaseController
     }
     
     /// <summary>
-    /// Register a new manga using a MyAnimeList id.
-    /// </summary>
-    /// <returns>Manga data, if success.</returns>
-    /// <response code="200">Returns the registered manga data.</response>
-    /// <response code="400">Error.</response>
-    /// <response code="403">Unauthorized</response>
-    [Authorize(Policy = "Admin")]
-    [SwaggerOperation("Register a new manga using a MyAnimeList id")]
-    [HttpPost]
-    public async Task<AddMangaResponse> RegisterManga(int malId)
-    {
-        return await mediator.Send(new AddMangaQuery(malId));
-    }
-
-    /// <summary>
     /// Retrieves the total number of users who are currently following a specific manga
     /// </summary>
     /// <response code="200">Returns the total number of users who are currently following a manga.</response>
@@ -61,7 +61,7 @@ public class MangaController(ISender mediator) : BaseController
     [AllowAnonymous]
     [SwaggerOperation("Get the total number of users who are currently following a manga")]
     [HttpGet("{mangaId:int}/follows")]
-    public async Task<GetFollowsResponse> GetUsersFollowingByMangaId([FromQuery] GetFollowsQuery request)
+    public async Task<GetMangaFollowersCountResponse> GetUsersFollowingByMangaId([FromQuery] GetMangaFollowersCountQuery request)
     {
         return await mediator.Send(request);
     }
@@ -74,13 +74,20 @@ public class MangaController(ISender mediator) : BaseController
     /// <response code="403">Unauthorized</response>
     [Authorize(Policy = "Admin")]
     [SwaggerOperation("Register a new source for a manga.")]
-    [HttpPost("manga/{mangaId:int}/sources")]
-    public async Task<AddMangaSourceResponse> AddSourceToManga([FromQuery] AddMangaSourceQuery request)
+    [HttpPost("{mangaId:int}/sources")]
+    public async Task AddSourceToManga(int mangaId, [FromBody] SourceInfo sourceInfo)
     {
-        return await mediator.Send(request);
+        await mediator.Send(new AddMangaSourceCommand(mangaId, sourceInfo));
     }
     
-    [HttpGet("/{mangaId:int}/chapter/{chapterId:int}")]
+    /// <summary>
+    /// Get chapter data by manga and source.
+    /// </summary>
+    /// <returns>Chapter data, if success.</returns>
+    /// <response code="200">Returns the manga data.</response>
+    /// <response code="400">Error.</response>
+    [SwaggerOperation("Get a chapter for a manga")]
+    [HttpGet("{mangaId:int}/chapter/{chapterId:int}")]
     public async Task<GetChapterResponse> GetChaptersByIdAndMangaId([FromQuery] GetChapterQuery request)
     {
         return await mediator.Send(request);
@@ -94,9 +101,9 @@ public class MangaController(ISender mediator) : BaseController
     /// <response code="403">Unauthorized</response>
     [Authorize(Policy = "Admin")]
     [SwaggerOperation("Update chapters from a combination of manga and source.")]
-    [HttpPost("/{mangaId:int}/source/{sourceId:int}/chapters")]
-    public async Task<UpdateChaptersResponse> UpdateChaptersFromSource([FromQuery] UpdateChaptersQuery request)
+    [HttpPost("{mangaId:int}/source/{sourceId:int}/chapters")]
+    public async Task UpdateChaptersFromSource([FromQuery] UpdateChaptersCommand request)
     {
-        return await mediator.Send(request);
+        await mediator.Send(request);
     }
 }

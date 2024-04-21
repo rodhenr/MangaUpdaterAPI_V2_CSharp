@@ -1,13 +1,14 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using MediatR;
+﻿using MangaUpdater.Core.Common.Exceptions;
 using MangaUpdater.Data;
-using MangaUpdater.Data.Entities.Models;
+using MediatR;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace MangaUpdater.Core.Features.Chapters;
 
-public record GetChapterQuery([FromQuery] int MangaId, [FromQuery] int ChapterId) : IRequest<GetChapterResponse>;
-public record GetChapterResponse(Chapter? Chapter);
+public record GetChapterQuery([FromRoute] int MangaId, [FromRoute] int ChapterId) : IRequest<GetChapterResponse>;
+
+public record GetChapterResponse(int Id, int MangaId, int SourceId, DateTime Date, string Number);
 
 public sealed class GetChapterHandler : IRequestHandler<GetChapterQuery, GetChapterResponse>
 {
@@ -25,6 +26,8 @@ public sealed class GetChapterHandler : IRequestHandler<GetChapterQuery, GetChap
             .Where(x => x.Id == request.ChapterId && x.MangaId == request.MangaId)
             .SingleOrDefaultAsync(cancellationToken);
 
-        return new GetChapterResponse(chapter);
+        if (chapter is null) throw new EntityNotFoundException($"Chapter not found for MangaId {request.MangaId} and ChapterId {request.ChapterId}");
+
+        return new GetChapterResponse(chapter.Id, chapter.MangaId, chapter.SourceId, chapter.Date, chapter.Number);
     }
 }

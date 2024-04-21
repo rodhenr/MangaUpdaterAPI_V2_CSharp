@@ -43,9 +43,9 @@ public static class CoreDependencyInjection
     
     public static IServiceCollection AddIdentityServices(this IServiceCollection services, IConfiguration configuration)
     {
-        services.AddDbContext<AppDbContextIdentity>(options =>
-            options.UseSqlServer(configuration.GetConnectionString("DefaultConnection"
-            ), b => b.MigrationsAssembly(typeof(AppDbContextIdentity).Assembly.FullName)));
+        services.AddDbContext<AppDbContextIdentity>(options => 
+            options.UseSqlServer(configuration.GetConnectionString("DefaultConnection"), 
+            b => b.MigrationsAssembly(typeof(AppDbContextIdentity).Assembly.FullName)));
 
         services.AddDefaultIdentity<AppUser>()
             .AddRoles<IdentityRole>()
@@ -93,11 +93,11 @@ public static class CoreDependencyInjection
             ClockSkew = TimeSpan.Zero
         };
 
-        services.AddAuthentication(options =>
-        {
-            options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-            options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-        }).AddJwtBearer(options => { options.TokenValidationParameters = tokenValidationParameters; });
+        services
+            .AddAuthentication(options => {
+                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme; })
+            .AddJwtBearer(options => { options.TokenValidationParameters = tokenValidationParameters; });
 
         services.AddAuthorizationBuilder()
             .SetFallbackPolicy(new AuthorizationPolicyBuilder()

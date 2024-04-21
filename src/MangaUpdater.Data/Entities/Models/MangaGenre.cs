@@ -23,5 +23,5 @@ public sealed class MangaGenre
     [ForeignKey("GenreId")]
     [InverseProperty("MangaGenres")]
     [JsonIgnore] 
-    public Genre? Genre { get; set; }
+    public Genre Genre { get; set; }
 }

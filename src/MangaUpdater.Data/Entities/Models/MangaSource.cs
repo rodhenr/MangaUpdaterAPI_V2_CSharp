@@ -29,5 +29,5 @@ public sealed class MangaSource
     [ForeignKey("SourceId")]
     [InverseProperty("MangaSources")]
     [JsonIgnore] 
-    public Source? Source { get; set; }
+    public Source Source { get; set; }
 }

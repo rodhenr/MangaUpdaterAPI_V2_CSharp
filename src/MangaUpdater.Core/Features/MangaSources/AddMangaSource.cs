@@ -1,14 +1,16 @@
-﻿using MangaUpdater.Data;
+﻿using MangaUpdater.Core.Common.Exceptions;
+using MangaUpdater.Data;
 using MangaUpdater.Data.Entities.Models;
+using MangaUpdater.Data.Queries;
 using MediatR;
-using Microsoft.AspNetCore.Mvc;
 
 namespace MangaUpdater.Core.Features.MangaSources;
 
-public record AddMangaSourceQuery([FromQuery] int MangaId, [FromBody] int SourceId, [FromBody] string MangaUrl) : IRequest<AddMangaSourceResponse>;
-public record AddMangaSourceResponse;
+public record AddMangaSourceCommand(int MangaId, SourceInfo SourceInfo) : IRequest;
 
-public sealed class AddMangaSourceHandler : IRequestHandler<AddMangaSourceQuery, AddMangaSourceResponse>
+public record SourceInfo(int SourceId, string MangaUrl);
+
+public sealed class AddMangaSourceHandler : IRequestHandler<AddMangaSourceCommand>
 {
     private readonly AppDbContextIdentity _context;
     
@@ -17,12 +19,22 @@ public sealed class AddMangaSourceHandler : IRequestHandler<AddMangaSourceQuery,
         _context = context;
     }
 
-    public async Task<AddMangaSourceResponse> Handle(AddMangaSourceQuery request, CancellationToken cancellationToken)
+    public async Task Handle(AddMangaSourceCommand request, CancellationToken cancellationToken)
     {
-        // TODO: Add validation
-        _context.MangaSources.Add(new MangaSource { MangaId = request.MangaId, SourceId = request.SourceId, Url = request.MangaUrl });
+        await ValidateMangaAndSource(request, cancellationToken);
+        
+        _context.MangaSources.Add(new MangaSource { MangaId = request.MangaId, SourceId = request.SourceInfo.SourceId, Url = request.SourceInfo.MangaUrl });
         await _context.SaveChangesAsync(cancellationToken);
+    }
 
-        return new AddMangaSourceResponse();
+    private async Task ValidateMangaAndSource(AddMangaSourceCommand request, CancellationToken cancellationToken)
+    {
+        var manga = await _context.Mangas.GetById(request.MangaId, cancellationToken);
+
+        if (manga is null) throw new EntityNotFoundException($"Manga not found for ID {request.MangaId}.");
+        
+        var source = await _context.Sources.GetById(request.SourceInfo.SourceId, cancellationToken);
+        
+        if (source is null) throw new EntityNotFoundException($"Source not found for ID {request.SourceInfo.SourceId}.");
     }
 }

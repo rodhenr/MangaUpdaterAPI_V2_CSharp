@@ -28,26 +28,26 @@ public class Manga
     public required int MyAnimeListId { get; set; }
 
     [InverseProperty("Manga")]
-    [JsonIgnore] 
-    public IEnumerable<Chapter>? Chapters { get; set; }
+    [JsonIgnore]
+    public List<Chapter> Chapters { get; set; } = [];
     
     [InverseProperty("Manga")]
     [JsonIgnore] 
-    public IEnumerable<UserManga>? UserMangas { get; set; }
+    public List<UserManga> UserMangas { get; set; } = [];
     
     [InverseProperty("Manga")]
     [JsonIgnore] 
-    public IEnumerable<MangaAuthor>? MangaAuthors { get; set; }
+    public List<MangaAuthor> MangaAuthors { get; set; } = [];
     
     [InverseProperty("Manga")]
     [JsonIgnore] 
-    public IEnumerable<MangaGenre>? MangaGenres { get; set; }
+    public List<MangaGenre> MangaGenres { get; set; } = [];
     
     [InverseProperty("Manga")]
     [JsonIgnore] 
-    public IEnumerable<MangaSource>? MangaSources { get; set; }
+    public List<MangaSource> MangaSources { get; set; } = [];
     
     [InverseProperty("Manga")]
     [JsonIgnore] 
-    public IEnumerable<MangaTitle>? MangaTitles { get; set; }
+    public List<MangaTitle> MangaTitles { get; set; } = [];
 }

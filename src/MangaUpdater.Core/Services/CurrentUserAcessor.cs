@@ -15,4 +15,5 @@ public class CurrentUserAccessor
     }
 
     public string UserId => _httpContextAccessor.HttpContext?.User.FindFirstValue(ClaimTypes.NameIdentifier) ?? throw new UserNotFoundException("User not found");
+    public bool IsLoggedIn => _httpContextAccessor.HttpContext?.User.Identity?.IsAuthenticated ?? false;
 }

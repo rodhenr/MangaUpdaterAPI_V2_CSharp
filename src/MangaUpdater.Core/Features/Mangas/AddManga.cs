@@ -1,34 +1,75 @@
-﻿using MangaUpdater.Core.Features.External;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using MediatR;
+﻿using MangaUpdater.Core.Common.Exceptions;
+using MangaUpdater.Core.Features.External;
 using MangaUpdater.Data;
 using MangaUpdater.Data.Entities.Models;
+using MediatR;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace MangaUpdater.Core.Features.Mangas;
 
-public record AddMangaQuery([FromQuery] int MalId) : IRequest<AddMangaResponse>;
-public record AddMangaResponse(Manga Manga);
+public record AddMangaCommand([FromBody] int MalId) : IRequest;
 
-public sealed class AddMangaHandler : IRequestHandler<AddMangaQuery, AddMangaResponse>
+public sealed class AddMangaHandler : IRequestHandler<AddMangaCommand>
 {
     private readonly AppDbContextIdentity _context;
-    private readonly ISender _mediator;
+    private readonly IMediator _mediator;
     
-    public AddMangaHandler(AppDbContextIdentity context, ISender mediator)
+    public AddMangaHandler(AppDbContextIdentity context, IMediator mediator)
     {
         _context = context;
         _mediator = mediator;
     }
 
-    public async Task<AddMangaResponse> Handle(AddMangaQuery request, CancellationToken cancellationToken)
+    public async Task Handle(AddMangaCommand request, CancellationToken cancellationToken)
     {
-        await _mediator.Send(new CreateMangaFromMyAnimeListQuery(request.MalId), cancellationToken);
-
-        var result = await _context.Mangas.FirstOrDefaultAsync(x => x.MyAnimeListId == request.MalId, cancellationToken);
-
-        if (result is null) throw new Exception("Error...");
+        var isMangaRegistered = await _context.Mangas
+            .Where(x => x.MyAnimeListId == request.MalId)
+            .FirstOrDefaultAsync(cancellationToken);
         
-        return new AddMangaResponse(result);
+        if (isMangaRegistered is not null) throw new BadRequestException($"The ID {request.MalId} is already registered");
+        
+        var apiResponse = await _mediator.Send(new GetMangaInfoFromMyAnimeListQuery(request.MalId), cancellationToken);
+
+        var createdMangaId = await CreateManga(request.MalId, apiResponse, cancellationToken);
+        await CreateMangaDetails(apiResponse, createdMangaId, cancellationToken);
+    }
+
+    private async Task<int> CreateManga(int malId, GetMangaInfoFromMyAnimeListResponse apiResponse, CancellationToken cancellationToken)
+    {
+        var mangaDto = new Manga
+        {
+            Synopsis = apiResponse.Synopsis,
+            Type = apiResponse.Type,
+            CoverUrl = apiResponse.CoverUrl,
+            MyAnimeListId = malId
+        };
+        
+        var createdManga = _context.Mangas.Add(mangaDto);
+        await _context.SaveChangesAsync(cancellationToken);
+
+        return createdManga.Entity.Id;
+    }
+
+    private async Task CreateMangaDetails(GetMangaInfoFromMyAnimeListResponse apiResponse, int mangaId, CancellationToken cancellationToken)
+    {
+        var genreList = apiResponse.Genres.Select(g => new MangaGenre { GenreId = (int)g.MalId, MangaId = mangaId });
+        var authorList = apiResponse.Authors.Select(a => new MangaAuthor { MangaId = mangaId, Name = a.Name });
+        var titleList = apiResponse.Titles
+            .Select(i => i.Title)
+            .Distinct()
+            .Select((title, index) =>
+                new MangaTitle
+                {
+                    MangaId = mangaId,
+                    Name = title,
+                    IsMainTitle = index == 0
+                });
+
+        _context.MangaGenres.AddRange(genreList);
+        _context.MangaAuthors.AddRange(authorList);
+        _context.MangaTitles.AddRange(titleList);
+
+        await _context.SaveChangesAsync(cancellationToken);
     }
 }

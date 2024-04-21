@@ -59,7 +59,7 @@ public class HangfireService : IHangfireService
         foreach (var manga in mangasToUpdateChapters)
         {
             //lastJobId = 
-            _mediator.Enqueue("UpdateManga", new UpdateChaptersFromAsuraScansQuery(manga.MangaId));
+            //_mediator.Enqueue("UpdateManga", new UpdateChaptersFromAsuraScansCommand(manga.MangaId));
         }
 
         BackgroundJob.ContinueJobWith<IHangfireService>(lastJobId, job => job.ScheduleNextInvocation(startTime));

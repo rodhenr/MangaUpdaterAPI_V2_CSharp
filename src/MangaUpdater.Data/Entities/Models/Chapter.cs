@@ -26,14 +26,14 @@ public sealed class Chapter
     [ForeignKey("MangaId")]
     [InverseProperty("Chapters")]
     [JsonIgnore] 
-    public Manga? Manga { get; set; }
+    public Manga Manga { get; set; }
     
     [ForeignKey("SourceId")]
     [InverseProperty("Chapters")]
     [JsonIgnore] 
-    public Source? Source { get; set; }
-    
+    public Source Source { get; set; }
+
     [InverseProperty("Chapter")]
-    [JsonIgnore] 
-    public IEnumerable<UserChapter>? UserChapter { get; set; }
+    [JsonIgnore]
+    public List<UserChapter> UserChapter { get; set; } = [];
 }

@@ -6,37 +6,23 @@ using MangaUpdater.Data;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
+// Built-in Services
 builder.Services.AddControllers().AddJsonOptions(x => x.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles);
 builder.Services.AddHttpClient();
 builder.Services.AddCors();
+
+// Custom Services
+builder.Services.AddApiServices().AddCoreServices().AddDataService();
+builder.Services.AddJwtAuthenticationServices(builder.Configuration);
+builder.Services.AddIdentityServices(builder.Configuration);
 
 // Swagger
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-// Injections
-builder.Services.AddApiServices()
-    .AddCoreServices()
-    .AddDataService();
-builder.Services.AddJwtAuthenticationServices(builder.Configuration);
-builder.Services.AddIdentityServices(builder.Configuration);
-
 var app = builder.Build();
 
-app.UseMiddleware<ValidationExceptionHandlingMiddleware>();
-
-// Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
-
-app.UseCors(b => b.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
-app.UseHttpsRedirection();
-app.UseAuthorization();
-
+// Hangfire
 // app.UseHangfireDashboard("/hangfire", new DashboardOptions
 // {
 //     Authorization = new[]
@@ -70,6 +56,18 @@ app.UseAuthorization();
 
 // BackgroundJob.Enqueue<IHangfireService>(task => task.AddHangfireJobs());
 
-app.MapControllers();
+// Custom Middleware
+app.UseMiddleware<ValidationExceptionHandlingMiddleware>();
 
+// Built-in 
+if (app.Environment.IsDevelopment())
+{
+    app.UseSwagger();
+    app.UseSwaggerUI();
+}
+
+app.UseCors(b => b.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
+app.UseHttpsRedirection();
+app.UseAuthorization();
+app.MapControllers();
 app.Run();

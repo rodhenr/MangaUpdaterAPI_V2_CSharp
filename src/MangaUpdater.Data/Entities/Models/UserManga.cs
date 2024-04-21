@@ -22,8 +22,8 @@ public sealed class UserManga
     [InverseProperty("UserMangas")]
     [JsonIgnore]
     public Manga? Manga { get; set; }
-    
+
     [InverseProperty("UserManga")]
-    [JsonIgnore] 
-    public IEnumerable<UserChapter>? UserChapter { get; set; }
+    [JsonIgnore]
+    public List<UserChapter> UserChapter { get; set; } = [];
 }

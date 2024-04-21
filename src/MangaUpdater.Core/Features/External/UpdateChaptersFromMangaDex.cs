@@ -1,91 +1,77 @@
 ﻿using System.Globalization;
 using MangaUpdater.Core.Common.Exceptions;
 using MangaUpdater.Core.Common.Extensions;
-using MediatR;
 using MangaUpdater.Core.Common.Helpers;
+using MangaUpdater.Core.Features.Chapters;
+using MangaUpdater.Core.Features.MangaSources;
 using MangaUpdater.Core.Models;
 using MangaUpdater.Data;
 using MangaUpdater.Data.Entities.Models;
-using Microsoft.EntityFrameworkCore;
+using MediatR;
 
 namespace MangaUpdater.Core.Features.External;
 
-public record UpdateChaptersFromMangaDexQuery(int MangaId) : IRequest<GetMangasFromMangaDexResponse>;
-public record GetMangasFromMangaDexResponse;
+public record UpdateChaptersFromMangaDexCommand(int MangaId, int SourceId, string SourceUrl) : IRequest;
 
-public sealed class GetMangasFromMangaDexHandler : IRequestHandler<UpdateChaptersFromMangaDexQuery, GetMangasFromMangaDexResponse>
+public sealed class GetMangasFromMangaDexHandler : IRequestHandler<UpdateChaptersFromMangaDexCommand>
 {
     private readonly AppDbContextIdentity _context;
-    private readonly IHttpClientFactory _clientFactory;
+    private readonly HttpClient _httpClient;
+    private readonly IMediator _mediator;
+    private readonly List<Chapter> _chapterList = [];
     
-    public GetMangasFromMangaDexHandler(AppDbContextIdentity context, IHttpClientFactory clientFactory)
+    public GetMangasFromMangaDexHandler(AppDbContextIdentity context, IHttpClientFactory clientFactory, IMediator mediator)
     {
         _context = context;
-        _clientFactory = clientFactory;
+        _mediator = mediator;
+        _httpClient = clientFactory.CreateClient();
+        
+        _httpClient.DefaultRequestHeaders.Add("User-Agent", "MangaUpdater/1.0");
     }
 
-    public async Task<GetMangasFromMangaDexResponse> Handle(UpdateChaptersFromMangaDexQuery request, CancellationToken cancellationToken)
+    public async Task Handle(UpdateChaptersFromMangaDexCommand request, CancellationToken cancellationToken)
     {
-        var source = await _context.Sources.FirstOrDefaultAsync(x => x.Name == "MangaDex", cancellationToken);
-
-        if (source is null) throw new Exception("Source not found");
-        
-        var manga = await _context.MangaSources.FirstOrDefaultAsync(x => x.MangaId == request.MangaId && x.SourceId == source.Id, cancellationToken);
-        
-        if (manga is null) throw new Exception("Manga not found");
-        
-        var chapters = await _context.Chapters
-            .AsNoTracking()
-            .Where(ch => ch.MangaId == request.MangaId && ch.SourceId == source.Id)
-            .ToListAsync(cancellationToken);
-
-        chapters.Sort((x, y) => float.Parse(x.Number, CultureInfo.InvariantCulture)
-            .CompareTo(float.Parse(y.Number, CultureInfo.InvariantCulture)));
-
-        var lastChapter = chapters.LastOrDefault();
-        
-        var chaptersToCreate = new List<Chapter>();
-        
-        var httpClient = _clientFactory.CreateClient();
-        httpClient.DefaultRequestHeaders.Add("User-Agent", "MangaUpdater/1.0");
-
+        var mangaSource = await _mediator.Send(new GetMangaSourceQuery(request.MangaId, request.SourceId), cancellationToken);
+        var lastChapterNumber =  await _mediator.Send(new GetLastChapterNumberQuery(request.MangaId, request.SourceId), cancellationToken);
         var offset = 0;
 
         while (true)
         {
-            var options = $"feed?translatedLanguage[]=en&limit=199&order[chapter]=asc&limit=500&offset={offset}";
-            var url = $"{source.BaseUrl}{manga.Url}/{options}";
+            var result = await GetApiResult(request, mangaSource.Url, offset, cancellationToken);
 
-            var response = await httpClient.GetAsync(url, cancellationToken);
+            if (result is null || result.Data.Count == 0) break;
 
-            if (!response.IsSuccessStatusCode) throw new BadRequestException($"Failed to retrieve data for ID `{manga.Url}` from MangaDex");
-
-            var content = await response.Content.TryToReadJsonAsync<MangaDexModel>();
-
-            if (content is null || content.Data.Count == 0) break;
-
-            foreach (var chapter in content.Data)
-            {
-                var chapterNumber = float.Parse(chapter.Attributes.Chapter, CultureInfo.InvariantCulture);
-
-                if (chapterNumber <= float.Parse(lastChapter?.Number ?? "0", CultureInfo.InvariantCulture)) continue;
-
-                chaptersToCreate.Add(new Chapter
-                {
-                    MangaId = request.MangaId,
-                    SourceId = source.Id,
-                    Number = chapter.Attributes.Chapter,
-                    Date = DateTime.Parse(chapter.Attributes.CreatedAt)
-                });
-            }
-
+            ProcessApiResult(request, result.Data, lastChapterNumber.Number);
             offset += 200;
         }
         
-        _context.Chapters.AddRange(chaptersToCreate.Distinct(new ChapterEqualityComparer()).ToList());
-        
+        _context.Chapters.AddRange(_chapterList.Distinct(new ChapterEqualityComparer()).ToList());
         await _context.SaveChangesAsync(cancellationToken);
+    }
 
-        return new GetMangasFromMangaDexResponse();
+    private async Task<MangaDexModel?> GetApiResult(UpdateChaptersFromMangaDexCommand request, string mangaUrl, int offset, CancellationToken cancellationToken)
+    {
+        var options = $"feed?translatedLanguage[]=en&limit=199&order[chapter]=asc&limit=500&offset={offset}";
+        var url = $"{request.SourceUrl}{mangaUrl}/{options}";
+
+        var response = await _httpClient.GetAsync(url, cancellationToken);
+
+        if (!response.IsSuccessStatusCode) throw new BadRequestException($"Failed to retrieve data for MangaId `{request.MangaId}` from MangaDex");
+
+        return await response.Content.TryToReadJsonAsync<MangaDexModel>();
+    }
+
+    private void ProcessApiResult(UpdateChaptersFromMangaDexCommand request, List<MangaDexResponse> apiData, float lastChapterNumber)
+    {
+        foreach (var chapter in from chapter in apiData let chapterNumber = float.Parse(chapter.Attributes.Chapter, CultureInfo.InvariantCulture) where !(chapterNumber <= lastChapterNumber) select chapter)
+        {
+            _chapterList.Add(new Chapter
+            {
+                MangaId = request.MangaId,
+                SourceId = request.SourceId,
+                Number = chapter.Attributes.Chapter,
+                Date = DateTime.Parse(chapter.Attributes.CreatedAt)
+            });
+        }
     }
 }

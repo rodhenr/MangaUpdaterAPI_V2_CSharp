@@ -15,7 +15,7 @@ public sealed class UserChapter
     
     public required int SourceId { get; set; }
     
-    [DefaultValue(0)]
+    [DefaultValue(null)]
     public int? ChapterId { get; set; }
     
     [ForeignKey("Id")]

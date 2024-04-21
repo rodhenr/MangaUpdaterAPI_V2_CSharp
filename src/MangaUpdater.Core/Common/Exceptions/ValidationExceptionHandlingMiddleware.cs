@@ -19,6 +19,34 @@ public sealed class ValidationExceptionHandlingMiddleware
         {
             await _next(context);
         }
+        catch (InvalidOperationException exception)
+        {
+            var problemDetails = new ProblemDetails
+            {
+                Type = "https://datatracker.ietf.org/doc/html/rfc9110#section-15.5.1",
+                Title = "Invalid Operation",
+                Status = StatusCodes.Status400BadRequest,
+                Detail = exception.Message
+            };
+
+            context.Response.StatusCode = StatusCodes.Status400BadRequest;
+
+            await context.Response.WriteAsJsonAsync(problemDetails);
+        }
+        catch (EntityNotFoundException exception)
+        {
+            var problemDetails = new ProblemDetails
+            {
+                Type = "https://datatracker.ietf.org/doc/html/rfc9110#section-15.5.5",
+                Title = "Entity Not Found",
+                Status = StatusCodes.Status404NotFound,
+                Detail = exception.Message
+            };
+
+            context.Response.StatusCode = StatusCodes.Status404NotFound;
+
+            await context.Response.WriteAsJsonAsync(problemDetails);
+        }
         catch (NotFoundException exception)
         {
             var problemDetails = new ProblemDetails
@@ -52,7 +80,7 @@ public sealed class ValidationExceptionHandlingMiddleware
             var problemDetails = new ProblemDetails
             {
                 Type = "https://datatracker.ietf.org/doc/html/rfc9110#section-15.5.1",
-                Title = "Bad Request",
+                Title = "User not found",
                 Status = StatusCodes.Status400BadRequest,
                 Detail = exception.Message
             };

@@ -1,11 +1,20 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using MangaUpdater.Data;
+using MangaUpdater.Data.Entities.Models;
 using MediatR;
-using MangaUpdater.Data;
+using Microsoft.EntityFrameworkCore;
 
 namespace MangaUpdater.Core.Features.Mangas;
 
-public record GetMangasQuery(int Page,  int PageSize, string? OrderBy, List<int>? SourceIds, List<int>? GenreIds, string? Input) : IRequest<GetMangasResponse>;
+public enum OrderByEnum
+{
+    Alphabet,
+    Latest
+}
+
+public record GetMangasQuery(string? Input, int Page = 1, int PageSize = 20, OrderByEnum OrderBy = OrderByEnum.Alphabet, List<int>? SourceIds = null, List<int>? GenreIds = null) : IRequest<GetMangasResponse>;
+
 public record GetMangasResponse(int CurrentPage, int PageSize, int TotalPages, List<MangaInfo> Mangas);
+
 public record MangaInfo(int MangaId, string CoverUrl, string MangaName);
 
 public sealed class GetMangasHandler : IRequestHandler<GetMangasQuery, GetMangasResponse>
@@ -19,54 +28,49 @@ public sealed class GetMangasHandler : IRequestHandler<GetMangasQuery, GetMangas
 
     public async Task<GetMangasResponse> Handle(GetMangasQuery request, CancellationToken cancellationToken)
     {
-        // I WAS RETURNING GENRES HERE, I THINK I SHOULD NOT RETURN IT ANYMORE
-        // Filter
-        var query = _context.Mangas
+        var queryable = _context.Mangas
             .Include(m => m.MangaTitles)
             .Include(m => m.MangaSources)
             .Include(m => m.MangaGenres)
             .AsQueryable();
 
-        query = request.OrderBy switch
-        {
-            "alphabet" => query.OrderBy(m => m.MangaTitles!.First(mt => mt.IsMainTitle).Name),
-            "latest" => query.OrderByDescending(m => m.Id),
-            _ => query
-        };
-
-        if (request.SourceIds is not null && request.SourceIds.Count != 0)
-        {
-            query = query
-                .Where(m => m.MangaSources != null && m.MangaSources.Any(b => request.SourceIds!.Contains(b.SourceId)))
-                .Include(m => m.MangaSources);
-        }
-
-        if (request.GenreIds is not null && request.GenreIds.Count != 0)
-        {
-            query = query
-                .Where(m => m.MangaGenres != null && m.MangaGenres.Any(b => request.GenreIds!.Contains(b.GenreId)))
-                .Include(m => m.MangaGenres);
-        }
-
-        if (request.Input is not null)
-        {
-            query = query.Where(m => m.MangaTitles!.Any(mt => mt.Name.Contains(request.Input)));
-        }
+        queryable = ApplyFilters(request, queryable);
         
-        //  Result
-        var mangas = await query
+        var mangas = await queryable
             .AsNoTracking()
             .Skip((request.Page - 1) * request.PageSize)
             .Take(request.PageSize)
-            .Select(manga => new MangaInfo(manga.Id, manga.CoverUrl, manga.MangaTitles!.First(mt => mt.IsMainTitle).Name))
+            .Select(manga => new MangaInfo(manga.Id, manga.CoverUrl, manga.MangaTitles.First(mt => mt.IsMainTitle).Name))
             .ToListAsync(cancellationToken);
 
+        var numberOfPages = await GetNumberOfPages(request.PageSize, cancellationToken);
+
+        return new GetMangasResponse(request.Page, request.PageSize, numberOfPages, mangas);
+    }
+
+    private static IQueryable<Manga> ApplyFilters(GetMangasQuery request, IQueryable<Manga> queryable)
+    {
+        queryable = request.OrderBy switch
+        {
+            OrderByEnum.Alphabet => queryable.OrderBy(m => m.MangaTitles!.First(mt => mt.IsMainTitle).Name),
+            OrderByEnum.Latest => queryable.OrderByDescending(m => m.Id),
+            _ => queryable
+        };
+
+        if (request.SourceIds is not null && request.SourceIds.Count != 0) queryable = queryable.Where(m => m.MangaSources.Any(b => request.SourceIds.Contains(b.SourceId)));
+        if (request.GenreIds is not null && request.GenreIds.Count != 0) queryable = queryable.Where(m => m.MangaGenres.Any(b => request.GenreIds.Contains(b.GenreId)));
+        
+        if (!string.IsNullOrWhiteSpace(request.Input)) queryable = queryable.Where(m => m.MangaTitles.Any(mt => mt.Name.Contains(request.Input)));
+
+        return queryable;
+    }
+
+    private async Task<int> GetNumberOfPages(int pageSize, CancellationToken cancellationToken)
+    {
         var numberOfMangas = await _context.Mangas
             .AsNoTracking()
             .CountAsync(cancellationToken);
 
-        var numberOfPages = (numberOfMangas / request.PageSize) + 1;
-
-        return new GetMangasResponse(request.Page, request.PageSize, numberOfPages, mangas);
+        return numberOfMangas / pageSize + 1;
     }
 }

@@ -1,6 +1,7 @@
 using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.SwaggerGen;
+using MangaUpdater.Core.Common.Extensions;
 
 namespace MangaUpdater.API;
 
@@ -20,8 +21,7 @@ public class ConfigureSwaggerOptions : IConfigureOptions<SwaggerGenOptions>
             Name = "Authorization",
             In = ParameterLocation.Header,
             Type = SecuritySchemeType.ApiKey,
-            Scheme = "Bearer",
-            BearerFormat = "JWT"
+            Scheme = "Bearer"
         });
 
         options.AddSecurityRequirement(new OpenApiSecurityRequirement
@@ -36,8 +36,7 @@ public class ConfigureSwaggerOptions : IConfigureOptions<SwaggerGenOptions>
                     },
                     Scheme = "oauth2",
                     Name = "Bearer",
-                    In = ParameterLocation.Header,
-                    BearerFormat = "JWT"
+                    In = ParameterLocation.Header
                 },
                 Array.Empty<string>()
             }

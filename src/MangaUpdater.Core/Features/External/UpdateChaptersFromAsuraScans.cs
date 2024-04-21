@@ -1,109 +1,88 @@
 ﻿using System.Globalization;
 using System.Text.RegularExpressions;
-using Microsoft.EntityFrameworkCore;
 using HtmlAgilityPack;
-using MediatR;
 using MangaUpdater.Core.Common.Helpers;
+using MangaUpdater.Core.Features.Chapters;
+using MangaUpdater.Core.Features.MangaSources;
 using MangaUpdater.Data;
 using MangaUpdater.Data.Entities.Models;
+using MediatR;
 
 namespace MangaUpdater.Core.Features.External;
 
-public record UpdateChaptersFromAsuraScansQuery(int MangaId) : IRequest<GetMangasFromAsuraScansResponse>;
-public record GetMangasFromAsuraScansResponse;
+public record UpdateChaptersFromAsuraScansCommand(int MangaId, int SourceId, string SourceUrl) : IRequest;
 
-public sealed class GetMangasFromAsuraScansHandler : IRequestHandler<UpdateChaptersFromAsuraScansQuery, GetMangasFromAsuraScansResponse>
+public sealed partial class GetMangasFromAsuraScansHandler : IRequestHandler<UpdateChaptersFromAsuraScansCommand>
 {
     private readonly AppDbContextIdentity _context;
-    private readonly IHttpClientFactory _clientFactory;
+    private readonly HttpClient _httpClient;
+    private readonly IMediator _mediator;
+    private readonly List<Chapter> _chapterList = [];
     
-    public GetMangasFromAsuraScansHandler(AppDbContextIdentity context, IHttpClientFactory clientFactory)
+    public GetMangasFromAsuraScansHandler(AppDbContextIdentity context, IHttpClientFactory clientFactory, IMediator mediator)
     {
         _context = context;
-        _clientFactory = clientFactory;
+        _mediator = mediator;
+        _httpClient = clientFactory.CreateClient();
     }
 
-    public async Task<GetMangasFromAsuraScansResponse> Handle(UpdateChaptersFromAsuraScansQuery request, CancellationToken cancellationToken)
+    public async Task Handle(UpdateChaptersFromAsuraScansCommand request, CancellationToken cancellationToken)
     {
-        var source = await _context.Sources.FirstOrDefaultAsync(x => x.Name == "MangaDex", cancellationToken);
-
-        if (source is null) throw new Exception("Source not found");
+        var mangaSource = await _mediator.Send(new GetMangaSourceQuery(request.MangaId, request.SourceId), cancellationToken);
+        var lastChapterNumber =  await _mediator.Send(new GetLastChapterNumberQuery(request.MangaId, request.SourceId), cancellationToken);
         
-        var manga = await _context.MangaSources.FirstOrDefaultAsync(x => x.MangaId == request.MangaId && x.SourceId == source.Id, cancellationToken);
+        var html = await _httpClient.GetStringAsync($"{request.SourceUrl}{mangaSource.Url}", cancellationToken);
         
-        if (manga is null) throw new Exception("Manga not found");
-        
-        var chapters = await _context.Chapters
-            .AsNoTracking()
-            .Where(ch => ch.MangaId == request.MangaId && ch.SourceId == source.Id)
-            .ToListAsync(cancellationToken);
-
-        chapters.Sort((x, y) => float.Parse(x.Number, CultureInfo.InvariantCulture)
-            .CompareTo(float.Parse(y.Number, CultureInfo.InvariantCulture)));
-
-        var lastChapter = chapters.LastOrDefault();
-        
-        var chaptersToCreate = new List<Chapter>();
-        
-        using var httpClient = _clientFactory.CreateClient();
-        var html = await httpClient.GetStringAsync($"{source.BaseUrl}{manga.Url}", cancellationToken);
-
         var htmlDoc = new HtmlDocument();
         htmlDoc.LoadHtml(html);
         
         var chapterNodes = htmlDoc.GetElementbyId("chapterlist").Descendants("li");
+        ProcessApiResult(request, chapterNodes, lastChapterNumber.Number);
         
-        foreach (var chapterNode in chapterNodes)
+        _context.Chapters.AddRange(_chapterList.Distinct(new ChapterEqualityComparer()).ToList());
+        await _context.SaveChangesAsync(cancellationToken);
+    }
+
+    private void ProcessApiResult(UpdateChaptersFromAsuraScansCommand request, IEnumerable<HtmlNode> nodes, float lastChapterNumber)
+    {
+        foreach (var chapterNode in nodes)
         {
-            var chapterNumberString = chapterNode.SelectSingleNode(".//span[@class='chapternum']").InnerText.Replace("Chapter ", "").Trim();
-            var chapterDateString = chapterNode.SelectSingleNode(".//span[@class='chapterdate']").InnerText.Trim();
+            var chapterNumberString = chapterNode
+                .SelectSingleNode(".//span[@class='chapternum']").InnerText.Replace("Chapter ", "")
+                .Trim();
+            var chapterDateString = chapterNode
+                .SelectSingleNode(".//span[@class='chapterdate']").InnerText
+                .Trim();
 
             var chapterNumber = ExtractNumberFromString(chapterNumberString);
-
-            if (float.Parse(chapterNumber, CultureInfo.InvariantCulture) <=
-                float.Parse(lastChapter?.Number ?? "0", CultureInfo.InvariantCulture)) break;
+            if (chapterNumber <= lastChapterNumber) break;
 
             var chapter = new Chapter
             {
                 MangaId = request.MangaId,
-                SourceId = source.Id,
-                Number = chapterNumber,
+                SourceId = request.SourceId,
+                Number = chapterNumber.ToString(CultureInfo.InvariantCulture),
                 Date = DateTime.Parse(chapterDateString)
             };
 
-            chaptersToCreate.Add(chapter);
+            _chapterList.Add(chapter);
         }
-        
-        _context.Chapters.AddRange(chaptersToCreate.Distinct(new ChapterEqualityComparer()).ToList());
-        
-        await _context.SaveChangesAsync(cancellationToken);
-
-        return new GetMangasFromAsuraScansResponse();
     }
 
-    private static string ExtractNumberFromString(string input)
+    private static float ExtractNumberFromString(string input)
     {
         var match = MyRegex().Match(input);
 
-        if (!match.Success) return "0";
+        if (!match.Success) return 0;
 
         var numericPart = match.Groups[1].Value;
 
-        if (float.TryParse(numericPart, NumberStyles.Float, CultureInfo.InvariantCulture, out var floatResult))
-        {
-            return floatResult.ToString(CultureInfo.InvariantCulture);
-        }
-
-        if (int.TryParse(numericPart, NumberStyles.Integer, CultureInfo.InvariantCulture, out var intResult))
-        {
-            return intResult.ToString(CultureInfo.InvariantCulture);
-        }
+        if (float.TryParse(numericPart, NumberStyles.Float, CultureInfo.InvariantCulture, out var floatResult)) return floatResult;
+        if (int.TryParse(numericPart, NumberStyles.Integer, CultureInfo.InvariantCulture, out var intResult)) return intResult;
 
         throw new InvalidOperationException("Failed to parse the numeric part as either float or int.");
     }
 
-    private static Regex MyRegex()
-    {
-        return new Regex(@"(\d+(\.\d+)?)");
-    }
+    [GeneratedRegex(@"(\d+(\.\d+)?)")]
+    private static partial Regex MyRegex();
 }
