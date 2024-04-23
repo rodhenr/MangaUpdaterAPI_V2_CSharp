@@ -16,9 +16,9 @@ public class UserController(ISender mediator) : BaseController
     /// <response code="400">Error.</response>
     [SwaggerOperation("Get all followed manga for a logged-in user")]
     [HttpGet("mangas")]
-    public async Task<GetUserMangasResponse> GetUserMangasList()
+    public async Task<List<GetUserMangasResponse>> GetUserMangasList([FromQuery] GetUserMangasQuery request)
     {
-        return await mediator.Send(new GetUserMangasQuery());
+        return await mediator.Send(request);
     }
 
     /// <summary>
@@ -28,8 +28,8 @@ public class UserController(ISender mediator) : BaseController
     /// <response code="200">Returns all followed manga for an user, if any.</response>
     /// <response code="400">Error.</response>
     [SwaggerOperation("Get all followed manga by a user")]
-    [HttpGet("{userId}/mangas")]
-    public async Task<GetUserMangasResponse> GetUserMangas([FromQuery] GetUserMangasQuery request)
+    [HttpGet("{userId:int}/mangas")]
+    public async Task<List<GetUserMangasResponse>> GetUserMangas([FromQuery] GetUserMangasQuery request)
     {
         return await mediator.Send(request);
     }
@@ -41,9 +41,9 @@ public class UserController(ISender mediator) : BaseController
     /// <response code="400">Error.</response>
     [SwaggerOperation("A logged-in user starts following sources from a manga")]
     [HttpPost("mangas/{mangaId:int}")]
-    public async Task<UpdateFollowedSourcesResponse> FollowSourcesFromManga([FromQuery] int mangaId, List<int> sourceIds)
+    public async Task FollowSourcesFromManga([FromRoute] int mangaId, [FromBody] List<int> sourceIds)
     {
-        return await mediator.Send(new UpdateFollowedSourcesQuery(mangaId, sourceIds));
+        await mediator.Send(new UpdateFollowedSourcesCommand(mangaId, sourceIds));
     }
 
     /// <summary>
@@ -53,9 +53,9 @@ public class UserController(ISender mediator) : BaseController
     /// <response code="400">Error.</response>
     [SwaggerOperation("A logged-in user no longer follows a manga")]
     [HttpDelete("mangas/{mangaId:int}")]
-    public async Task<UnfollowMangaResponse> UnfollowManga([FromQuery] UnfollowMangaQuery request)
+    public async Task TaskUnfollowManga([FromQuery] UnfollowMangaCommand request)
     {
-        return await mediator.Send(request);
+        await mediator.Send(request);
     }
 
     /// <summary>
@@ -65,9 +65,21 @@ public class UserController(ISender mediator) : BaseController
     /// <response code="400">Error.</response>
     [SwaggerOperation("A logged-in user no longer follows a source from a manga")]
     [HttpDelete("mangas/{mangaId:int}/sources/{sourceId:int}")]
-    public async Task<DeleteSourceResponse> DeleteUserManga([FromQuery] DeleteSourceQuery request)
+    public async Task DeleteUserManga([FromQuery] DeleteSourceCommand request)
     {
-        return await mediator.Send(request);
+        await mediator.Send(request);
+    }
+    
+    /// <summary>
+    /// A logged-in user changes its last chapter read from a combination of manga and source.
+    /// </summary>
+    /// <response code="200">Success.</response>
+    /// <response code="400">Error.</response>
+    [SwaggerOperation("A logged-in user changes its last chapter read from a combination of manga and source")]
+    [HttpPatch("mangas/{mangaId:int}/sources/{sourceId:int}")]
+    public async Task UpdateManga([FromRoute] int mangaId, [FromRoute] int sourceId, [FromBody] UpdateChapterRequest requestBody)
+    {
+        await mediator.Send(new UpdateChapterCommand(mangaId, sourceId, requestBody.ChapterId));
     }
     
     /// <summary>
@@ -78,32 +90,8 @@ public class UserController(ISender mediator) : BaseController
     /// <response code="400">Error.</response>
     [SwaggerOperation("Get all sources from a manga with following info for a logged-in user")]
     [HttpGet("mangas/{mangaId:int}/sources")]
-    public async Task<GetUserMangaSourcesResponse> GetUserSources([FromQuery] GetUserMangaSourcesQuery request)
+    public async Task<List<GetUserMangaSourcesResponse>> GetUserSources([FromQuery] GetUserMangaSourcesQuery request)
     {
         return await mediator.Send(request);
     }
-
-    /// <summary>
-    /// A logged-in user changes its last chapter read from a combination of manga and source.
-    /// </summary>
-    /// <response code="200">Success.</response>
-    /// <response code="400">Error.</response>
-    [SwaggerOperation("A logged-in user changes its last chapter read from a combination of manga and source")]
-    [HttpPatch("mangas/{mangaId:int}/sources/{sourceId:int}")]
-    public async Task<UpdateChapterResponse> UpdateManga(int mangaId, int sourceId, [FromQuery] int chapterId)
-    {
-        return await mediator.Send(new UpdateChapterQuery(mangaId, sourceId, chapterId));
-    }
-
-    // /// <summary>
-    // /// Get information about the logged user.
-    // /// </summary>
-    // /// <response code="200">Success.</response>
-    // /// <response code="400">Error.</response>
-    // [SwaggerOperation("Get information about the logged user")]
-    // [HttpGet("profile")]
-    // public async Task<GetUserInfoResponse> GetLoggedUserInfo()
-    // {
-    //     return await mediator.Send(new GetUserInfoQuery());
-    // }
 }

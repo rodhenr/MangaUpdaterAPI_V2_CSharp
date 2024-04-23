@@ -1,13 +1,13 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using MediatR;
+﻿using MangaUpdater.Core.Common.Exceptions;
 using MangaUpdater.Data;
-using MangaUpdater.Data.Entities.Models;
+using MangaUpdater.Data.Queries;
+using MediatR;
+using Microsoft.AspNetCore.Mvc;
 
 namespace MangaUpdater.Core.Features.Sources;
 
-public record GetSourceQuery([FromQuery] int SourceId) : IRequest<GetSourceResponse>;
-public record GetSourceResponse(Source? Source);
+public record GetSourceQuery([FromRoute] int SourceId) : IRequest<GetSourceResponse>;
+public record GetSourceResponse(int Id, string Name, string Url);
 
 public sealed class GetSourceHandler : IRequestHandler<GetSourceQuery, GetSourceResponse>
 {
@@ -20,10 +20,10 @@ public sealed class GetSourceHandler : IRequestHandler<GetSourceQuery, GetSource
 
     public async Task<GetSourceResponse> Handle(GetSourceQuery request, CancellationToken cancellationToken)
     {
-        var source = await _context.Sources
-            .AsNoTracking()
-            .SingleOrDefaultAsync(x => x.Id == request.SourceId, cancellationToken);
+        var source = await _context.Sources.GetById(request.SourceId, cancellationToken);
 
-        return new GetSourceResponse(source);
+        if (source is null) throw new EntityNotFoundException($"Source not found for SourceId {request.SourceId}.");
+        
+        return new GetSourceResponse(source.Id, source.Name, source.BaseUrl);
     }
 }

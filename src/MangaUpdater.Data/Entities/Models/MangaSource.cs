@@ -1,6 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Runtime.InteropServices;
 using System.Text.Json.Serialization;
 using Microsoft.EntityFrameworkCore;
 
@@ -24,7 +23,7 @@ public sealed class MangaSource
     [ForeignKey("MangaId")]
     [InverseProperty("MangaSources")]
     [JsonIgnore] 
-    public Manga? Manga { get; set; }
+    public Manga Manga { get; set; }
     
     [ForeignKey("SourceId")]
     [InverseProperty("MangaSources")]

@@ -21,7 +21,7 @@ public sealed class UserManga
     [ForeignKey("MangaId")]
     [InverseProperty("UserMangas")]
     [JsonIgnore]
-    public Manga? Manga { get; set; }
+    public Manga Manga { get; set; }
 
     [InverseProperty("UserManga")]
     [JsonIgnore]

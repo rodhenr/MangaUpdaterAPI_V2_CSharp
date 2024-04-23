@@ -18,18 +18,18 @@ public sealed class UserChapter
     [DefaultValue(null)]
     public int? ChapterId { get; set; }
     
-    [ForeignKey("Id")]
+    [ForeignKey("UserMangaId")]
     [InverseProperty("UserChapter")]
     [JsonIgnore] 
-    public UserManga? UserManga { get; set; }
+    public UserManga UserManga { get; set; }
     
-    [ForeignKey("Id")]
+    [ForeignKey("SourceId")]
     [InverseProperty("UserChapter")]
     [JsonIgnore] 
-    public Source? Source { get; set; }
+    public Source Source { get; set; }
     
-    [ForeignKey("Id")]
+    [ForeignKey("ChapterId")]
     [InverseProperty("UserChapter")]
     [JsonIgnore] 
-    public Chapter? Chapter { get; set; }
+    public Chapter Chapter { get; set; }
 }

@@ -1,8 +1,7 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using MediatR;
-using MangaUpdater.Data;
+﻿using MangaUpdater.Data;
 using MangaUpdater.Data.Entities.Models;
+using MediatR;
+using Microsoft.EntityFrameworkCore;
 
 namespace MangaUpdater.Core.Features.Sources;
 

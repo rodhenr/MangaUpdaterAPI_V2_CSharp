@@ -1,17 +1,14 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using MediatR;
-using MangaUpdater.Core.Services;
+﻿using MangaUpdater.Core.Services;
 using MangaUpdater.Data;
+using MediatR;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace MangaUpdater.Core.Features.Users;
 
-public record DeleteSourceQuery([FromQuery] int MangaId, [FromQuery] int SourceId) : IRequest<DeleteSourceResponse>;
-public record DeleteSourceResponse;
+public record DeleteSourceCommand([FromRoute] int MangaId, [FromRoute] int SourceId) : IRequest;
 
-//public record ChapterInfo(int ChapterId, int SourceId, string SourceName, DateTime Date, string Number, bool IsUserAllowedToRead, bool Read);
-
-public sealed class DeleteSourceHandler : IRequestHandler<DeleteSourceQuery, DeleteSourceResponse>
+public sealed class DeleteSourceHandler : IRequestHandler<DeleteSourceCommand>
 {
     private readonly AppDbContextIdentity _context;
     private readonly CurrentUserAccessor _currentUserAccessor;
@@ -22,24 +19,18 @@ public sealed class DeleteSourceHandler : IRequestHandler<DeleteSourceQuery, Del
         _currentUserAccessor = currentUserAccessor;
     }
 
-    public async Task<DeleteSourceResponse> Handle(DeleteSourceQuery request, CancellationToken cancellationToken)
+    public async Task Handle(DeleteSourceCommand request, CancellationToken cancellationToken)
     {
         var userId = _currentUserAccessor.UserId;
         
-        var userManga = await _context.UserMangas
-            .AsNoTracking()
+        var userChapters = await _context.UserMangas
             .Where(um => um.MangaId == request.MangaId && um.UserId == userId)
+            .SelectMany(x => x.UserChapter.Where(y => y.SourceId == request.SourceId))
             .SingleOrDefaultAsync(cancellationToken);
-
-        if (userManga is null) return new DeleteSourceResponse();
         
-        var userChapters = await _context.UserChapters
-            .Where(uc => uc.UserMangaId == userManga.Id && uc.SourceId == request.SourceId)
-            .ToListAsync(cancellationToken);
+        if (userChapters is null) return;
 
-        _context.UserChapters.RemoveRange(userChapters);
+        _context.UserChapters.Remove(userChapters);
         await _context.SaveChangesAsync(cancellationToken);
-
-        return new DeleteSourceResponse();
     }
 }

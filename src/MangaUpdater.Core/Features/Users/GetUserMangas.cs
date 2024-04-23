@@ -1,19 +1,16 @@
 ﻿using MangaUpdater.Core.Services;
 using MangaUpdater.Data;
-using MangaUpdater.Data.Entities.Models;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace MangaUpdater.Core.Features.Users;
 
-public record GetUserMangasQuery([FromQuery] string? UserId = null, [FromQuery] int Page = 1, [FromQuery] int Limit = 20) : IRequest<GetUserMangasResponse>;
-public record GetUserMangasResponse(IEnumerable<UserMangaInfo> Mangas);
-public record UserMangaInfo(int Id, string CoverUrl, string Name);
+public record GetUserMangasQuery([FromRoute] string? UserId = null, [FromQuery] int Page = 1, [FromQuery] int Limit = 20) : IRequest<List<GetUserMangasResponse>>;
 
-//public record ChapterInfo(int ChapterId, int SourceId, string SourceName, DateTime Date, string Number, bool IsUserAllowedToRead, bool Read);
+public record GetUserMangasResponse(int Id, string CoverUrl, string Name);
 
-public sealed class GetUserMangasHandler : IRequestHandler<GetUserMangasQuery, GetUserMangasResponse>
+public sealed class GetUserMangasHandler : IRequestHandler<GetUserMangasQuery, List<GetUserMangasResponse>>
 {
     private readonly AppDbContextIdentity _context;
     private readonly CurrentUserAccessor _currentUserAccessor;
@@ -24,7 +21,7 @@ public sealed class GetUserMangasHandler : IRequestHandler<GetUserMangasQuery, G
         _currentUserAccessor = currentUserAccessor;
     }
 
-    public async Task<GetUserMangasResponse> Handle(GetUserMangasQuery request, CancellationToken cancellationToken)
+    public async Task<List<GetUserMangasResponse>> Handle(GetUserMangasQuery request, CancellationToken cancellationToken)
     {
         var userId = request.UserId ?? _currentUserAccessor.UserId;
         
@@ -35,23 +32,23 @@ public sealed class GetUserMangasHandler : IRequestHandler<GetUserMangasQuery, G
             .AsNoTracking()
             .Where(um => um.UserId == userId)
             .Include(um => um.Manga)
-            .ThenInclude(m => m!.MangaTitles)
+            .ThenInclude(m => m.MangaTitles)
             .Include(um => um.Manga)
-            .ThenInclude(m => m!.Chapters!)
+            .ThenInclude(m => m.Chapters)
             .Select(um => new
             {
                 UserManga = um,
-                LastChapter = um.Manga!.Chapters!
+                LastChapter = um.Manga.Chapters
                     .Where(ch => ch.MangaId == um.MangaId)
                     .OrderByDescending(ch => ch.Date)
                     .First()
             })
             .OrderByDescending(um => um.LastChapter.Date)
-            .Select(um => new UserMangaInfo(um.UserManga.MangaId, um.UserManga.Manga!.CoverUrl, um.UserManga.Manga.MangaTitles!.FirstOrDefault()!.Name))
             .Skip(skip)
             .Take(maxLimit)
+            .Select(um => new GetUserMangasResponse(um.UserManga.MangaId, um.UserManga.Manga.CoverUrl, um.UserManga.Manga.MangaTitles.FirstOrDefault()!.Name))
             .ToListAsync(cancellationToken);
 
-        return new GetUserMangasResponse(result);
+        return result;
     }
 }

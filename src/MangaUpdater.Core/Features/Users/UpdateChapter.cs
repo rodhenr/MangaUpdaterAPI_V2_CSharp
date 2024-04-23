@@ -1,17 +1,16 @@
-﻿using System.Globalization;
-using Microsoft.EntityFrameworkCore;
-using MediatR;
+﻿using MangaUpdater.Core.Common.Exceptions;
 using MangaUpdater.Core.Services;
 using MangaUpdater.Data;
+using MediatR;
+using Microsoft.EntityFrameworkCore;
 
 namespace MangaUpdater.Core.Features.Users;
 
-public record UpdateChapterQuery(int MangaId, int SourceId, int ChapterId) : IRequest<UpdateChapterResponse>;
-public record UpdateChapterResponse;
+public record UpdateChapterCommand(int MangaId, int SourceId, int ChapterId) : IRequest;
 
-//public record ChapterInfo(int ChapterId, int SourceId, string SourceName, DateTime Date, string Number, bool IsUserAllowedToRead, bool Read);
+public record UpdateChapterRequest(int ChapterId);
 
-public sealed class UpdateChapterHandler : IRequestHandler<UpdateChapterQuery, UpdateChapterResponse>
+public sealed class UpdateChapterHandler : IRequestHandler<UpdateChapterCommand>
 {
     private readonly AppDbContextIdentity _context;
     private readonly CurrentUserAccessor _currentUserAccessor;
@@ -22,58 +21,21 @@ public sealed class UpdateChapterHandler : IRequestHandler<UpdateChapterQuery, U
         _currentUserAccessor = currentUserAccessor;
     }
 
-    public async Task<UpdateChapterResponse> Handle(UpdateChapterQuery request, CancellationToken cancellationToken)
+    public async Task Handle(UpdateChapterCommand request, CancellationToken cancellationToken)
     {
         var userId = _currentUserAccessor.UserId;
-        
-        var userManga = await _context.UserMangas
-            .AsNoTracking()
-            .Where(um => um.MangaId == request.MangaId && um.UserId == userId)
-            .SingleOrDefaultAsync(cancellationToken);
-        
-        if (userManga is null) return new UpdateChapterResponse();
 
-        var chapter = await _context.Chapters
-            .AsNoTracking()
-            .Where(ch => ch.MangaId == request.MangaId && ch.Id == request.ChapterId)
-            .SingleOrDefaultAsync(cancellationToken);
+        _ = await _context.Chapters
+            .Where(x => x.MangaId == request.MangaId && x.SourceId == request.SourceId && x.Id == request.ChapterId)
+            .SingleOrDefaultAsync(cancellationToken) ?? throw new BadRequestException("Invalid chapter.");
         
-        if (chapter is null) return new UpdateChapterResponse();
-
         var userChapter = await _context.UserChapters
-            .Where(uc => uc.UserMangaId == userManga.Id && uc.SourceId == request.SourceId)
-            .SingleOrDefaultAsync(cancellationToken);
-
-        if (userChapter == null) return new UpdateChapterResponse();
+            .Where(x => x.SourceId == request.SourceId && x.UserManga.UserId == userId && x.UserManga.MangaId == request.MangaId)
+            .SingleOrDefaultAsync(cancellationToken) ?? throw new EntityNotFoundException("UserChapter not found.");
         
-        if (userChapter.ChapterId == request.ChapterId)
-        {
-            var chapterList = await _context.Chapters
-                .Where(ch => ch.MangaId == request.MangaId && ch.SourceId == request.SourceId)
-                .ToListAsync(cancellationToken);
-
-            chapterList.Sort((x, y) => float.Parse(y.Number, CultureInfo.InvariantCulture)
-                    .CompareTo(float.Parse(x.Number, CultureInfo.InvariantCulture)));
-
-            var chapterNumber = await _context.Chapters
-                .Where(ch => ch.Id == request.ChapterId)
-                .Select(ch => ch.Number)
-                .SingleOrDefaultAsync(cancellationToken) ?? "0";
-
-            var previousChapter = chapterList
-                .FirstOrDefault(ch =>
-                    float.Parse(ch.Number, CultureInfo.InvariantCulture) <
-                    float.Parse(chapterNumber, CultureInfo.InvariantCulture));
+        if (userChapter.ChapterId == request.ChapterId) return;
         
-            userChapter.ChapterId = previousChapter?.Id;
-        }
-        else
-        {
-            userChapter.ChapterId = request.ChapterId;
-        }
-        
+        userChapter.ChapterId = request.ChapterId;
         await _context.SaveChangesAsync(cancellationToken);
-
-        return new UpdateChapterResponse();
     }
 }
