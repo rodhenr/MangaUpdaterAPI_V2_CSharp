@@ -1,4 +1,5 @@
 using System.Text.Json.Serialization;
+using Hangfire;
 using MangaUpdater.API;
 using MangaUpdater.Core;
 using MangaUpdater.Core.Common.Exceptions;
@@ -16,6 +17,15 @@ builder.Services.AddApiServices().AddCoreServices().AddDataService();
 builder.Services.AddJwtAuthenticationServices(builder.Configuration);
 builder.Services.AddIdentityServices(builder.Configuration);
 
+// Hangfire
+builder.Services.AddHangfire(c => c
+        .SetDataCompatibilityLevel(CompatibilityLevel.Version_180)
+        .UseSimpleAssemblyNameTypeSerializer()
+        .UseRecommendedSerializerSettings()
+        .UseSqlServerStorage(builder.Configuration.GetConnectionString("DefaultConnection"))
+);
+builder.Services.AddHangfireServer(options => options.WorkerCount = 2);
+
 // Swagger
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
@@ -23,38 +33,7 @@ builder.Services.AddSwaggerGen();
 var app = builder.Build();
 
 // Hangfire
-// app.UseHangfireDashboard("/hangfire", new DashboardOptions
-// {
-//     Authorization = new[]
-//     {
-//         new BasicAuthAuthorizationFilter(
-//             new BasicAuthAuthorizationFilterOptions()
-//             {
-//                 RequireSsl = false,
-//                 SslRedirect = false,
-//                 LoginCaseSensitive = true,
-//                 Users = new[]
-//                 {
-//                     new BasicAuthAuthorizationUser
-//                     {
-//                         Login = "Admin",
-//                         PasswordClear = "123"
-//                     }
-//                 }
-//             })
-//     }
-// });
-
-// var monitoringApi = JobStorage.Current.GetMonitoringApi();
-
-// var scheduledJobs = monitoringApi.ScheduledJobs(0, int.MaxValue);
-
-// foreach (var job in scheduledJobs)
-// {
-//     BackgroundJob.Delete(job.Key);
-// }
-
-// BackgroundJob.Enqueue<IHangfireService>(task => task.AddHangfireJobs());
+app.AddHangfireBuilder();
 
 // Custom Middleware
 app.UseMiddleware<ValidationExceptionHandlingMiddleware>();

@@ -1,6 +1,7 @@
 ﻿using System.Reflection;
 using System.Text;
 using FluentValidation;
+using Hangfire;
 using MangaUpdater.Core.Common.Behaviors;
 using MangaUpdater.Core.Features.Authentication;
 using MangaUpdater.Data;
@@ -29,14 +30,6 @@ public static class CoreDependencyInjection
             cfg.AddBehavior(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
         });
         services.AddValidatorsFromAssembly(executingAssembly);
-
-        // services.AddHangfire(c => c
-        //     .SetDataCompatibilityLevel(CompatibilityLevel.Version_180)
-        //     .UseSimpleAssemblyNameTypeSerializer()
-        //     .UseRecommendedSerializerSettings()
-        //     .UseSqlServerStorage(configuration.GetConnectionString("DefaultConnection")));
-        //
-        // services.AddHangfireServer(options => options.WorkerCount = 2);
 
         return services;
     }

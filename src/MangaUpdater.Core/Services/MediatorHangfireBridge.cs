@@ -1,4 +1,3 @@
-using System.ComponentModel;
 using MediatR;
 
 namespace MangaUpdater.Core.Services;
@@ -14,12 +13,6 @@ public class MediatorHangfireBridge
 
     public async Task Send<TRequest>(TRequest command)
     {
-        await _mediator.Send(command);
-    }
-
-    [DisplayName("{0}")]
-    public async Task Send<TRequest>(string jobName, TRequest command)
-    {
-        await _mediator.Send(command);
+        if (command != null) await _mediator.Send(command);
     }
 }

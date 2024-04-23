@@ -6,15 +6,9 @@ namespace MangaUpdater.Core.Common.Extensions;
 
 public static class MediatorExtensions
 {
-    public static void Enqueue<TRequest>(this IMediator mediator, string jobName, TRequest request)
+    public static string Enqueue(this IMediator mediator,IRequest request)
     {
         var client = new BackgroundJobClient();
-        client.Enqueue<MediatorHangfireBridge>(bridge => bridge.Send(jobName, request));
-    }
-
-    public static void Enqueue(this IMediator mediator,IRequest request)
-    {
-        var client = new BackgroundJobClient();
-        client.Enqueue<MediatorHangfireBridge>(bridge => bridge.Send(request));
+        return client.Enqueue<MediatorHangfireBridge>(bridge => bridge.Send(request));
     }
 }

@@ -25,7 +25,6 @@ public sealed class GetMangasFromMangaDexHandler : IRequestHandler<UpdateChapter
         _context = context;
         _mediator = mediator;
         _httpClient = clientFactory.CreateClient();
-        
         _httpClient.DefaultRequestHeaders.Add("User-Agent", "MangaUpdater/1.0");
     }
 
