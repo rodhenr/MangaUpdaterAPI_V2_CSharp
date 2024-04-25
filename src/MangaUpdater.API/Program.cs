@@ -4,6 +4,7 @@ using MangaUpdater.API;
 using MangaUpdater.Core;
 using MangaUpdater.Core.Common.Exceptions;
 using MangaUpdater.Data;
+using MangaUpdater.Core.Common.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -18,12 +19,13 @@ builder.Services.AddJwtAuthenticationServices(builder.Configuration);
 builder.Services.AddIdentityServices(builder.Configuration);
 
 // Hangfire
-builder.Services.AddHangfire(c => c
-        .SetDataCompatibilityLevel(CompatibilityLevel.Version_180)
+builder.Services.AddHangfire(configuration => configuration.SetDataCompatibilityLevel(CompatibilityLevel.Version_180)
         .UseSimpleAssemblyNameTypeSerializer()
         .UseRecommendedSerializerSettings()
+        .UseIgnoredAssemblyVersionTypeResolver()
         .UseSqlServerStorage(builder.Configuration.GetConnectionString("DefaultConnection"))
-);
+        .UseMediatR());
+
 builder.Services.AddHangfireServer(options => options.WorkerCount = 2);
 
 // Swagger

@@ -4,6 +4,7 @@ using FluentValidation;
 using Hangfire;
 using MangaUpdater.Core.Common.Behaviors;
 using MangaUpdater.Core.Features.Authentication;
+using MangaUpdater.Core.Services;
 using MangaUpdater.Data;
 using MangaUpdater.Data.Entities;
 using MediatR;
