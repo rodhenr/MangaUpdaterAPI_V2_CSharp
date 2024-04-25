@@ -1,10 +1,8 @@
 using System.Text.Json.Serialization;
-using Hangfire;
 using MangaUpdater.API;
 using MangaUpdater.Core;
 using MangaUpdater.Core.Common.Exceptions;
 using MangaUpdater.Data;
-using MangaUpdater.Core.Common.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -14,19 +12,9 @@ builder.Services.AddHttpClient();
 builder.Services.AddCors();
 
 // Custom Services
-builder.Services.AddApiServices().AddCoreServices().AddDataService();
+builder.Services.AddApiServices().AddDataService().AddCoreServices(builder.Configuration);
 builder.Services.AddJwtAuthenticationServices(builder.Configuration);
 builder.Services.AddIdentityServices(builder.Configuration);
-
-// Hangfire
-builder.Services.AddHangfire(configuration => configuration.SetDataCompatibilityLevel(CompatibilityLevel.Version_180)
-        .UseSimpleAssemblyNameTypeSerializer()
-        .UseRecommendedSerializerSettings()
-        .UseIgnoredAssemblyVersionTypeResolver()
-        .UseSqlServerStorage(builder.Configuration.GetConnectionString("DefaultConnection"))
-        .UseMediatR());
-
-builder.Services.AddHangfireServer(options => options.WorkerCount = 2);
 
 // Swagger
 builder.Services.AddEndpointsApiExplorer();

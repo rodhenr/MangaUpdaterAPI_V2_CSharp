@@ -2,9 +2,10 @@
 using System.Text;
 using FluentValidation;
 using Hangfire;
+using Hangfire.SqlServer;
 using MangaUpdater.Core.Common.Behaviors;
+using MangaUpdater.Core.Common.Extensions;
 using MangaUpdater.Core.Features.Authentication;
-using MangaUpdater.Core.Services;
 using MangaUpdater.Data;
 using MangaUpdater.Data.Entities;
 using MediatR;
@@ -20,7 +21,7 @@ namespace MangaUpdater.Core;
 
 public static class CoreDependencyInjection
 {
-    public static IServiceCollection AddCoreServices(this IServiceCollection services)
+    public static IServiceCollection AddCoreServices(this IServiceCollection services, IConfiguration configuration)
     {
         services.AutoRegister();
 
@@ -31,6 +32,18 @@ public static class CoreDependencyInjection
             cfg.AddBehavior(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
         });
         services.AddValidatorsFromAssembly(executingAssembly);
+        
+        services.AddHangfire(c => c.SetDataCompatibilityLevel(CompatibilityLevel.Version_180)
+            .UseSimpleAssemblyNameTypeSerializer()
+            .UseRecommendedSerializerSettings()
+            .UseIgnoredAssemblyVersionTypeResolver()
+            .UseSqlServerStorage(configuration.GetConnectionString("DefaultConnection"), new SqlServerStorageOptions
+            {
+                SchemaName = "dbo"
+            })
+            .UseMediatR());
+
+        services.AddHangfireServer(options => options.WorkerCount = 2);
 
         return services;
     }
