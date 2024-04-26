@@ -11,8 +11,8 @@ public class MediatorHangfireBridge
         _mediator = mediator;
     }
 
-    public async Task Send<TRequest>(TRequest command)
+    public async Task Send<TRequest>(TRequest command) where TRequest: IRequest
     {
-        if (command != null) await _mediator.Send(command);
+        await _mediator.Send(command);
     }
 }

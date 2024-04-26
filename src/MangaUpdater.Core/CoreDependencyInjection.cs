@@ -37,12 +37,8 @@ public static class CoreDependencyInjection
             .UseSimpleAssemblyNameTypeSerializer()
             .UseRecommendedSerializerSettings()
             .UseIgnoredAssemblyVersionTypeResolver()
-            .UseSqlServerStorage(configuration.GetConnectionString("DefaultConnection"), new SqlServerStorageOptions
-            {
-                SchemaName = "dbo"
-            })
+            .UseSqlServerStorage(configuration.GetConnectionString("DefaultConnection"), new SqlServerStorageOptions{ SchemaName =  "dbo" })
             .UseMediatR());
-
         services.AddHangfireServer(options => options.WorkerCount = 2);
 
         return services;

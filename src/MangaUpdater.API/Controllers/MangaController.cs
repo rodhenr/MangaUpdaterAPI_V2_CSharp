@@ -1,5 +1,6 @@
 ﻿using MangaUpdater.API.Controllers.Shared;
 using MangaUpdater.Core.Features.Chapters;
+using MangaUpdater.Core.Features.External;
 using MangaUpdater.Core.Features.Mangas;
 using MangaUpdater.Core.Features.MangaSources;
 using MediatR;
@@ -105,5 +106,13 @@ public class MangaController(IMediator mediator) : BaseController
     public async Task UpdateChaptersFromSource([FromQuery] UpdateChaptersCommand request)
     {
         await mediator.Send(request);
+    }
+
+    [AllowAnonymous]
+    [SwaggerOperation("Update all manga url from AsuraScans")]
+    [HttpPost("/update/asurascans")]
+    public async Task UpdateMangaUrlFromAsuraScans()
+    {
+        await mediator.Send(new UpdateMangaUrlFromAsuraScansCommand());
     }
 }
