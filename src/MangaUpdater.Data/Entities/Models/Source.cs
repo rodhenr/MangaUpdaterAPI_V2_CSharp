@@ -1,33 +1,25 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Text.Json.Serialization;
-using Microsoft.EntityFrameworkCore;
 
 namespace MangaUpdater.Data.Entities.Models;
 
-public sealed class Source
+public partial class Source
 {
     [Key]
-    [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
     public int Id { get; set; }
-    
+
     [StringLength(50)]
-    [Unicode(false)]
-    public required string Name { get; set; }
-    
+    public string Name { get; set; } = null!;
+
     [StringLength(100)]
-    [Unicode(false)]
-    public required string BaseUrl { get; set; }
+    public string BaseUrl { get; set; } = null!;
 
     [InverseProperty("Source")]
-    [JsonIgnore]
-    public List<UserChapter> UserChapter { get; set; } = [];
-    
+    public virtual ICollection<Chapter> Chapters { get; set; } = new List<Chapter>();
+
     [InverseProperty("Source")]
-    [JsonIgnore] 
-    public List<MangaSource> MangaSources { get; set; } = [];
-    
+    public virtual ICollection<MangaSource> MangaSources { get; set; } = new List<MangaSource>();
+
     [InverseProperty("Source")]
-    [JsonIgnore] 
-    public List<Chapter> Chapters { get; set; } = [];
+    public virtual ICollection<UserChapter> UserChapters { get; set; } = new List<UserChapter>();
 }

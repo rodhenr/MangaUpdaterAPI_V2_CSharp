@@ -25,7 +25,7 @@ public sealed class DeleteSourceHandler : IRequestHandler<DeleteSourceCommand>
         
         var userChapters = await _context.UserMangas
             .Where(um => um.MangaId == request.MangaId && um.UserId == userId)
-            .SelectMany(x => x.UserChapter.Where(y => y.SourceId == request.SourceId))
+            .SelectMany(x => x.UserChapters.Where(y => y.SourceId == request.SourceId))
             .SingleOrDefaultAsync(cancellationToken);
         
         if (userChapters is null) return;

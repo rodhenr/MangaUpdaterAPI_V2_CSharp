@@ -1,25 +1,21 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Text.Json.Serialization;
 using Microsoft.EntityFrameworkCore;
 
 namespace MangaUpdater.Data.Entities.Models;
 
-public sealed class MangaAuthor
+[PrimaryKey("MangaId", "Name")]
+public partial class MangaAuthor
 {
-    [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+    [Key]
+    public int MangaId { get; set; }
+
+    [Key]
+    public string Name { get; set; } = null!;
+
     public int Id { get; set; }
-    
-    [Key]
-    public required int MangaId { get; set; }
-    
-    [Key]
-    [StringLength(450)]
-    [Unicode(false)]
-    public required string Name { get; set; }
-    
+
     [ForeignKey("MangaId")]
     [InverseProperty("MangaAuthors")]
-    [JsonIgnore] 
-    public Manga? Manga { get; set; }
+    public virtual Manga Manga { get; set; } = null!;
 }

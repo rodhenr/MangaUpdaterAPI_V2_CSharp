@@ -1,53 +1,39 @@
-﻿using System.ComponentModel;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Text.Json.Serialization;
-using Microsoft.EntityFrameworkCore;
 
 namespace MangaUpdater.Data.Entities.Models;
 
-public class Manga
+public partial class Manga
 {
     [Key]
-    [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
     public int Id { get; set; }
-    
+
     [StringLength(200)]
-    [Unicode(false)]
-    public required string CoverUrl { get; set; }
-    
+    public string CoverUrl { get; set; } = null!;
+
     [StringLength(2000)]
-    [Unicode(false)]
-    public required string Synopsis { get; set; }
-    
+    public string Synopsis { get; set; } = null!;
+
     [StringLength(50)]
-    [Unicode(false)]
-    public required string Type { get; set; }
-    
-    [DefaultValue(0)]
-    public required int MyAnimeListId { get; set; }
+    public string Type { get; set; } = null!;
+
+    public int MyAnimeListId { get; set; }
 
     [InverseProperty("Manga")]
-    [JsonIgnore]
-    public List<Chapter> Chapters { get; set; } = [];
-    
+    public virtual ICollection<Chapter> Chapters { get; set; } = new List<Chapter>();
+
     [InverseProperty("Manga")]
-    [JsonIgnore] 
-    public List<UserManga> UserMangas { get; set; } = [];
-    
+    public virtual ICollection<MangaAuthor> MangaAuthors { get; set; } = new List<MangaAuthor>();
+
     [InverseProperty("Manga")]
-    [JsonIgnore] 
-    public List<MangaAuthor> MangaAuthors { get; set; } = [];
-    
+    public virtual ICollection<MangaGenre> MangaGenres { get; set; } = new List<MangaGenre>();
+
     [InverseProperty("Manga")]
-    [JsonIgnore] 
-    public List<MangaGenre> MangaGenres { get; set; } = [];
-    
+    public virtual ICollection<MangaSource> MangaSources { get; set; } = new List<MangaSource>();
+
     [InverseProperty("Manga")]
-    [JsonIgnore] 
-    public List<MangaSource> MangaSources { get; set; } = [];
-    
+    public virtual ICollection<MangaTitle> MangaTitles { get; set; } = new List<MangaTitle>();
+
     [InverseProperty("Manga")]
-    [JsonIgnore] 
-    public List<MangaTitle> MangaTitles { get; set; } = [];
+    public virtual ICollection<UserManga> UserMangas { get; set; } = new List<UserManga>();
 }

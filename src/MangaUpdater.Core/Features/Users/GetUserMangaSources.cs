@@ -31,7 +31,7 @@ public sealed class GetUserMangaSourcesHandler : IRequestHandler<GetUserMangaSou
             (
                 x.SourceId,
                 x.Source.Name,
-                x.Manga.UserMangas.Any(y => y.UserId == userId && y.UserChapter.Any(z => z.SourceId == x.SourceId))
+                x.Manga.UserMangas.Any(y => y.UserId == userId && y.UserChapters.Any(z => z.SourceId == x.SourceId))
             ))
             .ToListAsync(cancellationToken); 
     }

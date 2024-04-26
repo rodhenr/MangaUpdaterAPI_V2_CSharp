@@ -63,7 +63,7 @@ public sealed class GetMangaHandler : IRequestHandler<GetMangaQuery, GetMangaRes
         {
             queryable = queryable
                 .Include(m => m.UserMangas.Where(um => um.UserId == userId))
-                .ThenInclude(um => um.UserChapter)
+                .ThenInclude(um => um.UserChapters)
                 .ThenInclude(uc => uc.Chapter);
         }
 
@@ -78,7 +78,7 @@ public sealed class GetMangaHandler : IRequestHandler<GetMangaQuery, GetMangaRes
         if (!isAuthenticated) return manga.Chapters.Select(x => new ChapterDto(x.Id, x.SourceId, x.Source.Name, x.Date, x.Number));
 
         var userMangaInfo = manga.UserMangas
-            .SelectMany(um => um.UserChapter, (um, uc) => new { um.MangaId, uc.SourceId, uc.ChapterId, uc.Chapter?.Number })
+            .SelectMany(um => um.UserChapters, (um, uc) => new { um.MangaId, uc.SourceId, uc.ChapterId, uc.Chapter?.Number })
             .ToList();
 
         return manga.Chapters

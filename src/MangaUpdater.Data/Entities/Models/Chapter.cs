@@ -1,39 +1,31 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Text.Json.Serialization;
 using Microsoft.EntityFrameworkCore;
 
 namespace MangaUpdater.Data.Entities.Models;
-
-[Index("MangaId", "SourceId", "Number", Name="IX_Chapters_MangaId_SourceId_Number")]
-public sealed class Chapter
+[Index("MangaId", "SourceId", "Number", Name = "IX_Chapters_MangaId_SourceId_Number", IsUnique = true)]
+[Index("SourceId", Name = "IX_Chapters_SourceId")]
+public partial class Chapter
 {
     [Key]
-    [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
     public int Id { get; set; }
-    
-    public required int MangaId { get; set; }
-    
-    public required int SourceId { get; set; }
-    
-    [Column(TypeName = "datetime2")]
-    public required DateTime Date { get; set; }
-    
-    [StringLength(450)]
-    [Unicode(false)]
-    public required string Number { get; set; }
+
+    public int MangaId { get; set; }
+
+    public int SourceId { get; set; }
+
+    public string Number { get; set; } = null!;
+
+    public DateTime Date { get; set; }
 
     [ForeignKey("MangaId")]
     [InverseProperty("Chapters")]
-    [JsonIgnore] 
-    public Manga Manga { get; set; }
-    
+    public virtual Manga Manga { get; set; } = null!;
+
     [ForeignKey("SourceId")]
     [InverseProperty("Chapters")]
-    [JsonIgnore] 
-    public Source Source { get; set; }
+    public virtual Source Source { get; set; } = null!;
 
     [InverseProperty("Chapter")]
-    [JsonIgnore]
-    public List<UserChapter> UserChapter { get; set; } = [];
+    public virtual ICollection<UserChapter> UserChapters { get; set; } = new List<UserChapter>();
 }

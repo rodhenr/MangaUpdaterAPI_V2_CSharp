@@ -1,29 +1,23 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Text.Json.Serialization;
 using Microsoft.EntityFrameworkCore;
 
 namespace MangaUpdater.Data.Entities.Models;
 
-[Index("MangaId", "UserId", Name="IX_UserMangas_MangaId_UserId")]
-public sealed class UserManga
+[Index("MangaId", "UserId", Name = "IX_UserMangas_MangaId_UserId", IsUnique = true)]
+public partial class UserManga
 {
+    public string UserId { get; set; } = null!;
+
+    public int MangaId { get; set; }
+
     [Key]
-    [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
     public int Id { get; set; }
-    
-    [StringLength(450)]
-    [Unicode(false)]
-    public required string UserId { get; set; }
-    
-    public required int MangaId { get; set; }
-    
+
     [ForeignKey("MangaId")]
     [InverseProperty("UserMangas")]
-    [JsonIgnore]
-    public Manga Manga { get; set; }
+    public virtual Manga Manga { get; set; } = null!;
 
     [InverseProperty("UserManga")]
-    [JsonIgnore]
-    public List<UserChapter> UserChapter { get; set; } = [];
+    public virtual ICollection<UserChapter> UserChapters { get; set; } = new List<UserChapter>();
 }

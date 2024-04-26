@@ -1,21 +1,16 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Text.Json.Serialization;
-using Microsoft.EntityFrameworkCore;
 
 namespace MangaUpdater.Data.Entities.Models;
 
-public sealed class Genre
+public partial class Genre
 {
-    [Key]
-    [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-    public int Id { get; set; }
-    
     [StringLength(20)]
-    [Unicode(false)]
-    public required string Name { get; set; }
+    public string Name { get; set; } = null!;
+
+    [Key]
+    public int Id { get; set; }
 
     [InverseProperty("Genre")]
-    [JsonIgnore]
-    public List<MangaGenre> MangaGenres { get; set; } = [];
+    public virtual ICollection<MangaGenre> MangaGenres { get; set; } = new List<MangaGenre>();
 }
