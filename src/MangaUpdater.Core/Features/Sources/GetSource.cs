@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace MangaUpdater.Core.Features.Sources;
 
 public record GetSourceQuery([FromRoute] int SourceId) : IRequest<GetSourceResponse>;
+
 public record GetSourceResponse(int Id, string Name, string Url);
 
 public sealed class GetSourceHandler : IRequestHandler<GetSourceQuery, GetSourceResponse>
@@ -20,9 +21,7 @@ public sealed class GetSourceHandler : IRequestHandler<GetSourceQuery, GetSource
 
     public async Task<GetSourceResponse> Handle(GetSourceQuery request, CancellationToken cancellationToken)
     {
-        var source = await _context.Sources.GetById(request.SourceId, cancellationToken);
-
-        if (source is null) throw new EntityNotFoundException($"Source not found for SourceId {request.SourceId}.");
+        var source = await _context.Sources.GetById(request.SourceId, cancellationToken) ?? throw new EntityNotFoundException($"Source not found for SourceId {request.SourceId}.");
         
         return new GetSourceResponse(source.Id, source.Name, source.BaseUrl);
     }

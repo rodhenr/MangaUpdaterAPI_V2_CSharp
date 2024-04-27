@@ -19,6 +19,7 @@ public sealed class GetMangasFromMangaDexHandler : IRequestHandler<UpdateChapter
     private readonly HttpClient _httpClient;
     private readonly IMediator _mediator;
     private readonly List<Chapter> _chapterList = [];
+    private const string ApiOptions = "feed?translatedLanguage[]=en&limit=199&order[chapter]=asc&limit=500&offset=";
     
     public GetMangasFromMangaDexHandler(AppDbContextIdentity context, IHttpClientFactory clientFactory, IMediator mediator)
     {
@@ -31,7 +32,7 @@ public sealed class GetMangasFromMangaDexHandler : IRequestHandler<UpdateChapter
     public async Task Handle(UpdateChaptersFromMangaDexCommand request, CancellationToken cancellationToken)
     {
         var mangaSource = await _mediator.Send(new GetMangaSourceQuery(request.MangaId, request.SourceId), cancellationToken);
-        var lastChapterNumber =  await _mediator.Send(new GetLastChapterNumberQuery(request.MangaId, request.SourceId), cancellationToken);
+        var lastChapterNumber =  await _mediator.Send(new GetLastChapterQuery(request.MangaId, request.SourceId), cancellationToken);
         var offset = 0;
 
         while (true)
@@ -48,16 +49,14 @@ public sealed class GetMangasFromMangaDexHandler : IRequestHandler<UpdateChapter
         await _context.SaveChangesAsync(cancellationToken);
     }
 
-    private async Task<MangaDexModel?> GetApiResult(UpdateChaptersFromMangaDexCommand request, string mangaUrl, int offset, CancellationToken cancellationToken)
+    private async Task<MangaDexApiModel?> GetApiResult(UpdateChaptersFromMangaDexCommand request, string mangaUrl, int offset, CancellationToken cancellationToken)
     {
-        var options = $"feed?translatedLanguage[]=en&limit=199&order[chapter]=asc&limit=500&offset={offset}";
-        var url = $"{request.SourceUrl}{mangaUrl}/{options}";
-
+        var url = $"{request.SourceUrl}{mangaUrl}/{ApiOptions}{offset}";
         var response = await _httpClient.GetAsync(url, cancellationToken);
 
         if (!response.IsSuccessStatusCode) throw new BadRequestException($"Failed to retrieve data for MangaId `{request.MangaId}` from MangaDex");
 
-        return await response.Content.TryToReadJsonAsync<MangaDexModel>();
+        return await response.Content.TryToReadJsonAsync<MangaDexApiModel>();
     }
 
     private void ProcessApiResult(UpdateChaptersFromMangaDexCommand request, List<MangaDexResponse> apiData, float lastChapterNumber)

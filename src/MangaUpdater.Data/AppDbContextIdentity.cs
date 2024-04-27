@@ -6,8 +6,7 @@ using MangaUpdater.Data.Entities.Models;
 namespace MangaUpdater.Data;
 
 [RegisterScoped]
-public class AppDbContextIdentity(DbContextOptions<AppDbContextIdentity> options)
-    : IdentityDbContext<AppUser>(options)
+public class AppDbContextIdentity(DbContextOptions<AppDbContextIdentity> options) : IdentityDbContext<AppUser>(options)
 {
     public DbSet<Chapter> Chapters { get; set; }
     public DbSet<Genre> Genres { get; set; }

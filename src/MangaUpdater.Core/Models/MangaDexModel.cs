@@ -1,10 +1,10 @@
 namespace MangaUpdater.Core.Models;
 
-public class MangaDexModel
+public class MangaDexApiModel
 {
     public required string Result { get; set; }
     public required string Response { get; set; }
-    public List<MangaDexResponse> Data { get; set; }
+    public required List<MangaDexResponse> Data { get; set; }
     public int? Limit { get; set; }
     public int? Offset { get; set; }
     public int? Total { get; set; }

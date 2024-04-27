@@ -1,4 +1,5 @@
 using HtmlAgilityPack;
+using MangaUpdater.Core.Common.Exceptions;
 using MangaUpdater.Core.Features.Chapters;
 using MangaUpdater.Data;
 using MangaUpdater.Data.Entities.Models;
@@ -33,18 +34,22 @@ public sealed class SearchForMangaInAsuraScansHandler : IRequestHandler<UpdateMa
             })
             .ToListAsync(cancellationToken);
 
+        var asuraScansSource = await _context.Sources
+            .Where(x => x.Id == (int)SourceEnum.AsuraScans)
+            .SingleOrDefaultAsync(cancellationToken) ?? throw new EntityNotFoundException("Source not found");
+
         foreach (var manga in mangas)
         {
-            await SearchAndUpdateSourceUrl(manga.Title, manga.Source, cancellationToken);
+            await SearchAndUpdateSourceUrl(asuraScansSource.BaseUrl, manga.Title, manga.Source, cancellationToken);
         }
     }
 
-    private async Task SearchAndUpdateSourceUrl(MangaTitle title, MangaSource source, CancellationToken cancellationToken)
+    private async Task SearchAndUpdateSourceUrl(string baseUrl, MangaTitle title, MangaSource source, CancellationToken cancellationToken)
     {
         var splittedTitle = title.Name.Split(' ');
         var queryString = string.Join("+", splittedTitle);
             
-        var html = await _httpClient.GetStringAsync($"https://asuratoon.com/?s={queryString}", cancellationToken);
+        var html = await _httpClient.GetStringAsync($"{baseUrl.Replace("manga/", "")}?s={queryString}", cancellationToken);
     
         var htmlDoc = new HtmlDocument();
         htmlDoc.LoadHtml(html);
@@ -57,12 +62,12 @@ public sealed class SearchForMangaInAsuraScansHandler : IRequestHandler<UpdateMa
 
         if (newUrl is null) return;
         
-        await UpdateMangaUrl(source, newUrl, cancellationToken);
+        await UpdateMangaUrl(baseUrl, source, newUrl, cancellationToken);
     }
 
-    private async Task UpdateMangaUrl(MangaSource mangaSource, string url, CancellationToken cancellationToken)
+    private async Task UpdateMangaUrl(string baseUrl, MangaSource mangaSource, string url, CancellationToken cancellationToken)
     {
-        mangaSource.Url = url.Replace("https://asuratoon.com/manga/", "");
+        mangaSource.Url = url.Replace($"{baseUrl}", "");
         await _context.SaveChangesAsync(cancellationToken);
     }
 }

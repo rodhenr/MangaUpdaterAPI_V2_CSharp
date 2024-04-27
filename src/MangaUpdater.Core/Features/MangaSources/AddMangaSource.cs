@@ -21,20 +21,10 @@ public sealed class AddMangaSourceHandler : IRequestHandler<AddMangaSourceComman
 
     public async Task Handle(AddMangaSourceCommand request, CancellationToken cancellationToken)
     {
-        await ValidateMangaAndSource(request, cancellationToken);
+        _ = await _context.Mangas.GetById(request.MangaId, cancellationToken) ?? throw new EntityNotFoundException($"Manga not found for ID {request.MangaId}.");
+        _ = await _context.Sources.GetById(request.SourceInfo.SourceId, cancellationToken) ?? throw new EntityNotFoundException($"Source not found for ID {request.SourceInfo.SourceId}.");
         
         _context.MangaSources.Add(new MangaSource { MangaId = request.MangaId, SourceId = request.SourceInfo.SourceId, Url = request.SourceInfo.MangaUrl });
         await _context.SaveChangesAsync(cancellationToken);
-    }
-
-    private async Task ValidateMangaAndSource(AddMangaSourceCommand request, CancellationToken cancellationToken)
-    {
-        var manga = await _context.Mangas.GetById(request.MangaId, cancellationToken);
-
-        if (manga is null) throw new EntityNotFoundException($"Manga not found for ID {request.MangaId}.");
-        
-        var source = await _context.Sources.GetById(request.SourceInfo.SourceId, cancellationToken);
-        
-        if (source is null) throw new EntityNotFoundException($"Source not found for ID {request.SourceInfo.SourceId}.");
     }
 }

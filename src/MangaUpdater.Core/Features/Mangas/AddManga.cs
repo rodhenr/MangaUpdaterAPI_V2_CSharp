@@ -37,7 +37,7 @@ public sealed class AddMangaHandler : IRequestHandler<AddMangaCommand>
 
     private async Task<int> CreateManga(int malId, GetMangaInfoFromMyAnimeListResponse apiResponse, CancellationToken cancellationToken)
     {
-        var mangaDto = new Manga
+        var manga = new Manga
         {
             Synopsis = apiResponse.Synopsis,
             Type = apiResponse.Type,
@@ -45,7 +45,7 @@ public sealed class AddMangaHandler : IRequestHandler<AddMangaCommand>
             MyAnimeListId = malId
         };
         
-        var createdManga = _context.Mangas.Add(mangaDto);
+        var createdManga = _context.Mangas.Add(manga);
         await _context.SaveChangesAsync(cancellationToken);
 
         return createdManga.Entity.Id;

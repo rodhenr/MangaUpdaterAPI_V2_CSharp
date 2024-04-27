@@ -24,10 +24,8 @@ public sealed class UpdateFollowedSourcesHandler : IRequestHandler<UpdateFollowe
 
     public async Task Handle(UpdateFollowedSourcesCommand request, CancellationToken cancellationToken)
     {
-        var userId = _currentUserAccessor.UserId;
-
         await VerifySources(request, cancellationToken);
-        var userManga = await CreateAndGetUserManga(request.MangaId, userId, cancellationToken);
+        var userManga = await CreateAndGetUserManga(request.MangaId, request.SourceIds, cancellationToken);
         
         var userSources = request.SourceIds
             .Select(x => new UserChapter
@@ -53,20 +51,34 @@ public sealed class UpdateFollowedSourcesHandler : IRequestHandler<UpdateFollowe
             .OrderBy(x => x)
             .SequenceEqual(request.SourceIds.OrderBy(x => x));
 
-        if (!listsAreEqual) throw new InvalidOperationException("Some of the source IDs do not exist.");
+        if (!listsAreEqual) throw new NotFoundException("Some of the source IDs do not exist.");
     }
 
-    private async Task<UserManga> CreateAndGetUserManga(int mangaId, string userId, CancellationToken cancellationToken)
+    private async Task<UserManga> CreateAndGetUserManga(int mangaId, List<int> sourceIds, CancellationToken cancellationToken)
     {
-        var userManga = await _context.UserMangas.GetByMangaIdAndUserId(mangaId, userId, cancellationToken);
-        if (userManga is not null) return userManga;
+        var userManga = await _context.UserMangas.GetByMangaIdAndUserId(mangaId, _currentUserAccessor.UserId, cancellationToken);
         
-        _context.UserMangas.Add(new UserManga { MangaId = mangaId, UserId = userId! });
+        if (userManga is not null)
+        {
+            await VerifyUserSources(userManga.Id, sourceIds, cancellationToken);
+            return userManga;
+        };
+        
+        _context.UserMangas.Add(new UserManga { MangaId = mangaId, UserId = _currentUserAccessor.UserId });
         await _context.SaveChangesAsync(cancellationToken);
         
-        var newUserManga = await _context.UserMangas.GetByMangaIdAndUserId(mangaId, userId, cancellationToken);
+        var newUserManga = await _context.UserMangas.GetByMangaIdAndUserId(mangaId, _currentUserAccessor.UserId, cancellationToken);
         if (newUserManga is null) throw new EntityNotFoundException("UserManga not found.");
         
         return newUserManga;
+    }
+    
+    private async Task VerifyUserSources(int userMangaId, List<int> sourceIds, CancellationToken cancellationToken)
+    {
+        var userChapters = await _context.UserChapters
+            .Where(x => x.UserMangaId == userMangaId && sourceIds.Contains(x.SourceId))
+            .ToListAsync(cancellationToken: cancellationToken);
+
+        if (userChapters.Count > 0) throw new BadRequestException("User already following one or more sources from the request.");
     }
 }

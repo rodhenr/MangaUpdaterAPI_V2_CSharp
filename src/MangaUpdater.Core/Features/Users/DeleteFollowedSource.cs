@@ -6,25 +6,23 @@ using Microsoft.EntityFrameworkCore;
 
 namespace MangaUpdater.Core.Features.Users;
 
-public record DeleteSourceCommand([FromRoute] int MangaId, [FromRoute] int SourceId) : IRequest;
+public record DeleteFollowedSourceCommand([FromRoute] int MangaId, [FromRoute] int SourceId) : IRequest;
 
-public sealed class DeleteSourceHandler : IRequestHandler<DeleteSourceCommand>
+public sealed class DeleteFollowedSourceHandler : IRequestHandler<DeleteFollowedSourceCommand>
 {
     private readonly AppDbContextIdentity _context;
     private readonly CurrentUserAccessor _currentUserAccessor;
     
-    public DeleteSourceHandler(AppDbContextIdentity context, CurrentUserAccessor currentUserAccessor)
+    public DeleteFollowedSourceHandler(AppDbContextIdentity context, CurrentUserAccessor currentUserAccessor)
     {
         _context = context;
         _currentUserAccessor = currentUserAccessor;
     }
 
-    public async Task Handle(DeleteSourceCommand request, CancellationToken cancellationToken)
+    public async Task Handle(DeleteFollowedSourceCommand request, CancellationToken cancellationToken)
     {
-        var userId = _currentUserAccessor.UserId;
-        
         var userChapters = await _context.UserMangas
-            .Where(um => um.MangaId == request.MangaId && um.UserId == userId)
+            .Where(um => um.MangaId == request.MangaId && um.UserId == _currentUserAccessor.UserId)
             .SelectMany(x => x.UserChapters.Where(y => y.SourceId == request.SourceId))
             .SingleOrDefaultAsync(cancellationToken);
         

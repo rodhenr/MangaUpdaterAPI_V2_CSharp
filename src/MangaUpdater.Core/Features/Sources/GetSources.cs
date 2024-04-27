@@ -1,28 +1,27 @@
 ﻿using MangaUpdater.Data;
-using MangaUpdater.Data.Entities.Models;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
 namespace MangaUpdater.Core.Features.Sources;
 
-public record GetSourcesQuery : IRequest<GetSourcesResponse>;
-public record GetSourcesResponse(List<Source> Sources);
+public record GetSourcesQuery : IRequest<List<GetSourcesResponse>>;
 
-public sealed class GetSourcesHandler : IRequestHandler<GetSourcesQuery, GetSourcesResponse>
+public record GetSourcesResponse(int Id, string Name, string Url);
+
+public sealed class GetSourcesHandler : IRequestHandler<GetSourcesQuery, List<GetSourcesResponse>>
 {
     private readonly AppDbContextIdentity _context;
-    
+
     public GetSourcesHandler(AppDbContextIdentity context)
     {
         _context = context;
     }
 
-    public async Task<GetSourcesResponse> Handle(GetSourcesQuery request, CancellationToken cancellationToken)
+    public async Task<List<GetSourcesResponse>> Handle(GetSourcesQuery request, CancellationToken cancellationToken)
     {
-        var sources = await _context.Sources
+        return await _context.Sources
             .AsNoTracking()
+            .Select(x => new GetSourcesResponse(x.Id, x.Name, x.BaseUrl))
             .ToListAsync(cancellationToken);
-
-        return new GetSourcesResponse(sources);
     }
 }

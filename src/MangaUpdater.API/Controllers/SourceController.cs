@@ -1,33 +1,22 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Authorization;
-using Swashbuckle.AspNetCore.Annotations;
-using MediatR;
-using MangaUpdater.API.Controllers.Shared;
+﻿using MangaUpdater.API.Controllers.Shared;
 using MangaUpdater.Core.Features.Sources;
+using MediatR;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Swashbuckle.AspNetCore.Annotations;
 
 namespace MangaUpdater.API.Controllers;
 
-public class SourceController(ISender mediator) : BaseController
+public class SourceController(IMediator mediator) : BaseController
 {
-    /// <summary>
-    /// Get all sources.
-    /// </summary>
-    /// <returns>All sources, if any.</returns>
-    /// <response code="200">Returns all existing sources, if any.</response>
     [AllowAnonymous]
     [SwaggerOperation("Get all sources")]
     [HttpGet]
-    public async Task<GetSourcesResponse> GetSources()    
+    public async Task<List<GetSourcesResponse>> GetSources()    
     {
         return await mediator.Send(new GetSourcesQuery());
     }
 
-    /// <summary>
-    /// Get a source by id.
-    /// </summary>
-    /// <returns>A source, if exists.</returns>
-    /// <response code="200">Returns a source, if exist.</response>
-    /// <response code="400">If doesn't exist.</response>
     [AllowAnonymous]
     [SwaggerOperation("Get a source by id")]
     [HttpGet("{sourceId:int}")]

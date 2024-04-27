@@ -11,6 +11,7 @@ public static class HangfireConfigurationExtensions
         {
             TypeNameHandling = TypeNameHandling.All
         };
+        
         configuration.UseSerializerSettings(jsonSettings);
     }
 }

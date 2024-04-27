@@ -18,8 +18,9 @@ public sealed partial class GetMangasFromAsuraScansHandler : IRequestHandler<Upd
     private readonly HttpClient _httpClient;
     private readonly IMediator _mediator;
     private readonly List<Chapter> _chapterList = [];
-    
-    public GetMangasFromAsuraScansHandler(AppDbContextIdentity context, IHttpClientFactory clientFactory, IMediator mediator)
+
+    public GetMangasFromAsuraScansHandler(AppDbContextIdentity context, IHttpClientFactory clientFactory,
+        IMediator mediator)
     {
         _context = context;
         _mediator = mediator;
@@ -29,16 +30,16 @@ public sealed partial class GetMangasFromAsuraScansHandler : IRequestHandler<Upd
     public async Task Handle(UpdateChaptersFromAsuraScansCommand request, CancellationToken cancellationToken)
     {
         var mangaSource = await _mediator.Send(new GetMangaSourceQuery(request.MangaId, request.SourceId), cancellationToken);
-        var lastChapterNumber =  await _mediator.Send(new GetLastChapterNumberQuery(request.MangaId, request.SourceId), cancellationToken);
-        
+        var lastChapterNumber = await _mediator.Send(new GetLastChapterQuery(request.MangaId, request.SourceId), cancellationToken);
+
         var html = await _httpClient.GetStringAsync($"{request.SourceUrl}{mangaSource.Url}", cancellationToken);
-        
+
         var htmlDoc = new HtmlDocument();
         htmlDoc.LoadHtml(html);
-        
+
         var chapterNodes = htmlDoc.GetElementbyId("chapterlist").Descendants("li");
         ProcessApiResult(request, chapterNodes, lastChapterNumber.Number);
-        
+
         _context.Chapters.AddRange(_chapterList.Distinct(new ChapterEqualityComparer()).ToList());
         await _context.SaveChangesAsync(cancellationToken);
     }
@@ -77,8 +78,10 @@ public sealed partial class GetMangasFromAsuraScansHandler : IRequestHandler<Upd
 
         var numericPart = match.Groups[1].Value;
 
-        if (float.TryParse(numericPart, NumberStyles.Float, CultureInfo.InvariantCulture, out var floatResult)) return floatResult;
-        if (int.TryParse(numericPart, NumberStyles.Integer, CultureInfo.InvariantCulture, out var intResult)) return intResult;
+        if (float.TryParse(numericPart, NumberStyles.Float, CultureInfo.InvariantCulture, out var floatResult))
+            return floatResult;
+        if (int.TryParse(numericPart, NumberStyles.Integer, CultureInfo.InvariantCulture, out var intResult))
+            return intResult;
 
         throw new InvalidOperationException("Failed to parse the numeric part as either float or int.");
     }

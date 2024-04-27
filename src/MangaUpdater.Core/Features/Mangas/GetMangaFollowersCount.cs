@@ -6,6 +6,7 @@ using Microsoft.EntityFrameworkCore;
 namespace MangaUpdater.Core.Features.Mangas;
 
 public record GetMangaFollowersCountQuery([FromRoute] int MangaId) : IRequest<GetMangaFollowersCountResponse>;
+
 public record GetMangaFollowersCountResponse(int MangaId, int Followers);
 
 public sealed class GetMangaFollowersCountHandler : IRequestHandler<GetMangaFollowersCountQuery, GetMangaFollowersCountResponse>

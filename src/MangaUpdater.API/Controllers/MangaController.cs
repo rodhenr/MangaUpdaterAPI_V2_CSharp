@@ -12,11 +12,6 @@ namespace MangaUpdater.API.Controllers;
 
 public class MangaController(IMediator mediator) : BaseController
 {
-    /// <summary>
-    /// Get all manga.
-    /// </summary>
-    /// <returns>All manga, if any.</returns>
-    /// <response code="200">Returns all existing manga, if any.</response>
     [AllowAnonymous]
     [SwaggerOperation("Get all mangas")]
     [HttpGet]
@@ -25,13 +20,6 @@ public class MangaController(IMediator mediator) : BaseController
         return await mediator.Send(request);
     }
     
-    /// <summary>
-    /// Register a new manga using a MyAnimeList id.
-    /// </summary>
-    /// <returns>Manga data, if success.</returns>
-    /// <response code="200">Returns the registered manga data.</response>
-    /// <response code="400">Error.</response>
-    /// <response code="403">Unauthorized</response>
     [Authorize(Policy = "Admin")]
     [SwaggerOperation("Register a new manga using a MyAnimeList id")]
     [HttpPost]
@@ -39,13 +27,7 @@ public class MangaController(IMediator mediator) : BaseController
     {
         await mediator.Send(request);
     }
-
-    /// <summary>
-    /// Get manga data by id.
-    /// </summary>
-    /// <returns>Manga data, if success.</returns>
-    /// <response code="200">Returns the manga data.</response>
-    /// <response code="400">Error.</response>
+    
     [AllowAnonymous]
     [SwaggerOperation("Get manga data by id")]
     [HttpGet("{mangaId:int}")]
@@ -54,11 +36,6 @@ public class MangaController(IMediator mediator) : BaseController
         return await mediator.Send(request);
     }
     
-    /// <summary>
-    /// Retrieves the total number of users who are currently following a specific manga
-    /// </summary>
-    /// <response code="200">Returns the total number of users who are currently following a manga.</response>
-    /// <response code="400">Error.</response>
     [AllowAnonymous]
     [SwaggerOperation("Get the total number of users who are currently following a manga")]
     [HttpGet("{mangaId:int}/follows")]
@@ -67,26 +44,6 @@ public class MangaController(IMediator mediator) : BaseController
         return await mediator.Send(request);
     }
     
-    /// <summary>
-    /// Register a new source for a manga.
-    /// </summary>
-    /// <response code="200">Success.</response>
-    /// <response code="400">Error.</response>
-    /// <response code="403">Unauthorized</response>
-    [Authorize(Policy = "Admin")]
-    [SwaggerOperation("Register a new source for a manga.")]
-    [HttpPost("{mangaId:int}/sources")]
-    public async Task AddSourceToManga(int mangaId, [FromBody] SourceInfo sourceInfo)
-    {
-        await mediator.Send(new AddMangaSourceCommand(mangaId, sourceInfo));
-    }
-    
-    /// <summary>
-    /// Get chapter data by manga and source.
-    /// </summary>
-    /// <returns>Chapter data, if success.</returns>
-    /// <response code="200">Returns the manga data.</response>
-    /// <response code="400">Error.</response>
     [SwaggerOperation("Get a chapter for a manga")]
     [HttpGet("{mangaId:int}/chapter/{chapterId:int}")]
     public async Task<GetChapterResponse> GetChaptersByIdAndMangaId([FromQuery] GetChapterQuery request)
@@ -94,15 +51,17 @@ public class MangaController(IMediator mediator) : BaseController
         return await mediator.Send(request);
     }
     
-    /// <summary>
-    /// Update chapters from a combination of manga and source.
-    /// </summary>
-    /// <response code="200">Success.</response>
-    /// <response code="400">Error.</response>
-    /// <response code="403">Unauthorized</response>
+    [Authorize(Policy = "Admin")]
+    [SwaggerOperation("Register a new source for a manga.")]
+    [HttpPost("{mangaId:int}/source")]
+    public async Task AddSourceToManga(int mangaId, [FromBody] SourceInfo sourceInfo)
+    {
+        await mediator.Send(new AddMangaSourceCommand(mangaId, sourceInfo));
+    }
+    
     [Authorize(Policy = "Admin")]
     [SwaggerOperation("Update chapters from a combination of manga and source.")]
-    [HttpPost("{mangaId:int}/source/{sourceId:int}/chapters")]
+    [HttpPost("{mangaId:int}/source/{sourceId:int}/chapter")]
     public async Task UpdateChaptersFromSource([FromQuery] UpdateChaptersCommand request)
     {
         await mediator.Send(request);

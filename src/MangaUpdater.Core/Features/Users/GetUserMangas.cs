@@ -28,27 +28,13 @@ public sealed class GetUserMangasHandler : IRequestHandler<GetUserMangasQuery, L
         var maxLimit = request.Limit > 100 ? 100 : request.Limit;
         var skip = (request.Page - 1) * request.Limit;
         
-        var result = await _context.UserMangas
-            .AsNoTracking()
-            .Where(um => um.UserId == userId)
-            .Include(um => um.Manga)
-            .ThenInclude(m => m.MangaTitles)
-            .Include(um => um.Manga)
-            .ThenInclude(m => m.Chapters)
-            .Select(um => new
-            {
-                UserManga = um,
-                LastChapter = um.Manga.Chapters
-                    .Where(ch => ch.MangaId == um.MangaId)
-                    .OrderByDescending(ch => ch.Date)
-                    .First()
-            })
-            .OrderByDescending(um => um.LastChapter.Date)
+        return await _context.UserMangas
+            .Where(x => x.UserId == userId)
+            .OrderByDescending(x => x.Manga.Chapters.OrderByDescending(ch => ch.Date).First().Date)
             .Skip(skip)
             .Take(maxLimit)
-            .Select(um => new GetUserMangasResponse(um.UserManga.MangaId, um.UserManga.Manga.CoverUrl, um.UserManga.Manga.MangaTitles.FirstOrDefault()!.Name))
+            .Select(x => new GetUserMangasResponse(x.MangaId, x.Manga.CoverUrl, x.Manga.MangaTitles.First().Name))
+            .AsNoTracking()
             .ToListAsync(cancellationToken);
-
-        return result;
     }
 }

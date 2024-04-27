@@ -10,7 +10,7 @@ namespace MangaUpdater.Core.Services;
 public interface IHangfireService
 {
     Task AddHangfireJobs();
-    void ScheduleNextInvocation(DateTime dateJobStarted);
+    void ScheduleNextJob(DateTime dateJobStarted);
 }
 
 [RegisterScoped]
@@ -35,7 +35,7 @@ public class HangfireService : IHangfireService
         
         if (mangas.Count == 0)
         {
-            ScheduleNextInvocation(startTime);
+            ScheduleNextJob(startTime);
             return;
         }
         
@@ -46,10 +46,10 @@ public class HangfireService : IHangfireService
             lastJobId = _mediator.Enqueue(new UpdateChaptersCommand(manga.MangaId, manga.SourceId));
         }
 
-        BackgroundJob.ContinueJobWith<IHangfireService>(lastJobId, job => job.ScheduleNextInvocation(startTime));
+        BackgroundJob.ContinueJobWith<IHangfireService>(lastJobId, job => job.ScheduleNextJob(startTime));
     }
     
-    public void ScheduleNextInvocation(DateTime startTime)
+    public void ScheduleNextJob(DateTime startTime)
     {
         var timeDifference = DateTime.Now - startTime;
 

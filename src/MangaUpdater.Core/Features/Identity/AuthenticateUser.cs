@@ -2,10 +2,9 @@
 using MangaUpdater.Data.Entities;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc;
 using SignInResult = Microsoft.AspNetCore.Identity.SignInResult;
 
-namespace MangaUpdater.Core.Features.Authentication;
+namespace MangaUpdater.Core.Features.Identity;
 
 public record AuthenticateUserQuery(string Email, string Password) : IRequest<AuthenticateUserResponse>;
 
@@ -26,9 +25,11 @@ public sealed class AuthenticateUserHandler : IRequestHandler<AuthenticateUserQu
 
     public async Task<AuthenticateUserResponse> Handle(AuthenticateUserQuery request, CancellationToken cancellationToken)
     {
-        var user = await _userManager.FindByEmailAsync(request.Email) ?? throw new UserNotFoundException("User not found");
+        var user = await _userManager.FindByEmailAsync(request.Email);
+        
+        if (user?.Email is null) throw new UserNotFoundException("Invalid user email");
 
-        var result = await _signInManager.PasswordSignInAsync(user.UserName, request.Password, false, false);
+        var result = await _signInManager.PasswordSignInAsync(user.UserName!, request.Password, false, false);
 
         if (result.Succeeded) return await GetAuthenticateUserInfo(user, cancellationToken);
 

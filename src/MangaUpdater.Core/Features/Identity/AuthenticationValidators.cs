@@ -1,6 +1,6 @@
 using FluentValidation;
 
-namespace MangaUpdater.Core.Features.Authentication;
+namespace MangaUpdater.Core.Features.Identity;
 
 public class AuthenticateUserValidator : AbstractValidator<AuthenticateUserQuery>
 {
@@ -18,9 +18,11 @@ public class RegisterUserValidator : AbstractValidator<RegisterUserCommand>
 {
     public RegisterUserValidator()
     {
-        RuleFor(x => x.UserName)
-            .NotEmpty().MinimumLength(3).WithMessage("Your username must be at least 3.");
-        
+        RuleFor(x => x.UserName)            
+            .NotEmpty().WithMessage("The {PropertyName} field cannot be empty.")
+            .Length(3, 20).WithMessage("The {PropertyName} field must be between {MinLength} and {MaxLength} characters.")
+            .Must(username => !username.Any(char.IsWhiteSpace)).WithMessage("The {PropertyName} field cannot contain spaces.");
+                    
         RuleFor(x => x.Email)
             .EmailAddress().WithMessage("Invalid email.");
 

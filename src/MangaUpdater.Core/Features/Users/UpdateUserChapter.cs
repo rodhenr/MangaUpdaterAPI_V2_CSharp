@@ -6,11 +6,11 @@ using Microsoft.EntityFrameworkCore;
 
 namespace MangaUpdater.Core.Features.Users;
 
-public record UpdateChapterCommand(int MangaId, int SourceId, int ChapterId) : IRequest;
+public record UpdateUserChapterCommand(int MangaId, int SourceId, int ChapterId) : IRequest;
 
 public record UpdateChapterRequest(int ChapterId);
 
-public sealed class UpdateChapterHandler : IRequestHandler<UpdateChapterCommand>
+public sealed class UpdateChapterHandler : IRequestHandler<UpdateUserChapterCommand>
 {
     private readonly AppDbContextIdentity _context;
     private readonly CurrentUserAccessor _currentUserAccessor;
@@ -21,16 +21,14 @@ public sealed class UpdateChapterHandler : IRequestHandler<UpdateChapterCommand>
         _currentUserAccessor = currentUserAccessor;
     }
 
-    public async Task Handle(UpdateChapterCommand request, CancellationToken cancellationToken)
+    public async Task Handle(UpdateUserChapterCommand request, CancellationToken cancellationToken)
     {
-        var userId = _currentUserAccessor.UserId;
-
         _ = await _context.Chapters
             .Where(x => x.MangaId == request.MangaId && x.SourceId == request.SourceId && x.Id == request.ChapterId)
-            .SingleOrDefaultAsync(cancellationToken) ?? throw new BadRequestException("Invalid chapter.");
+            .SingleOrDefaultAsync(cancellationToken) ?? throw new EntityNotFoundException("Invalid chapter.");
         
         var userChapter = await _context.UserChapters
-            .Where(x => x.SourceId == request.SourceId && x.UserManga.UserId == userId && x.UserManga.MangaId == request.MangaId)
+            .Where(x => x.SourceId == request.SourceId && x.UserManga.UserId == _currentUserAccessor.UserId && x.UserManga.MangaId == request.MangaId)
             .SingleOrDefaultAsync(cancellationToken) ?? throw new EntityNotFoundException("UserChapter not found.");
         
         if (userChapter.ChapterId == request.ChapterId) return;

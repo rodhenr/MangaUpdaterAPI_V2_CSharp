@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 
-namespace MangaUpdater.Core.Features.Authentication;
+namespace MangaUpdater.Core.Features.Identity;
 
 public record GenerateTokenQuery(AppUser User) : IRequest<GenerateTokenResponse>;
 
@@ -59,7 +59,7 @@ public sealed class GenerateTokenHandler : IRequestHandler<GenerateTokenQuery, G
         var claims = new List<Claim>
         {
             new(JwtRegisteredClaimNames.NameId, user.Id),
-            new(JwtRegisteredClaimNames.Email, user.Email),
+            new(JwtRegisteredClaimNames.Email, user.Email!),
             new(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
             new(JwtRegisteredClaimNames.Nbf, DateTime.Now.ToString(usCulture)),
             new(JwtRegisteredClaimNames.Iat, DateTime.Now.ToString(usCulture))

@@ -3,7 +3,7 @@ using MangaUpdater.Data.Entities;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
 
-namespace MangaUpdater.Core.Features.Authentication;
+namespace MangaUpdater.Core.Features.Identity;
 
 public record GetUserInfoQuery(string UserId) : IRequest<GetUserInfoResponse>;
 public record GetUserInfoResponse(string Avatar, string Name, string Id, string Email, bool IsAdmin);
@@ -21,7 +21,7 @@ public sealed class GetUserInfoHandler : IRequestHandler<GetUserInfoQuery, GetUs
         var user = await _userManager.FindByIdAsync(request.UserId) ?? throw new AuthenticationException("User not found");
         var isAdmin = await IsUserAdmin(user);
 
-        return new GetUserInfoResponse(user.Avatar, user.UserName, user.Id, user.Email!, isAdmin);
+        return new GetUserInfoResponse(user.Avatar, user.UserName!, user.Id, user.Email!, isAdmin);
     }
     
     private async Task<bool> IsUserAdmin(AppUser user)

@@ -5,7 +5,7 @@ using Hangfire;
 using Hangfire.SqlServer;
 using MangaUpdater.Core.Common.Behaviors;
 using MangaUpdater.Core.Common.Extensions;
-using MangaUpdater.Core.Features.Authentication;
+using MangaUpdater.Core.Features.Identity;
 using MangaUpdater.Data;
 using MangaUpdater.Data.Entities;
 using MediatR;

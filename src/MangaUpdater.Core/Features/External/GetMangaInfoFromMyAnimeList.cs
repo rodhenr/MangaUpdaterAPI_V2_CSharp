@@ -6,11 +6,13 @@ using MediatR;
 namespace MangaUpdater.Core.Features.External;
 
 public record GetMangaInfoFromMyAnimeListQuery(int MalMangaId) : IRequest<GetMangaInfoFromMyAnimeListResponse>;
+
 public record GetMangaInfoFromMyAnimeListResponse(string Synopsis, string Type, string CoverUrl, IEnumerable<TitleEntry> Titles, IEnumerable<MalCollection> Genres, IEnumerable<MalCollection> Authors);
 
 public sealed class GetMangaInfoFromMyAnimeListHandler : IRequestHandler<GetMangaInfoFromMyAnimeListQuery, GetMangaInfoFromMyAnimeListResponse>
 {
     private readonly IHttpClientFactory _clientFactory;
+    private const string ApiUrl = "https://api.jikan.moe/v4/manga/";
     
     public GetMangaInfoFromMyAnimeListHandler(IHttpClientFactory clientFactory)
     {
@@ -20,7 +22,7 @@ public sealed class GetMangaInfoFromMyAnimeListHandler : IRequestHandler<GetMang
     public async Task<GetMangaInfoFromMyAnimeListResponse> Handle(GetMangaInfoFromMyAnimeListQuery request, CancellationToken cancellationToken)
     {
         var client = _clientFactory.CreateClient();
-        var url = $"https://api.jikan.moe/v4/manga/{request.MalMangaId}";
+        var url = $"{ApiUrl}{request.MalMangaId}";
 
         var response = await client.GetAsync(url, cancellationToken);
 

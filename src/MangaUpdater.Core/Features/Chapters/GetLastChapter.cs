@@ -6,19 +6,20 @@ using Microsoft.EntityFrameworkCore;
 
 namespace MangaUpdater.Core.Features.Chapters;
 
-public record GetLastChapterNumberQuery([FromQuery] int MangaId, [FromQuery] int SourceId) : IRequest<GetLastChapterNumberResponse>;
-public record GetLastChapterNumberResponse(float Number);
+public record GetLastChapterQuery([FromQuery] int MangaId, [FromQuery] int SourceId) : IRequest<GetLastChapterResponse>;
 
-public sealed class GetLastChapterNumberHandler : IRequestHandler<GetLastChapterNumberQuery, GetLastChapterNumberResponse>
+public record GetLastChapterResponse(float Number);
+
+public sealed class GetLastChapterHandler : IRequestHandler<GetLastChapterQuery, GetLastChapterResponse>
 {
     private readonly AppDbContextIdentity _context;
     
-    public GetLastChapterNumberHandler(AppDbContextIdentity context)
+    public GetLastChapterHandler(AppDbContextIdentity context)
     {
         _context = context;
     }
 
-    public async Task<GetLastChapterNumberResponse> Handle(GetLastChapterNumberQuery request, CancellationToken cancellationToken)
+    public async Task<GetLastChapterResponse> Handle(GetLastChapterQuery request, CancellationToken cancellationToken)
     {
         var chapters = await _context.Chapters
             .AsNoTracking()
@@ -30,6 +31,6 @@ public sealed class GetLastChapterNumberHandler : IRequestHandler<GetLastChapter
 
         var lastChapter = chapters.LastOrDefault();
 
-        return new GetLastChapterNumberResponse(float.Parse(lastChapter?.Number ?? "0", CultureInfo.InvariantCulture));
+        return new GetLastChapterResponse(float.Parse(lastChapter?.Number ?? "0", CultureInfo.InvariantCulture));
     }
 }

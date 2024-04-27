@@ -25,16 +25,15 @@ var app = builder.Build();
 // Hangfire
 app.AddHangfireBuilder();
 
-// Custom Middleware
+// Custom Middlewares
 app.UseMiddleware<ValidationExceptionHandlingMiddleware>();
 
-// Built-in 
+// Built-in
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
 }
-
 app.UseCors(b => b.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
 app.UseHttpsRedirection();
 app.UseAuthorization();

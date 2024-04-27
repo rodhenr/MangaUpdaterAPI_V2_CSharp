@@ -5,7 +5,7 @@ using MediatR;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
-namespace MangaUpdater.Core.Features.Authentication;
+namespace MangaUpdater.Core.Features.Identity;
 
 public record UpdateUserEmailCommand([FromBody] string Email) : IRequest;
 
@@ -24,8 +24,7 @@ public sealed class UpdateUserEmailHandler : IRequestHandler<UpdateUserEmailComm
 
     public async Task Handle(UpdateUserEmailCommand request, CancellationToken cancellationToken)
     {
-        var userId = _currentUserAccessor.UserId;
-        var user = await _userManager.FindByIdAsync(userId) ?? throw new UserNotFoundException("User not found");
+        var user = await _userManager.FindByIdAsync(_currentUserAccessor.UserId) ?? throw new UserNotFoundException("User not found");
         
         var changeEmailToken = await _userManager.GenerateChangeEmailTokenAsync(user, request.Email);
         var result = await _userManager.ChangeEmailAsync(user, request.Email, changeEmailToken);

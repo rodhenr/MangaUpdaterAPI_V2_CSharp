@@ -4,7 +4,7 @@ using MangaUpdater.Data.Entities;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
 
-namespace MangaUpdater.Core.Features.Authentication;
+namespace MangaUpdater.Core.Features.Identity;
 
 public record GetAndVerifyUserQuery(string Password) : IRequest<GetAndVerifyUserResponse>;
 public record GetAndVerifyUserResponse(AppUser User);
@@ -21,8 +21,7 @@ public sealed class GetAndVerifyUserHandler : IRequestHandler<GetAndVerifyUserQu
 
     public async Task<GetAndVerifyUserResponse> Handle(GetAndVerifyUserQuery request, CancellationToken cancellationToken)
     {
-        var userId = _currentUserAccessor.UserId;
-        var user = await _userManager.FindByIdAsync(userId) ?? throw new UserNotFoundException("User not found");
+        var user = await _userManager.FindByIdAsync(_currentUserAccessor.UserId) ?? throw new UserNotFoundException("User not found");
         
         var isPasswordCorrect = await _userManager.CheckPasswordAsync(user, request.Password);
         if (!isPasswordCorrect) throw new AuthorizationException("Invalid credentials");

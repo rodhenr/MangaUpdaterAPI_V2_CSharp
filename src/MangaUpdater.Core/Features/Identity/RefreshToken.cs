@@ -4,7 +4,7 @@ using MangaUpdater.Data.Entities;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
 
-namespace MangaUpdater.Core.Features.Authentication;
+namespace MangaUpdater.Core.Features.Identity;
 
 public record RefreshTokenQuery : IRequest<RefreshTokenResponse>;
 
@@ -25,8 +25,7 @@ public sealed class RefreshTokenHandler : IRequestHandler<RefreshTokenQuery, Ref
 
     public async Task<RefreshTokenResponse> Handle(RefreshTokenQuery request, CancellationToken cancellationToken)
     {
-        var userId = _currentUserAccessor.UserId;
-        var user = await _userManager.FindByIdAsync(userId) ?? throw new UserNotFoundException("User not found");
+        var user = await _userManager.FindByIdAsync(_currentUserAccessor.UserId) ?? throw new UserNotFoundException("User not found");
 
         return await GetRefreshTokenInfo(user, cancellationToken);
     }
