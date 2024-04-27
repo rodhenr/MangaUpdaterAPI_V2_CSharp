@@ -4,16 +4,19 @@ using MangaUpdater.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
 
-namespace MangaUpdater.Data.Migrations
+namespace MangaUpdater.Data.Scaffolding
 {
     [DbContext(typeof(AppDbContextIdentity))]
-    partial class MangaUpdaterContextModelSnapshot : ModelSnapshot
+    [Migration("20240426224907_Add_MangaTitle_Column")]
+    partial class Add_MangaTitle_Column
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

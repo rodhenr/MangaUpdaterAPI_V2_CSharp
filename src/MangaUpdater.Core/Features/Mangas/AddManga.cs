@@ -63,7 +63,7 @@ public sealed class AddMangaHandler : IRequestHandler<AddMangaCommand>
                 {
                     MangaId = mangaId,
                     Name = title,
-                    IsMainTitle = index == 0
+                    IsMyAnimeListMainTitle = index == 0
                 });
 
         _context.MangaGenres.AddRange(genreList);

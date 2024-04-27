@@ -12,7 +12,9 @@ public partial class MangaTitle
     [Key]
     public int Id { get; set; }
 
-    public bool IsMainTitle { get; set; }
+    public bool IsMyAnimeListMainTitle { get; set; }
+    
+    public bool IsAsuraMainTitle { get; set; }
 
     [ForeignKey("MangaId")]
     [InverseProperty("MangaTitles")]

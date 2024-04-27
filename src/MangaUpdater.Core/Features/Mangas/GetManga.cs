@@ -40,7 +40,7 @@ public sealed class GetMangaHandler : IRequestHandler<GetMangaQuery, GetMangaRes
         var genres = result.MangaGenres.Select(x => new GenreDto(x.Genre.Id, x.Genre.Name));
         var sources = result.MangaSources.Select(x => new SourceDto(x.Source.Id, x.Source.Name));
         var authors = result.MangaAuthors.Select(x => new AuthorDto(x.Id, x.Name));
-        var titles = result.MangaTitles.Select(x => new TitleDto(x.Id, x.Name, x.IsMainTitle));
+        var titles = result.MangaTitles.Select(x => new TitleDto(x.Id, x.Name, x.IsMyAnimeListMainTitle));
         
         return new GetMangaResponse(result.Id, result.CoverUrl, result.Synopsis, result.Type, result.MyAnimeListId, chapters, genres, sources, authors, titles);
     }

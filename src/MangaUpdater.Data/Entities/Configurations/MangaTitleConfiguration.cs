@@ -18,7 +18,7 @@ public class MangaTitleConfiguration : IEntityTypeConfiguration<MangaTitle>
             .HasForeignKey(mt => mt.MangaId);
         
         builder
-            .HasIndex(mt => new { mt.MangaId, mt.IsMainTitle })
+            .HasIndex(mt => new { mt.MangaId, mt.IsMyAnimeListMainTitle })
             .HasFilter("IsMainTitle = 1")
             .IsUnique();
     }

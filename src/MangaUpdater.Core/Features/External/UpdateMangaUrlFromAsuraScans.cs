@@ -25,40 +25,39 @@ public sealed class SearchForMangaInAsuraScansHandler : IRequestHandler<UpdateMa
     public async Task Handle(UpdateMangaUrlFromAsuraScansCommand request, CancellationToken cancellationToken)
     {
         var mangas = await _context.Mangas
-            .Where(x => x.MangaSources.Any(y => y.SourceId == (int)SourceEnum.AsuraScans))
+            .Where(x => x.MangaSources.Any(y => y.SourceId == (int)SourceEnum.AsuraScans) && x.MangaTitles.Any(y => y.IsAsuraMainTitle))
             .Select(x => new
             {
-                x.MangaTitles, 
-                MangaSource = x.MangaSources.Where(y => y.SourceId == (int)SourceEnum.AsuraScans)!.SingleOrDefault()!
+                Title = x.MangaTitles.First(y => y.IsAsuraMainTitle == true), 
+                Source = x.MangaSources.First(y => y.SourceId == (int)SourceEnum.AsuraScans)
             })
             .ToListAsync(cancellationToken);
 
         foreach (var manga in mangas)
         {
-            await SearchAndUpdateSourceUrl(manga.MangaTitles, manga.MangaSource, cancellationToken);
+            await SearchAndUpdateSourceUrl(manga.Title, manga.Source, cancellationToken);
         }
     }
 
-    private async Task SearchAndUpdateSourceUrl(IEnumerable<MangaTitle> titles, MangaSource source, CancellationToken cancellationToken)
+    private async Task SearchAndUpdateSourceUrl(MangaTitle title, MangaSource source, CancellationToken cancellationToken)
     {
-        foreach (var title in titles)
-        {
-            var splittedTitle = title.Name.Split(' ');
-            var queryString = string.Join("+", splittedTitle);
-                
-            var html = await _httpClient.GetStringAsync($"https://asuratoon.com/?s={queryString}", cancellationToken);
-        
-            var htmlDoc = new HtmlDocument();
-            htmlDoc.LoadHtml(html);
-        
-            var htmlResult = htmlDoc.DocumentNode.SelectNodes("//div[contains(@class, 'bsx')]//a");
-            var titleFound = htmlResult?.SingleOrDefault(x => x.GetAttributeValue("Title", "").StartsWith(title.Name) && x.GetAttributeValue("href", "") != source.Url);
-
-            if (titleFound is null) continue;
+        var splittedTitle = title.Name.Split(' ');
+        var queryString = string.Join("+", splittedTitle);
             
-            await UpdateMangaUrl(source, titleFound.GetAttributeValue("href", ""), cancellationToken);
-            break;
-        }
+        var html = await _httpClient.GetStringAsync($"https://asuratoon.com/?s={queryString}", cancellationToken);
+    
+        var htmlDoc = new HtmlDocument();
+        htmlDoc.LoadHtml(html);
+    
+        var htmlResult = htmlDoc.DocumentNode.SelectNodes("//div[contains(@class, 'bsx')]//a");
+        var newUrl = htmlResult?
+            .Where(x => x.GetAttributeValue("Title", "").StartsWith(title.Name))
+            .Select(x => x.GetAttributeValue("href", ""))
+            .SingleOrDefault(); 
+
+        if (newUrl is null) return;
+        
+        await UpdateMangaUrl(source, newUrl, cancellationToken);
     }
 
     private async Task UpdateMangaUrl(MangaSource mangaSource, string url, CancellationToken cancellationToken)

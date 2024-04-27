@@ -40,7 +40,7 @@ public sealed class GetMangasHandler : IRequestHandler<GetMangasQuery, GetMangas
             .AsNoTracking()
             .Skip((request.Page - 1) * request.PageSize)
             .Take(request.PageSize)
-            .Select(manga => new MangaInfo(manga.Id, manga.CoverUrl, manga.MangaTitles.First(mt => mt.IsMainTitle).Name))
+            .Select(manga => new MangaInfo(manga.Id, manga.CoverUrl, manga.MangaTitles.First(mt => mt.IsMyAnimeListMainTitle).Name))
             .ToListAsync(cancellationToken);
 
         var numberOfPages = await GetNumberOfPages(request.PageSize, cancellationToken);
@@ -52,7 +52,7 @@ public sealed class GetMangasHandler : IRequestHandler<GetMangasQuery, GetMangas
     {
         queryable = request.OrderBy switch
         {
-            OrderByEnum.Alphabet => queryable.OrderBy(m => m.MangaTitles!.First(mt => mt.IsMainTitle).Name),
+            OrderByEnum.Alphabet => queryable.OrderBy(m => m.MangaTitles!.First(mt => mt.IsMyAnimeListMainTitle).Name),
             OrderByEnum.Latest => queryable.OrderByDescending(m => m.Id),
             _ => queryable
         };

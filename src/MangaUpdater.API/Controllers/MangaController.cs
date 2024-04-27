@@ -108,9 +108,9 @@ public class MangaController(IMediator mediator) : BaseController
         await mediator.Send(request);
     }
 
-    [AllowAnonymous]
+    [Authorize(Policy = "Admin")]
     [SwaggerOperation("Update all manga url from AsuraScans")]
-    [HttpPost("/update/asurascans")]
+    [HttpPost("update/asura")]
     public async Task UpdateMangaUrlFromAsuraScans()
     {
         await mediator.Send(new UpdateMangaUrlFromAsuraScansCommand());
