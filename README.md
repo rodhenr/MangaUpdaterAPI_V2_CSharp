@@ -6,24 +6,23 @@ Track and follow your favorite manga series effortlessly with this front-end pro
 
 For this project, the following technologies were used:
 
-- [.NET 7](https://learn.microsoft.com/en-us/dotnet/csharp/)
-- [EF CORE](https://learn.microsoft.com/en-us/ef/core/)
+- [.NET 8](https://learn.microsoft.com/en-us/dotnet/csharp/)
+- [Entity Framework CORE](https://learn.microsoft.com/en-us/ef/core/)
+- [Mediatr](https://github.com/jbogard/MediatR)
 - [FluentValidation](https://fluentvalidation.net/)
-- [AutoMapper](https://www.hangfire.io/)
 - [Hangfire](https://www.hangfire.io/)
 - [HtmlAgilityPack](https://html-agility-pack.net/)
 - [Swagger](https://swagger.io/)
-- [Xunit](https://fluentvalidation.net/)
-- [Moq](https://github.com/devlooped/moq)
+- [AutoRegisterInject](https://github.com/patrickklaeren/AutoRegisterInject)
 
 ## :dvd: How to Replicate This Project
 
-1. To replicate this project, make sure you have Docker installed.
+1. To replicate this project, make sure you have Docker and .Net 8 installed.
 
 2. Clone this repository to your local machine:
 
    ```bash
-   git clone https://github.com/your-username/MangaUpdaterAPI_V2_CSharp.git
+   git clone https://github.com/rodhenr/MangaUpdaterAPI_V2_CSharp.git
    ```
 
 3. Open your terminal and navigate to the project folder:
@@ -40,7 +39,7 @@ For this project, the following technologies were used:
 
    Wait until all the containers are running.
 
-5. You can test the API using the base url [http://localhost:8080](http://localhost:8080).
+5. You can test the API using the base url [http://localhost:5135](http://localhost:5135).
 
 ## :desktop_computer: Getting the Frontend Project
 

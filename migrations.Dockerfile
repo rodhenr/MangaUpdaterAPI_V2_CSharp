@@ -10,11 +10,11 @@ ENV PATH $PATH:/root/.dotnet/tools
 RUN dotnet tool install -g dotnet-ef --version 8.0.4
 
 # Create dotnet migration bundle
-RUN dotnet ef migrations bundle -p MangaUpdater.Infra/MangaUpdater.Infra.Data.csproj -s MangaUpdaterAPI/MangaUpdater.API.csproj -o bundle --verbose --self-contained
+RUN dotnet ef migrations bundle -p src/MangaUpdater.Data/MangaUpdater.Data.csproj -s src/MangaUpdater.API/MangaUpdater.API.csproj -o bundle --verbose --self-contained
 
 FROM mcr.microsoft.com/dotnet/aspnet:8.0-alpine AS runtime
 WORKDIR /app
-COPY --from=build /app/MangaUpdaterAPI/appsettings.json .
+COPY --from=build /app/src/MangaUpdater.API/appsettings.json .
 COPY --from=build /app/bundle .
 
 # Give permission to execute
