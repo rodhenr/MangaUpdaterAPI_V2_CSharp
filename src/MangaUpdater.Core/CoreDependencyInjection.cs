@@ -1,5 +1,6 @@
 ﻿using System.Reflection;
 using System.Text;
+using CommunityToolkit.Diagnostics;
 using FluentValidation;
 using Hangfire;
 using Hangfire.SqlServer;
@@ -69,39 +70,49 @@ public static class CoreDependencyInjection
     
     public static IServiceCollection AddJwtAuthenticationServices(this IServiceCollection services, IConfiguration configuration)
     {
-        var jwtAppSettingsOptions = configuration.GetSection(nameof(JwtOptions));
-        var securityKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(configuration.GetSection("JwtOptions:SecurityKey").Value!));
+        var issuer = configuration["Issuer"];
+        var audience = configuration["Audience"];
+        var apiKey = configuration["ApiKey"];
+        
+        Guard.IsNotNullOrEmpty(issuer);
+        Guard.IsNotNullOrEmpty(audience);
+        Guard.IsNotNullOrEmpty(apiKey);
 
+        var securityKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(apiKey));
+        
+        // Configure JwtOptions
         services.Configure<JwtOptions>(options =>
         {
-            options.Issuer = jwtAppSettingsOptions[nameof(JwtOptions.Issuer)]!;
-            options.Audience = jwtAppSettingsOptions[nameof(JwtOptions.Audience)]!;
+            options.Issuer = issuer;
+            options.Audience = audience;
             options.SigningCredentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha512);
-            options.AccessTokenExpiration =
-                int.Parse(jwtAppSettingsOptions[nameof(JwtOptions.AccessTokenExpiration)] ?? "0");
-            options.RefreshTokenExpiration =
-                int.Parse(jwtAppSettingsOptions[nameof(JwtOptions.RefreshTokenExpiration)] ?? "0");
+            options.AccessTokenExpiration = 3000;
+            options.RefreshTokenExpiration = 3600;
         });
 
-        var tokenValidationParameters = new TokenValidationParameters
-        {
-            ValidateIssuer = true,
-            ValidIssuer = configuration.GetSection("JwtOptions:Issuer").Value,
-            ValidateAudience = true,
-            ValidAudience = configuration.GetSection("JwtOptions:Audience").Value,
-            ValidateIssuerSigningKey = true,
-            IssuerSigningKey = securityKey,
-            RequireExpirationTime = true,
-            ValidateLifetime = true,
-            ClockSkew = TimeSpan.Zero
-        };
-
+        // Configure JWT
         services
             .AddAuthentication(options => {
                 options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
                 options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme; })
-            .AddJwtBearer(options => { options.TokenValidationParameters = tokenValidationParameters; });
+            .AddJwtBearer(options =>
+            {
+                options.Audience = audience;
+                options.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuer = true,
+                    ValidIssuer = configuration.GetSection("JwtOptions:Issuer").Value,
+                    ValidateAudience = true,
+                    ValidAudience = configuration.GetSection("JwtOptions:Audience").Value,
+                    ValidateIssuerSigningKey = true,
+                    IssuerSigningKey = securityKey,
+                    RequireExpirationTime = true,
+                    ValidateLifetime = true,
+                    ClockSkew = TimeSpan.Zero
+                };
+            });
 
+        // Add policy
         services.AddAuthorizationBuilder()
             .SetFallbackPolicy(new AuthorizationPolicyBuilder()
                 .RequireAuthenticatedUser()

@@ -24,7 +24,7 @@ RUN apk add gcompat
 ENV DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=false
 
 # Expose the port your application will run on
-EXPOSE 80
+EXPOSE 8080
 
 ENTRYPOINT ["dotnet", "MangaUpdater.API.dll"]
 

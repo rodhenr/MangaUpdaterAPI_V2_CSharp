@@ -1,6 +1,7 @@
 ﻿using MangaUpdater.API.Controllers.Shared;
 using MangaUpdater.Core.Features.Chapters;
 using MangaUpdater.Core.Features.External;
+using MangaUpdater.Core.Features.Genres;
 using MangaUpdater.Core.Features.Mangas;
 using MangaUpdater.Core.Features.MangaSources;
 using MediatR;
@@ -34,6 +35,14 @@ public class MangaController(IMediator mediator) : BaseController
     public async Task<GetMangaResponse> GetManga([FromQuery] GetMangaQuery request)
     {
         return await mediator.Send(request);
+    }
+    
+    [AllowAnonymous]
+    [SwaggerOperation("Get all genres")]
+    [HttpGet("genre")]
+    public async Task<List<GetGenresResponse>> GetGenres()
+    {
+        return await mediator.Send(new GetGenresQuery());
     }
     
     [AllowAnonymous]
