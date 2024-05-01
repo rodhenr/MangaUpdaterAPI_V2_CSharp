@@ -13,7 +13,7 @@ namespace MangaUpdater.Core.Features.Mangas;
 
 public record GetMangaQuery([FromRoute] int MangaId) : IRequest<GetMangaResponse>;
 
-public record GetMangaResponse(int Id, string CoverUrl, string Synopsis, string Type, int MyAnimeListId, IEnumerable<ChapterDto> Chapters, IEnumerable<GenreDto> Genres, IEnumerable<SourceDto> Sources, IEnumerable<MangaAuthorDto> Authors, IEnumerable<MangaTitleDto> Titles);
+public record GetMangaResponse(int Id, string CoverUrl, string Synopsis, string Type, int MyAnimeListId, bool IsUserFollowing, IEnumerable<ChapterDto> Chapters, IEnumerable<GenreDto> Genres, IEnumerable<SourceDto> Sources, IEnumerable<MangaAuthorDto> Authors, IEnumerable<MangaTitleDto> Titles);
 
 public sealed class GetMangaHandler : IRequestHandler<GetMangaQuery, GetMangaResponse>
 {
@@ -35,13 +35,14 @@ public sealed class GetMangaHandler : IRequestHandler<GetMangaQuery, GetMangaRes
             .OrderByDescending(ch => float.Parse(ch.Number, CultureInfo.InvariantCulture))
             .ToList();
 
+        var isUserFollowing = manga.UserMangas.Count > 0;
         var chapters = MapAndReturnChapters(manga);
         var genres = manga.MangaGenres.Select(x => new GenreDto(x.Genre.Id, x.Genre.Name));
         var sources = manga.MangaSources.Select(x => new SourceDto(x.Source.Id, x.Source.Name));
         var authors = manga.MangaAuthors.Select(x => new MangaAuthorDto(x.Id, x.Name));
         var titles = manga.MangaTitles.Select(x => new MangaTitleDto(x.Id, x.Name, x.IsMyAnimeListMainTitle));
         
-        return new GetMangaResponse(manga.Id, manga.CoverUrl, manga.Synopsis, manga.Type, manga.MyAnimeListId, chapters, genres, sources, authors, titles);
+        return new GetMangaResponse(manga.Id, manga.CoverUrl, manga.Synopsis, manga.Type, manga.MyAnimeListId, isUserFollowing, chapters, genres, sources, authors, titles);
     }
 
     private async Task<Manga?> ApplyFilters(IQueryable<Manga> queryable, int mangaId, CancellationToken cancellationToken)

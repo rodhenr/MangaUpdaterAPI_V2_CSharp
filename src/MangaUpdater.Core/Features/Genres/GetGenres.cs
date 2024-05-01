@@ -19,9 +19,10 @@ public sealed class GetGenresHandler : IRequestHandler<GetGenresQuery, List<GetG
 
     public async Task<List<GetGenresResponse>> Handle(GetGenresQuery request, CancellationToken cancellationToken)
     {
-        return await _context.Genres
+        return await _context.MangaGenres
             .AsNoTracking()
-            .Select(x => new GetGenresResponse(x.Id, x.Name))
+            .Select(x => new GetGenresResponse(x.Genre.Id, x.Genre.Name))
+            .Distinct()
             .ToListAsync(cancellationToken);
     }
 }

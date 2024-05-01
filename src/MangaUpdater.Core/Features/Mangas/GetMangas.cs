@@ -1,6 +1,4 @@
-﻿using MangaUpdater.Core.Dto;
-using MangaUpdater.Core.Features.Chapters;
-using MangaUpdater.Data;
+﻿using MangaUpdater.Data;
 using MangaUpdater.Data.Entities.Models;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -15,9 +13,9 @@ public enum OrderByEnum
 
 public record GetMangasQuery(string? Input, int Page = 1, int PageSize = 20, OrderByEnum OrderBy = OrderByEnum.Alphabet, List<int>? SourceIds = null, List<int>? GenreIds = null) : IRequest<GetMangasResponse>;
 
-public record GetMangasResponse(int CurrentPage, int PageSize, int TotalPages, List<MangaInfo> Mangas);
+public record GetMangasResponse(int CurrentPage, int PageSize, int TotalPages, IEnumerable<MangaInfo> Mangas);
 
-public record MangaInfo(int MangaId, string CoverUrl, string MangaName, List<ChapterDto> RecentChapters);
+public record MangaInfo(int MangaId, string CoverUrl, string MangaName);
 
 public sealed class GetMangasHandler : IRequestHandler<GetMangasQuery, GetMangasResponse>
 {
@@ -32,24 +30,22 @@ public sealed class GetMangasHandler : IRequestHandler<GetMangasQuery, GetMangas
 
     public async Task<GetMangasResponse> Handle(GetMangasQuery request, CancellationToken cancellationToken)
     {
-        var queryable = _context.Mangas
-            .Include(m => m.MangaTitles)
-            .Include(m => m.MangaSources)
-            .Include(m => m.MangaGenres)
-            .AsQueryable();
-
+        var page = request.Page < 1 ? 1 : request.Page;
+        var pageSize = request.PageSize < 1 ? 1 : request.PageSize;
+        
+        var queryable = _context.Mangas.AsNoTracking();
         queryable = ApplyFilters(request, queryable);
         
         var mangas = await queryable
-            .AsNoTracking()
-            .Skip((request.Page - 1) * request.PageSize)
-            .Take(request.PageSize)
+            .Skip((page - 1) * pageSize)
+            .Take(pageSize)
+            .Select(x => new MangaInfo(x.Id, x.CoverUrl, x.MangaTitles.First().Name))
             .ToListAsync(cancellationToken);
+        
+        var count = await queryable.CountAsync(cancellationToken);
+        var numberOfPages = (int)Math.Ceiling((double)count / pageSize);
 
-        var mangasDto = await GetMangaInfo(mangas, cancellationToken);
-        var numberOfPages = await GetNumberOfPages(request.PageSize, cancellationToken);
-
-        return new GetMangasResponse(request.Page, request.PageSize, numberOfPages, mangasDto);
+        return new GetMangasResponse(request.Page, request.PageSize, numberOfPages, mangas);
     }
 
     private static IQueryable<Manga> ApplyFilters(GetMangasQuery request, IQueryable<Manga> queryable)
@@ -67,27 +63,5 @@ public sealed class GetMangasHandler : IRequestHandler<GetMangasQuery, GetMangas
         if (!string.IsNullOrWhiteSpace(request.Input)) queryable = queryable.Where(m => m.MangaTitles.Any(mt => mt.Name.Contains(request.Input)));
 
         return queryable;
-    }
-
-    private async Task<List<MangaInfo>> GetMangaInfo(List<Manga> mangas, CancellationToken cancellationToken)
-    {
-        var mangaInfo = new List<MangaInfo>();
-        
-        foreach (var manga in mangas)
-        {
-            var recentChapters = await _mediator.Send(new GetRecentChaptersQuery(manga.Id, manga.MangaSources.Select(x => x.SourceId).ToList()), cancellationToken);
-            mangaInfo.Add(new MangaInfo(manga.Id, manga.CoverUrl, manga.MangaTitles.First(mt => mt.IsMyAnimeListMainTitle).Name, recentChapters.Chapters.ToList()));
-        }
-
-        return mangaInfo;
-    }
-
-    private async Task<int> GetNumberOfPages(int pageSize, CancellationToken cancellationToken)
-    {
-        var numberOfMangas = await _context.Mangas
-            .AsNoTracking()
-            .CountAsync(cancellationToken);
-
-        return numberOfMangas / pageSize + 1;
     }
 }

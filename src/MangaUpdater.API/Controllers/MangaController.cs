@@ -60,6 +60,13 @@ public class MangaController(IMediator mediator) : BaseController
         return await mediator.Send(request);
     }
     
+    [SwaggerOperation("Get all sources for a manga.")]
+    [HttpGet("{mangaId:int}/source")]
+    public async Task<List<GetMangaSourcesResponse>> GetMangaSources([FromQuery] GetMangaSourcesQuery request)
+    {
+        return await mediator.Send(request);
+    }
+    
     [Authorize(Policy = "Admin")]
     [SwaggerOperation("Register a new source for a manga.")]
     [HttpPost("{mangaId:int}/source")]

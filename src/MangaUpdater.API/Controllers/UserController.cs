@@ -22,12 +22,12 @@ public class UserController(IMediator mediator) : BaseController
     {
         return await mediator.Send(request);
     }
-
-    [SwaggerOperation("A logged-in user starts following sources from a manga")]
+    
+    [SwaggerOperation("A logged-in user starts following a manga")]
     [HttpPost("manga/{mangaId:int}")]
-    public async Task FollowSourcesFromManga([FromRoute] int mangaId, [FromBody] List<int> sourceIds)
+    public async Task FollowManga([FromQuery] FollowMangaCommand request)
     {
-        await mediator.Send(new UpdateFollowedSourcesCommand(mangaId, sourceIds));
+        await mediator.Send(request);
     }
 
     [SwaggerOperation("A logged-in user no longer follows a manga")]
@@ -42,6 +42,13 @@ public class UserController(IMediator mediator) : BaseController
     public async Task<List<GetUserMangaSourcesResponse>> GetUserSources([FromQuery] GetUserMangaSourcesQuery request)
     {
         return await mediator.Send(request);
+    }
+    
+    [SwaggerOperation("A logged-in user starts following sources from a manga")]
+    [HttpPost("manga/{mangaId:int}/source")]
+    public async Task FollowSourcesFromManga([FromRoute] int mangaId, [FromBody] List<int> sourceIds)
+    {
+        await mediator.Send(new UpdateFollowedSourcesCommand(mangaId, sourceIds));
     }
 
     [SwaggerOperation("A logged-in user no longer follows a source from a manga")]

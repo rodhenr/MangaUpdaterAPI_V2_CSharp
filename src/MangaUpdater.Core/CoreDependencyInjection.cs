@@ -101,9 +101,9 @@ public static class CoreDependencyInjection
                 options.TokenValidationParameters = new TokenValidationParameters
                 {
                     ValidateIssuer = true,
-                    ValidIssuer = configuration.GetSection("JwtOptions:Issuer").Value,
+                    ValidIssuer = issuer,
                     ValidateAudience = true,
-                    ValidAudience = configuration.GetSection("JwtOptions:Audience").Value,
+                    ValidAudience = audience,
                     ValidateIssuerSigningKey = true,
                     IssuerSigningKey = securityKey,
                     RequireExpirationTime = true,
