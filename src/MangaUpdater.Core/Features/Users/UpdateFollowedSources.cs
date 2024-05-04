@@ -26,6 +26,18 @@ public sealed class UpdateFollowedSourcesHandler : IRequestHandler<UpdateFollowe
     {
         await VerifySources(request, cancellationToken);
         var userManga = await CreateAndGetUserManga(request.MangaId, request.SourceIds, cancellationToken);
+
+        if (request.SourceIds.Count == 0)
+        {
+            var userChapters = await _context.UserChapters
+                .Where(x => x.UserMangaId == userManga.Id)
+                .ToListAsync(cancellationToken);
+            
+            _context.UserChapters.RemoveRange(userChapters);
+            await _context.SaveChangesAsync(cancellationToken);
+
+            return;
+        }
         
         var userSources = request.SourceIds
             .Select(x => new UserChapter
