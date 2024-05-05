@@ -46,6 +46,14 @@ public class UpdateUserEmailValidator : AbstractValidator<UpdateUserEmailCommand
     {
         RuleFor(x => x.Email)
             .EmailAddress().WithMessage("Invalid email.");
+        
+        RuleFor(x => x.Password)
+            .NotEmpty().WithMessage("Invalid password.")
+            .MinimumLength(8).WithMessage("Your password length must be at least 8.")
+            .MaximumLength(32).WithMessage("Your password length must not exceed 32.");
+        
+        RuleFor(x => x.ConfirmationPassword)
+            .Equal(x => x.Password).WithMessage("Passwords don't match");
     }
 }
 

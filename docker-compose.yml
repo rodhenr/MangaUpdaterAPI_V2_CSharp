@@ -49,5 +49,7 @@ services:
       - Issuer=http://localhost
       - Audience=audiencehere
       - ApiKey=yourapikeyhereyourapikeyhereyourapikeyhereyourapikeyhereyourapikeyhere
+      - HangfireLogin=Admin
+      - HangfirePassword=123456789
     depends_on:
       - migrations

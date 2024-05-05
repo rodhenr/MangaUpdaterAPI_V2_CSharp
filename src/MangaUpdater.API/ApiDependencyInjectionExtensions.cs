@@ -1,3 +1,4 @@
+using CommunityToolkit.Diagnostics;
 using Hangfire;
 using Hangfire.Dashboard.BasicAuthorization;
 using MangaUpdater.Core.Services;
@@ -17,8 +18,14 @@ public static class ApiDependencyInjectionExtensions
         return services;
     }
 
-    public static WebApplication AddHangfireBuilder(this WebApplication builder)
+    public static WebApplication AddHangfireBuilder(this WebApplication builder, IConfiguration configuration)
     {
+        var hangfireLogin = configuration["HangfireLogin"];
+        var hangfirePassword = configuration["HangfirePassword"];
+        
+        Guard.IsNotNullOrEmpty(hangfireLogin);
+        Guard.IsNotNullOrEmpty(hangfirePassword);
+        
         builder.UseHangfireDashboard("/hangfire", new DashboardOptions
         {
             Authorization = new[]
@@ -33,8 +40,8 @@ public static class ApiDependencyInjectionExtensions
                         {
                             new BasicAuthAuthorizationUser
                             {
-                                Login = "Admin",
-                                PasswordClear = "123"
+                                Login = hangfireLogin,
+                                PasswordClear = hangfirePassword
                             }
                         }
                     })

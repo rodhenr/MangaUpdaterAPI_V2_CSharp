@@ -23,7 +23,7 @@ builder.Services.AddSwaggerGen();
 var app = builder.Build();
 
 // Hangfire
-app.AddHangfireBuilder();
+app.AddHangfireBuilder(app.Configuration);
 
 // Custom Middlewares
 app.UseMiddleware<ValidationExceptionHandlingMiddleware>();

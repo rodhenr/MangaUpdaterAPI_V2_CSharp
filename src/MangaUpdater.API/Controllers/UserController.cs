@@ -65,6 +65,13 @@ public class UserController(IMediator mediator) : BaseController
         await mediator.Send(new UpdateUserChapterCommand(mangaId, sourceId, requestBody.ChapterId));
     }
     
+    [SwaggerOperation("Get profile info from a logged in user")]
+    [HttpGet("account/profile")]
+    public async Task<GetUserProfileInfoResponse> GetUserProfileInfo()
+    {
+        return await mediator.Send(new GetUserProfileInfoQuery());
+    }
+    
     [SwaggerOperation("Changes email for the logged-in user")]
     [HttpPost("account/email")]
     public async Task UpdateUserEmail([FromBody] UpdateUserEmailCommand request)
