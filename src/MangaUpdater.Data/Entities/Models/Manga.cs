@@ -6,8 +6,9 @@ namespace MangaUpdater.Data.Entities.Models;
 public partial class Manga
 {
     [Key]
-    public int Id { get; set; }
-
+    [DatabaseGenerated(DatabaseGeneratedOption.None)]
+    public int MyAnimeListId { get; set; }
+    
     [StringLength(200)]
     public string CoverUrl { get; set; } = null!;
 
@@ -16,8 +17,6 @@ public partial class Manga
 
     [StringLength(50)]
     public string Type { get; set; } = null!;
-
-    public int MyAnimeListId { get; set; }
 
     [InverseProperty("Manga")]
     public virtual ICollection<Chapter> Chapters { get; set; } = new List<Chapter>();

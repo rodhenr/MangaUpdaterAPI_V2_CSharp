@@ -9,7 +9,7 @@ public static class MangaQueries
     {
         return await manga
             .AsNoTracking()
-            .Where(x => x.Id == mangaId)
+            .Where(x => x.MyAnimeListId == mangaId)
             .SingleOrDefaultAsync(cancellationToken);
     }
 }

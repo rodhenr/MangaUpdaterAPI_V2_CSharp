@@ -42,7 +42,7 @@ public sealed class GetMangaHandler : IRequestHandler<GetMangaQuery, GetMangaRes
         var authors = manga.MangaAuthors.Select(x => new MangaAuthorDto(x.Id, x.Name));
         var titles = manga.MangaTitles.Select(x => new MangaTitleDto(x.Id, x.Name, x.IsMyAnimeListMainTitle));
         
-        return new GetMangaResponse(manga.Id, manga.CoverUrl, manga.Synopsis, manga.Type, manga.MyAnimeListId, isUserFollowing, chapters, genres, sources, authors, titles);
+        return new GetMangaResponse(manga.MyAnimeListId, manga.CoverUrl, manga.Synopsis, manga.Type, manga.MyAnimeListId, isUserFollowing, chapters, genres, sources, authors, titles);
     }
 
     private async Task<Manga?> ApplyFilters(IQueryable<Manga> queryable, int mangaId, CancellationToken cancellationToken)
@@ -67,7 +67,7 @@ public sealed class GetMangaHandler : IRequestHandler<GetMangaQuery, GetMangaRes
                 .ThenInclude(uc => uc.Chapter);
         }
 
-        return await queryable.SingleOrDefaultAsync(m => m.Id == mangaId, cancellationToken);
+        return await queryable.SingleOrDefaultAsync(m => m.MyAnimeListId == mangaId, cancellationToken);
     }
 
     private IEnumerable<ChapterDto> MapAndReturnChapters(Manga manga)
