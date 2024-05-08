@@ -29,7 +29,8 @@ public sealed class GetMangaHandler : IRequestHandler<GetMangaQuery, GetMangaRes
     public async Task<GetMangaResponse> Handle(GetMangaQuery request, CancellationToken cancellationToken)
     {
         var queryable = _context.Mangas.AsNoTracking();
-        var manga = await ApplyFilters(queryable, request.MangaId, cancellationToken) ?? throw new EntityNotFoundException($"Manga not found for ID {request.MangaId}");
+        var manga = await ApplyFilters(queryable, request.MangaId, cancellationToken) 
+                    ?? throw new EntityNotFoundException($"Manga not found for ID {request.MangaId}");
         
         manga.Chapters = manga.Chapters
             .OrderByDescending(ch => float.Parse(ch.Number, CultureInfo.InvariantCulture))
@@ -38,7 +39,7 @@ public sealed class GetMangaHandler : IRequestHandler<GetMangaQuery, GetMangaRes
         var isUserFollowing = manga.UserMangas.Count > 0;
         var chapters = MapAndReturnChapters(manga);
         var genres = manga.MangaGenres.Select(x => new GenreDto(x.Genre.Id, x.Genre.Name));
-        var sources = manga.MangaSources.Select(x => new SourceDto(x.Source.Id, x.Source.Name));
+        var sources = manga.MangaSources.Select(x => new SourceDto(x.Source.Id, x.Source.Name, $"{x.Source.BaseUrl}{x.Url}"));
         var authors = manga.MangaAuthors.Select(x => new MangaAuthorDto(x.Id, x.Name));
         var titles = manga.MangaTitles.Select(x => new MangaTitleDto(x.Id, x.Name, x.IsMyAnimeListMainTitle));
         
