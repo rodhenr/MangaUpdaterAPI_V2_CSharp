@@ -9,8 +9,8 @@ namespace MangaUpdater.Core.Services;
 
 public interface IHangfireService
 {
-    Task AddHangfireJobs();
-    void ScheduleNextJob(DateTime dateJobStarted);
+    Task AddHangfireJobs(SourceEnum? sourceId);
+    void ScheduleNextJob(DateTime dateJobStarted, SourceEnum? sourceId);
 }
 
 [RegisterScoped]
@@ -25,37 +25,59 @@ public class HangfireService : IHangfireService
         _mediator = mediator;
     }
 
-    public async Task AddHangfireJobs()
+    public async Task AddHangfireJobs(SourceEnum? sourceId)
     {
-        var mangas = await _context.MangaSources
-            .Select(x => new {x.MangaId, SourceId = (SourceEnum)x.SourceId})
-            .ToListAsync();
+        var mangasToUpdate = await GetMangasToUpdateChapters(sourceId);
 
         var startTime = DateTime.Now;
         
-        if (mangas.Count == 0)
+        if (mangasToUpdate.Count == 0)
         {
-            ScheduleNextJob(startTime);
+            ScheduleNextJob(startTime, null);
             return;
         }
         
-        var lastJobId = string.Empty;
-
-        foreach (var manga in mangas)
+        foreach (var mangas in mangasToUpdate)
         {
-            lastJobId = _mediator.Enqueue(new UpdateChaptersCommand(manga.MangaId, manga.SourceId));
+            var lastJobId = string.Empty;
+            
+            foreach (var mangaId in mangas.Value)
+            {
+                lastJobId = lastJobId == ""
+                    ? _mediator.Enqueue(new UpdateChaptersCommand(mangaId, mangas.Key))
+                    : EnqueueContinueJob(lastJobId, mangaId, mangas.Key);
+            }
+            
+            BackgroundJob.ContinueJobWith<IHangfireService>(lastJobId, job => job.ScheduleNextJob(startTime, mangas.Key));
         }
-
-        BackgroundJob.ContinueJobWith<IHangfireService>(lastJobId, job => job.ScheduleNextJob(startTime));
     }
     
-    public void ScheduleNextJob(DateTime startTime)
+    public void ScheduleNextJob(DateTime startTime, SourceEnum? sourceId)
     {
         var timeDifference = DateTime.Now - startTime;
 
-        BackgroundJob.Schedule<IHangfireService>(job => job.AddHangfireJobs(),
-            timeDifference.Seconds >= 1800
+        BackgroundJob.Schedule<IHangfireService>(job => job.AddHangfireJobs(sourceId),
+            timeDifference.Seconds >= 3600
                 ? TimeSpan.FromSeconds(1)
-                : TimeSpan.FromSeconds(1800 - timeDifference.TotalSeconds));
+                : TimeSpan.FromSeconds(3600 - timeDifference.TotalSeconds));
+    }
+
+    private async Task<Dictionary<SourceEnum, IEnumerable<int>>> GetMangasToUpdateChapters(SourceEnum? sourceId)
+    {
+        var queryable = _context.MangaSources.AsQueryable();
+
+        if (sourceId is not null) queryable = queryable.Where(x => x.SourceId == (int)sourceId);
+
+        return await queryable
+            .GroupBy(x => x.SourceId)
+            .ToDictionaryAsync(
+                x => (SourceEnum)x.Key,
+                x => x.Select(y => y.MangaId)
+            );
+    }
+
+    private static string EnqueueContinueJob(string lastJobId, int mangaId, SourceEnum sourceId)
+    {
+        return BackgroundJob.ContinueJobWith(lastJobId, () => MediatorExtensions.Enqueue(new UpdateChaptersCommand(mangaId, sourceId)));
     }
 }

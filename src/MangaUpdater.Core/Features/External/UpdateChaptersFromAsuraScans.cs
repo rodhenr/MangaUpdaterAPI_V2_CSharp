@@ -46,6 +46,9 @@ public sealed partial class GetMangasFromAsuraScansHandler : IRequestHandler<Upd
 
     private void ProcessApiResult(UpdateChaptersFromAsuraScansCommand request, IEnumerable<HtmlNode> nodes, float lastChapterNumber)
     {
+        var currentHour = DateTime.Now.Hour;
+        var currentMinute = DateTime.Now.Minute;
+        
         foreach (var chapterNode in nodes)
         {
             var chapterNumberString = chapterNode
@@ -58,12 +61,14 @@ public sealed partial class GetMangasFromAsuraScansHandler : IRequestHandler<Upd
             var chapterNumber = ExtractNumberFromString(chapterNumberString);
             if (chapterNumber <= lastChapterNumber) break;
 
+            var chapterDate = DateTime.Parse(chapterDateString).AddHours(DateTime.Now.Hour).AddMinutes(DateTime.Now.Minute);
+
             var chapter = new Chapter
             {
                 MangaId = request.MangaId,
                 SourceId = request.SourceId,
                 Number = chapterNumber.ToString(CultureInfo.InvariantCulture),
-                Date = DateTime.Parse(chapterDateString)
+                Date = chapterDate
             };
 
             _chapterList.Add(chapter);

@@ -56,7 +56,7 @@ public static class ApiDependencyInjectionExtensions
             BackgroundJob.Delete(job.Key);
         }
 
-        BackgroundJob.Enqueue<IHangfireService>(task => task.AddHangfireJobs());
+        BackgroundJob.Enqueue<IHangfireService>(task => task.AddHangfireJobs(null));
 
         return builder;
     }

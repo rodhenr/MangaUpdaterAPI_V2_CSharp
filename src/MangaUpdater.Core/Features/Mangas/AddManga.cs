@@ -31,30 +31,28 @@ public sealed class AddMangaHandler : IRequestHandler<AddMangaCommand>
         
         var apiResponse = await _mediator.Send(new GetMangaInfoFromMyAnimeListQuery(request.MalId), cancellationToken);
 
-        var createdMangaId = await CreateManga(request.MalId, apiResponse, cancellationToken);
-        await CreateMangaDetails(apiResponse, createdMangaId, cancellationToken);
+        await CreateManga(request.MalId, apiResponse, cancellationToken);
+        await CreateMangaDetails(apiResponse, request.MalId, cancellationToken);
     }
 
-    private async Task<int> CreateManga(int malId, GetMangaInfoFromMyAnimeListResponse apiResponse, CancellationToken cancellationToken)
+    private async Task CreateManga(int malId, GetMangaInfoFromMyAnimeListResponse apiResponse, CancellationToken cancellationToken)
     {
         var manga = new Manga
         {
+            MyAnimeListId = malId,
             Synopsis = apiResponse.Synopsis,
             Type = apiResponse.Type,
-            CoverUrl = apiResponse.CoverUrl,
-            MyAnimeListId = malId
+            CoverUrl = apiResponse.CoverUrl
         };
         
         _context.Mangas.Add(manga);
         await _context.SaveChangesAsync(cancellationToken);
-
-        return malId;
     }
 
     private async Task CreateMangaDetails(GetMangaInfoFromMyAnimeListResponse apiResponse, int mangaId, CancellationToken cancellationToken)
     {
         var genreList = apiResponse.Genres.Select(g => new MangaGenre { GenreId = (int)g.MalId, MangaId = mangaId });
-        var authorList = apiResponse.Authors.Select(a => new MangaAuthor { MangaId = mangaId, Name = a.Name });
+        var authorList = apiResponse.Authors.Select(a => new MangaAuthor { MangaId = mangaId, Name = a.Name.Replace(',', ' ') });
         var titleList = apiResponse.Titles
             .Select(i => i.Title)
             .Distinct()
