@@ -1,10 +1,10 @@
-﻿using MangaUpdater.Infrastructure;
+﻿using MangaUpdater.Database;
 using MangaUpdater.Exceptions;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
-namespace MangaUpdater.Features.Chapters.Get;
+namespace MangaUpdater.Features.Chapters.Queries;
 
 public record GetChapterQuery([FromRoute] int MangaId, [FromRoute] int ChapterId) : IRequest<GetChapterResponse>;
 

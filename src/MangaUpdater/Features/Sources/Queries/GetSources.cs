@@ -1,8 +1,8 @@
-﻿using MangaUpdater.Infrastructure;
+﻿using MangaUpdater.Database;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
-namespace MangaUpdater.Features.Sources.GetSources;
+namespace MangaUpdater.Features.Sources.Queries;
 
 public record GetSourcesQuery : IRequest<List<GetSourcesResponse>>;
 

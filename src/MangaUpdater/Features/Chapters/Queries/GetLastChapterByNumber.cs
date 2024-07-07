@@ -1,10 +1,10 @@
 using System.Globalization;
-using MangaUpdater.Infrastructure;
+using MangaUpdater.Database;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
-namespace MangaUpdater.Features.Chapters.GetLast;
+namespace MangaUpdater.Features.Chapters.Queries;
 
 public record GetLastChapterByNumberQuery([FromQuery] int MangaId, [FromQuery] int SourceId) : IRequest<GetLastChapterByNumberResponse>;
 

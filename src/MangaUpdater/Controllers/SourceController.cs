@@ -1,5 +1,5 @@
 ﻿using MangaUpdater.Controllers.Shared;
-using MangaUpdater.Features.Sources;
+using MangaUpdater.Features.Sources.Queries;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;

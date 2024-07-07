@@ -2,7 +2,7 @@
 using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.EntityFrameworkCore;
 
-namespace MangaUpdater.Infrastructure.Entities;
+namespace MangaUpdater.Entities;
 
 [Index("MangaId", "UserId", Name = "IX_UserMangas_MangaId_UserId", IsUnique = true)]
 public partial class UserManga

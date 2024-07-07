@@ -1,15 +1,15 @@
 ﻿using System.Globalization;
-using MangaUpdater.Infrastructure;
-using MangaUpdater.Infrastructure.Entities;
-using MangaUpdater.Dto;
-using MangaUpdater.Features.Chapters;
-using MangaUpdater.Services;
+using MangaUpdater.Database;
+using MangaUpdater.DTOs;
+using MangaUpdater.Entities;
 using MangaUpdater.Exceptions;
+using MangaUpdater.Helpers;
+using MangaUpdater.Services;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
-namespace MangaUpdater.Features.Mangas.GetManga;
+namespace MangaUpdater.Features.Mangas.Queries;
 
 public record GetMangaQuery([FromRoute] int MangaId) : IRequest<GetMangaResponse>;
 

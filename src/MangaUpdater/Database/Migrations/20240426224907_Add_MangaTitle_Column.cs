@@ -2,7 +2,7 @@
 
 #nullable disable
 
-namespace MangaUpdater.Infrastructure.Scaffolding
+namespace MangaUpdater.Database.Scaffolding
 {
     /// <inheritdoc />
     public partial class Add_MangaTitle_Column : Migration

@@ -1,10 +1,10 @@
 using MangaUpdater.Services;
-using MangaUpdater.Infrastructure;
+using MangaUpdater.Database;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
-namespace MangaUpdater.Features.MangaSources.GetMangaSources;
+namespace MangaUpdater.Features.MangaSources.Queries;
 
 public record GetMangaSourcesQuery([FromRoute] int MangaId) : IRequest<List<GetMangaSourcesResponse>>;
 

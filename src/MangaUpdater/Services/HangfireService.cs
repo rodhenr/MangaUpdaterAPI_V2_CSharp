@@ -1,17 +1,17 @@
 ﻿using Hangfire;
+using MangaUpdater.Database;
+using MangaUpdater.Enums;
 using MangaUpdater.Extensions;
-using MangaUpdater.Features.Chapters;
-using MangaUpdater.Features.Chapters.Update;
-using MangaUpdater.Infrastructure;
+using MangaUpdater.Features.Chapters.Commands;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
-namespace MangaUpdater.Shared;
+namespace MangaUpdater.Services;
 
 public interface IHangfireService
 {
-    Task AddHangfireJobs(SourceEnum? sourceId);
-    void ScheduleNextJob(DateTime dateJobStarted, SourceEnum? sourceId);
+    Task AddHangfireJobs(MangaSourcesEnum? sourceId);
+    void ScheduleNextJob(DateTime dateJobStarted, MangaSourcesEnum? sourceId);
 }
 
 [RegisterScoped]
@@ -26,7 +26,7 @@ public class HangfireService : IHangfireService
         _mediator = mediator;
     }
 
-    public async Task AddHangfireJobs(SourceEnum? sourceId)
+    public async Task AddHangfireJobs(MangaSourcesEnum? sourceId)
     {
         var mangasToUpdate = await GetMangasToUpdateChapters(sourceId);
 
@@ -54,7 +54,7 @@ public class HangfireService : IHangfireService
         }
     }
     
-    public void ScheduleNextJob(DateTime startTime, SourceEnum? sourceId)
+    public void ScheduleNextJob(DateTime startTime, MangaSourcesEnum? sourceId)
     {
         var timeDifference = DateTime.Now - startTime;
 
@@ -64,7 +64,7 @@ public class HangfireService : IHangfireService
                 : TimeSpan.FromSeconds(3600 - timeDifference.TotalSeconds));
     }
 
-    private async Task<Dictionary<SourceEnum, IEnumerable<int>>> GetMangasToUpdateChapters(SourceEnum? sourceId)
+    private async Task<Dictionary<MangaSourcesEnum, IEnumerable<int>>> GetMangasToUpdateChapters(MangaSourcesEnum? sourceId)
     {
         var queryable = _context.MangaSources.AsQueryable();
 
@@ -73,12 +73,12 @@ public class HangfireService : IHangfireService
         return await queryable
             .GroupBy(x => x.SourceId)
             .ToDictionaryAsync(
-                x => (SourceEnum)x.Key,
+                x => (MangaSourcesEnum)x.Key,
                 x => x.Select(y => y.MangaId)
             );
     }
 
-    private static string EnqueueContinueJob(string lastJobId, int mangaId, SourceEnum sourceId)
+    private static string EnqueueContinueJob(string lastJobId, int mangaId, MangaSourcesEnum sourceId)
     {
         return BackgroundJob.ContinueJobWith(lastJobId, () => 
             MediatorExtensions.Enqueue(new UpdateChaptersCommand(mangaId, sourceId)));

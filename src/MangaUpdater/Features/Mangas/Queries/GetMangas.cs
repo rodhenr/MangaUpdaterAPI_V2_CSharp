@@ -1,9 +1,9 @@
-﻿using MangaUpdater.Infrastructure;
-using MangaUpdater.Infrastructure.Entities;
+﻿using MangaUpdater.Database;
+using MangaUpdater.Entities;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
-namespace MangaUpdater.Features.Mangas.GetMangas;
+namespace MangaUpdater.Features.Mangas.Queries;
 
 public enum OrderByEnum
 {

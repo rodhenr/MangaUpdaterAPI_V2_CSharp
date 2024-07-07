@@ -2,7 +2,7 @@
 using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.EntityFrameworkCore;
 
-namespace MangaUpdater.Infrastructure.Entities;
+namespace MangaUpdater.Entities;
 
 [PrimaryKey("MangaId", "Name")]
 public partial class MangaAuthor

@@ -2,7 +2,7 @@
 using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.EntityFrameworkCore;
 
-namespace MangaUpdater.Infrastructure.Entities;
+namespace MangaUpdater.Entities;
 
 [Index("MangaId", "SourceId", "Number", Name = "IX_Chapters_MangaId_SourceId_Number", IsUnique = true)]
 [Index("SourceId", Name = "IX_Chapters_SourceId")]

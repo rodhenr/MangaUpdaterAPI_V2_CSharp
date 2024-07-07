@@ -1,6 +1,6 @@
 using System.Text.Json.Serialization;
-using MangaUpdater.Exceptions;
 using MangaUpdater.Extensions;
+using MangaUpdater.Middlewares;
 
 var builder = WebApplication.CreateBuilder(args);
 

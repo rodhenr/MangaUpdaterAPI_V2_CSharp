@@ -1,8 +1,8 @@
-﻿using MangaUpdater.Infrastructure.Entities;
+﻿using MangaUpdater.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace MangaUpdater.Infrastructure.Configurations;
+namespace MangaUpdater.Database.Configurations;
 
 public class GenreConfiguration : IEntityTypeConfiguration<Genre>
 {

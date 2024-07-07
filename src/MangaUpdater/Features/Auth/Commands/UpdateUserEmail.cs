@@ -1,12 +1,12 @@
-﻿using MangaUpdater.Infrastructure.Entities;
-using MangaUpdater.Services;
+﻿using MangaUpdater.Entities;
 using MangaUpdater.Exceptions;
+using MangaUpdater.Services;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using InvalidOperationException = MangaUpdater.Shared.Exceptions.InvalidOperationException;
+using InvalidOperationException = MangaUpdater.Exceptions.InvalidOperationException;
 
-namespace MangaUpdater.Features.Auth.UserInfo;
+namespace MangaUpdater.Features.Auth.Commands;
 
 public record UpdateUserEmailCommand([FromBody] string Email, [FromBody] string Password, [FromBody] string ConfirmationPassword) : IRequest;
 

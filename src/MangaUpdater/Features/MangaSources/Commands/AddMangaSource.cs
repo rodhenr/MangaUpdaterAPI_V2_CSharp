@@ -1,10 +1,10 @@
-﻿using MangaUpdater.Infrastructure;
-using MangaUpdater.Infrastructure.Queries;
-using MangaUpdater.Infrastructure.Entities;
+﻿using MangaUpdater.Database;
+using MangaUpdater.Entities;
 using MangaUpdater.Exceptions;
+using MangaUpdater.Extensions;
 using MediatR;
 
-namespace MangaUpdater.Features.MangaSources.CreateMangaSource;
+namespace MangaUpdater.Features.MangaSources.Commands;
 
 public record AddMangaSourceCommand(int MangaId, SourceInfo SourceInfo) : IRequest;
 

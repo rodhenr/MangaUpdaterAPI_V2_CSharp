@@ -1,9 +1,9 @@
 using System.Security.Authentication;
-using MangaUpdater.Infrastructure.Entities;
+using MangaUpdater.Entities;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
 
-namespace MangaUpdater.Features.Auth.Login;
+namespace MangaUpdater.Features.Auth.Queries;
 
 public record GetUserInfoQuery(string UserId) : IRequest<GetUserInfoResponse>;
 public record GetUserInfoResponse(string Avatar, string Name, string Id, string Email, bool IsAdmin);

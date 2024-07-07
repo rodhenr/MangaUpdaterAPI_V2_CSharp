@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
-namespace MangaUpdater.Infrastructure.Entities;
+namespace MangaUpdater.Entities;
 
 public class AppUser : IdentityUser
 {

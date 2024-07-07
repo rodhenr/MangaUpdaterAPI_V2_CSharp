@@ -1,7 +1,6 @@
 ﻿using MangaUpdater.Controllers.Shared;
-using MangaUpdater.Features.Auth.Login;
-using MangaUpdater.Features.Auth.RefreshToken;
-using MangaUpdater.Features.Auth.Register;
+using MangaUpdater.Features.Auth.Commands;
+using MangaUpdater.Features.Auth.Queries;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;

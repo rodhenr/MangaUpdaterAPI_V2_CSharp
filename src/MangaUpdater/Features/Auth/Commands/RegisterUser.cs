@@ -1,10 +1,10 @@
-﻿using MangaUpdater.Infrastructure.Entities;
+﻿using MangaUpdater.Entities;
 using MangaUpdater.Exceptions;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
-namespace MangaUpdater.Features.Auth.Register;
+namespace MangaUpdater.Features.Auth.Commands;
 
 public record RegisterUserCommand([FromBody] string UserName, [FromBody] string Email, [FromBody] string Password, [FromBody] string ConfirmationPassword) : IRequest;
 

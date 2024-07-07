@@ -5,10 +5,12 @@ using FluentValidation;
 using Hangfire;
 using Hangfire.Dashboard.BasicAuthorization;
 using Hangfire.SqlServer;
+using MangaUpdater.Database;
+using MangaUpdater.Entities;
 using MangaUpdater.Features.Auth;
-using MangaUpdater.Infrastructure;
-using MangaUpdater.Infrastructure.Entities;
 using MangaUpdater.Middlewares;
+using MangaUpdater.Services;
+using MangaUpdater.Shared;
 using MediatR;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
@@ -82,7 +84,7 @@ public static class DependencyInjectionExtensions
         services.AddMediatR(cfg =>
         {
             cfg.RegisterServicesFromAssembly(executingAssembly);
-            cfg.AddBehavior(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
+            cfg.AddBehavior(typeof(IPipelineBehavior<,>), typeof(ValidationBehaviorMiddleware<,>));
         });
         services.AddValidatorsFromAssembly(executingAssembly);
         
@@ -90,7 +92,7 @@ public static class DependencyInjectionExtensions
             .UseSimpleAssemblyNameTypeSerializer()
             .UseRecommendedSerializerSettings()
             .UseIgnoredAssemblyVersionTypeResolver()
-            .UseSqlServerStorage(configuration.GetConnectionString("DefaultConnection"), new SqlServerStorageOptions(){ SchemaName =  "dbo" })
+            .UseSqlServerStorage(configuration.GetConnectionString("DefaultConnection"), new SqlServerStorageOptions { SchemaName =  "dbo" })
             .UseMediatR());
         services.AddHangfireServer(options => options.WorkerCount = 2);
 

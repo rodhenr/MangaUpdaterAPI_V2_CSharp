@@ -1,10 +1,10 @@
-using MangaUpdater.Infrastructure.Entities;
-using MangaUpdater.Services;
+using MangaUpdater.Entities;
 using MangaUpdater.Exceptions;
+using MangaUpdater.Services;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
 
-namespace MangaUpdater.Features.Auth.UserInfo;
+namespace MangaUpdater.Features.Auth.Queries;
 
 public record GetAndVerifyUserQuery(string Password) : IRequest<GetAndVerifyUserResponse>;
 public record GetAndVerifyUserResponse(AppUser User);

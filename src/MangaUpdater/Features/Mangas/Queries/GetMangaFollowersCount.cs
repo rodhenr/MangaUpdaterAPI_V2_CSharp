@@ -1,9 +1,9 @@
-﻿using MangaUpdater.Infrastructure;
+﻿using MangaUpdater.Database;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
-namespace MangaUpdater.Features.Mangas.GetMangaFollowers;
+namespace MangaUpdater.Features.Mangas.Queries;
 
 public record GetMangaFollowersCountQuery([FromRoute] int MangaId) : IRequest<GetMangaFollowersCountResponse>;
 

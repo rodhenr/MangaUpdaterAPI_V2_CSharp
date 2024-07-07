@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace MangaUpdater.Infrastructure.Entities;
+namespace MangaUpdater.Entities;
 
 public partial class Genre
 {

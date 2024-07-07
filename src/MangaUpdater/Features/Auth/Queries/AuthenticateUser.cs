@@ -1,9 +1,9 @@
-﻿using MangaUpdater.Infrastructure.Entities;
+﻿using MangaUpdater.Entities;
 using MangaUpdater.Exceptions;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
 
-namespace MangaUpdater.Features.Auth.Login;
+namespace MangaUpdater.Features.Auth.Queries;
 
 public record AuthenticateUserQuery(string Email, string Password) : IRequest<AuthenticateUserResponse>;
 

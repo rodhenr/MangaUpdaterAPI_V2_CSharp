@@ -2,7 +2,7 @@
 
 #nullable disable
 
-namespace MangaUpdater.Infrastructure.Migrations
+namespace MangaUpdater.Database.Migrations
 {
     /// <inheritdoc />
     public partial class AddIdEntities : Migration

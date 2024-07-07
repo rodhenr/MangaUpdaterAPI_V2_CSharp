@@ -1,8 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
-using MangaUpdater.Infrastructure.Entities;
+using MangaUpdater.Entities;
 
-namespace MangaUpdater.Infrastructure;
+namespace MangaUpdater.Database;
 
 [RegisterScoped]
 public class AppDbContextIdentity(DbContextOptions<AppDbContextIdentity> options) : IdentityDbContext<AppUser>(options)

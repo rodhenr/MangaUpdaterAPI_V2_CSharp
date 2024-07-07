@@ -1,10 +1,11 @@
-﻿using MangaUpdater.Infrastructure.Entities;
+﻿using MangaUpdater.Entities;
 using MangaUpdater.Exceptions;
+using MangaUpdater.Features.Auth.Queries;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
-namespace MangaUpdater.Features.Auth.UserInfo;
+namespace MangaUpdater.Features.Auth.Commands;
 
 public record UpdateUserPasswordCommand([FromBody] string Password, [FromQuery] string OldPassword) : IRequest;
 

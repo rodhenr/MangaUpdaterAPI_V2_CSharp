@@ -1,8 +1,8 @@
-using MangaUpdater.Infrastructure;
+using MangaUpdater.Database;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
-namespace MangaUpdater.Features.Genres.GetGenres;
+namespace MangaUpdater.Features.Genres.Queries;
 
 public record GetGenresQuery : IRequest<List<GetGenresResponse>>;
 

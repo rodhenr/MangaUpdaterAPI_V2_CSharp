@@ -1,10 +1,10 @@
-﻿using MangaUpdater.Infrastructure.Entities;
-using MangaUpdater.Services;
+﻿using MangaUpdater.Entities;
 using MangaUpdater.Exceptions;
+using MangaUpdater.Services;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
 
-namespace MangaUpdater.Features.Auth.RefreshToken;
+namespace MangaUpdater.Features.Auth.Queries;
 
 public record RefreshTokenQuery : IRequest<RefreshTokenResponse>;
 

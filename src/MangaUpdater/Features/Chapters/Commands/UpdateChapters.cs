@@ -1,18 +1,13 @@
-using MangaUpdater.Infrastructure;
-using MangaUpdater.Features.External;
+using MangaUpdater.Database;
+using MangaUpdater.Enums;
 using MangaUpdater.Exceptions;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
-namespace MangaUpdater.Features.Chapters.Update;
+namespace MangaUpdater.Features.Chapters.Commands;
 
-public enum SourceEnum {
-    MangaDex = 1,
-    AsuraScans = 2
-}
-
-public record UpdateChaptersCommand([FromRoute] int MangaId, [FromRoute] SourceEnum SourceId) : IRequest;
+public record UpdateChaptersCommand([FromRoute] int MangaId, [FromRoute] MangaSourcesEnum SourceId) : IRequest;
 
 public sealed class UpdateChaptersHandler : IRequestHandler<UpdateChaptersCommand>
 {
@@ -38,10 +33,10 @@ public sealed class UpdateChaptersHandler : IRequestHandler<UpdateChaptersComman
         
         switch (request.SourceId)
         {
-            case SourceEnum.MangaDex: 
+            case MangaSourcesEnum.MangaDex: 
                 await _mediator.Send(new UpdateChaptersFromMangaDexCommand(request.MangaId, source.Id, source.BaseUrl), cancellationToken);
                 break;
-            case SourceEnum.AsuraScans: 
+            case MangaSourcesEnum.AsuraScans: 
                 await _mediator.Send(new UpdateChaptersFromAsuraScansCommand(request.MangaId, source.Id, source.BaseUrl), cancellationToken);
                 break;
             default: throw new ArgumentOutOfRangeException();

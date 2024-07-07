@@ -1,12 +1,12 @@
-﻿using MangaUpdater.Infrastructure;
-using MangaUpdater.Infrastructure.Entities;
-using MangaUpdater.Features.External;
+﻿using MangaUpdater.Database;
+using MangaUpdater.Entities;
 using MangaUpdater.Exceptions;
+using MangaUpdater.Features.Mangas.Queries;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
-namespace MangaUpdater.Features.Mangas.CreateManga;
+namespace MangaUpdater.Features.Mangas.Commands;
 
 public record AddMangaCommand([FromBody] int MalId) : IRequest;
 
@@ -26,8 +26,11 @@ public sealed class AddMangaHandler : IRequestHandler<AddMangaCommand>
         var isMangaRegistered = await _context.Mangas
             .Where(x => x.MyAnimeListId == request.MalId)
             .FirstOrDefaultAsync(cancellationToken);
-        
-        if (isMangaRegistered is not null) throw new BadRequestException($"The ID {request.MalId} is already registered");
+
+        if (isMangaRegistered is not null)
+        {
+            throw new BadRequestException($"The ID {request.MalId} is already registered");
+        }
         
         var apiResponse = await _mediator.Send(new GetMangaInfoFromMyAnimeListQuery(request.MalId), cancellationToken);
 

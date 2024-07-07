@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
-namespace MangaUpdater.Infrastructure.Migrations
+namespace MangaUpdater.Database.Migrations
 {
     /// <inheritdoc />
     public partial class initial : Migration
