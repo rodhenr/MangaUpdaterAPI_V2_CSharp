@@ -3,16 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.6.33815.320
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MangaUpdater.Core", "src\MangaUpdater.Core\MangaUpdater.Core.csproj", "{E2623CDD-30EF-4586-81A9-E407DC634F76}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MangaUpdater.Data", "src\MangaUpdater.Data\MangaUpdater.Data.csproj", "{4BB434C0-1468-4394-A0B9-BCA76F7E7D4E}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MangaUpdater.API", "src\MangaUpdater.API\MangaUpdater.API.csproj", "{74435919-C1BF-4C70-ABEA-162E8F6EBF47}"
-	ProjectSection(ProjectDependencies) = postProject
-		{4BB434C0-1468-4394-A0B9-BCA76F7E7D4E} = {4BB434C0-1468-4394-A0B9-BCA76F7E7D4E}
-	EndProjectSection
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{8C52B59C-F8F7-436C-9EA5-86562E55D9C2}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MangaUpdater", "src\MangaUpdater\MangaUpdater.csproj", "{01643D78-1C55-43CB-A7A3-0729F4E64B01}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{78854080-3536-4701-9B13-D4B48C849AB5}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -20,26 +15,16 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{E2623CDD-30EF-4586-81A9-E407DC634F76}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{E2623CDD-30EF-4586-81A9-E407DC634F76}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{E2623CDD-30EF-4586-81A9-E407DC634F76}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{E2623CDD-30EF-4586-81A9-E407DC634F76}.Release|Any CPU.Build.0 = Release|Any CPU
-		{4BB434C0-1468-4394-A0B9-BCA76F7E7D4E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{4BB434C0-1468-4394-A0B9-BCA76F7E7D4E}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{4BB434C0-1468-4394-A0B9-BCA76F7E7D4E}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{4BB434C0-1468-4394-A0B9-BCA76F7E7D4E}.Release|Any CPU.Build.0 = Release|Any CPU
-		{74435919-C1BF-4C70-ABEA-162E8F6EBF47}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{74435919-C1BF-4C70-ABEA-162E8F6EBF47}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{74435919-C1BF-4C70-ABEA-162E8F6EBF47}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{74435919-C1BF-4C70-ABEA-162E8F6EBF47}.Release|Any CPU.Build.0 = Release|Any CPU
+		{01643D78-1C55-43CB-A7A3-0729F4E64B01}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{01643D78-1C55-43CB-A7A3-0729F4E64B01}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{01643D78-1C55-43CB-A7A3-0729F4E64B01}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{01643D78-1C55-43CB-A7A3-0729F4E64B01}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
-		{E2623CDD-30EF-4586-81A9-E407DC634F76} = {8C52B59C-F8F7-436C-9EA5-86562E55D9C2}
-		{4BB434C0-1468-4394-A0B9-BCA76F7E7D4E} = {8C52B59C-F8F7-436C-9EA5-86562E55D9C2}
-		{74435919-C1BF-4C70-ABEA-162E8F6EBF47} = {8C52B59C-F8F7-436C-9EA5-86562E55D9C2}
+		{01643D78-1C55-43CB-A7A3-0729F4E64B01} = {8C52B59C-F8F7-436C-9EA5-86562E55D9C2}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {37825D02-898E-45CF-9C77-DBD9E36FC788}
