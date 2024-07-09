@@ -1,6 +1,6 @@
 using MediatR;
 
-namespace MangaUpdater.Services;
+namespace MangaUpdater.Services.Hangfire;
 
 public class MediatorHangfireBridge
 {

@@ -1,5 +1,6 @@
 using Hangfire;
 using MangaUpdater.Services;
+using MangaUpdater.Services.Hangfire;
 using MediatR;
 
 namespace MangaUpdater.Extensions;

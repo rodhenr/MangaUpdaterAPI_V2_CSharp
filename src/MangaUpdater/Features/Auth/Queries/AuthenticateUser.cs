@@ -1,5 +1,6 @@
 ﻿using MangaUpdater.Entities;
 using MangaUpdater.Exceptions;
+using MangaUpdater.Features.User.Queries;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
 

@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using InvalidOperationException = MangaUpdater.Exceptions.InvalidOperationException;
 
-namespace MangaUpdater.Features.Auth.Commands;
+namespace MangaUpdater.Features.User.Commands;
 
 public record UpdateUserEmailCommand([FromBody] string Email, [FromBody] string Password, [FromBody] string ConfirmationPassword) : IRequest;
 

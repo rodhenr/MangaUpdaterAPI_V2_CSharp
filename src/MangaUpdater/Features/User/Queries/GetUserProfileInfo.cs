@@ -2,7 +2,7 @@ using MangaUpdater.Features.Auth.Queries;
 using MangaUpdater.Services;
 using MediatR;
 
-namespace MangaUpdater.Features.Auth.Queries;
+namespace MangaUpdater.Features.User.Queries;
 
 public record GetUserProfileInfoQuery: IRequest<GetUserProfileInfoResponse>;
 

@@ -6,7 +6,7 @@ using MangaUpdater.Features.Chapters.Commands;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
-namespace MangaUpdater.Services;
+namespace MangaUpdater.Services.Hangfire;
 
 public interface IHangfireService
 {

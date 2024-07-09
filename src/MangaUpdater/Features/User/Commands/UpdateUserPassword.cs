@@ -5,7 +5,7 @@ using MediatR;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
-namespace MangaUpdater.Features.Auth.Commands;
+namespace MangaUpdater.Features.User.Commands;
 
 public record UpdateUserPasswordCommand([FromBody] string Password, [FromQuery] string OldPassword) : IRequest;
 

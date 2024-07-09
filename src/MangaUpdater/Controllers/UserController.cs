@@ -1,6 +1,6 @@
 ﻿using MangaUpdater.Controllers.Shared;
-using MangaUpdater.Features.Auth.Commands;
-using MangaUpdater.Features.Auth.Queries;
+using MangaUpdater.Features.User.Commands;
+using MangaUpdater.Features.User.Queries;
 using MangaUpdater.Features.UserMangas.Commands;
 using MangaUpdater.Features.UserMangas.Queries;
 using MediatR;

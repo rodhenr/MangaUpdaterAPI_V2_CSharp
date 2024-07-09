@@ -1,6 +1,7 @@
 using FluentValidation;
 using MangaUpdater.Features.Auth.Commands;
 using MangaUpdater.Features.Auth.Queries;
+using MangaUpdater.Features.User.Commands;
 
 namespace MangaUpdater.Shared;
 

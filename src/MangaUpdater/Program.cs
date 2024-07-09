@@ -1,5 +1,5 @@
 using System.Text.Json.Serialization;
-using MangaUpdater.Extensions;
+using MangaUpdater;
 using MangaUpdater.Middlewares;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -10,9 +10,7 @@ builder.Services.AddHttpClient();
 builder.Services.AddCors();
 
 // Custom Services
-builder.Services.AddApiServices().AddDataService().AddCoreServices(builder.Configuration);
-builder.Services.AddJwtAuthenticationServices(builder.Configuration);
-builder.Services.AddIdentityServices(builder.Configuration);
+builder.Services.AddCustomServices(builder.Configuration);
 
 // Swagger
 builder.Services.AddEndpointsApiExplorer();

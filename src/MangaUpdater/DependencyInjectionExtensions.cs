@@ -7,9 +7,9 @@ using Hangfire.Dashboard.BasicAuthorization;
 using Hangfire.SqlServer;
 using MangaUpdater.Database;
 using MangaUpdater.Entities;
-using MangaUpdater.Features.Auth;
 using MangaUpdater.Middlewares;
 using MangaUpdater.Services;
+using MangaUpdater.Services.Hangfire;
 using MangaUpdater.Shared;
 using MediatR;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -18,21 +18,27 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
+using Newtonsoft.Json;
 using Swashbuckle.AspNetCore.SwaggerGen;
 
-namespace MangaUpdater.Extensions;
+namespace MangaUpdater;
 
 public static class DependencyInjectionExtensions
 {
-    public static IServiceCollection AddApiServices(this IServiceCollection services)
+    public static IServiceCollection AddCustomServices(this IServiceCollection services, IConfiguration configuration)
     {
         services.AddHttpContextAccessor();
         services.AddTransient<IConfigureOptions<SwaggerGenOptions>, ConfigureSwaggerOptions>();
         services.AddProblemDetails();
         
+        AddHangfireServices(services, configuration);
+        AddMediatrServices(services, configuration);
+        AddIdentityServices(services, configuration);
+        AddJwtAuthenticationServices(services, configuration);
+        
         return services;
     }
-
+    
     public static WebApplication AddHangfireBuilder(this WebApplication builder, IConfiguration configuration)
     {
         var hangfireLogin = configuration["HangfireLogin"];
@@ -75,11 +81,28 @@ public static class DependencyInjectionExtensions
 
         return builder;
     }
-    
-    public static IServiceCollection AddCoreServices(this IServiceCollection services, IConfiguration configuration)
-    {
-        services.AutoRegister();
 
+    private static IServiceCollection AddHangfireServices(IServiceCollection services, IConfiguration configuration)
+    {
+        var jsonSettings = new JsonSerializerSettings
+        {
+            TypeNameHandling = TypeNameHandling.All
+        };
+        
+        services.AddHangfire(c => c.SetDataCompatibilityLevel(CompatibilityLevel.Version_180)
+            .UseSimpleAssemblyNameTypeSerializer()
+            .UseRecommendedSerializerSettings()
+            .UseIgnoredAssemblyVersionTypeResolver()
+            .UseSqlServerStorage(configuration.GetConnectionString("DefaultConnection"), new SqlServerStorageOptions { SchemaName =  "dbo" })
+            .UseSerializerSettings(jsonSettings));
+        
+        services.AddHangfireServer(options => options.WorkerCount = 2);
+
+        return services;
+    }
+
+    private static IServiceCollection AddMediatrServices(IServiceCollection services, IConfiguration configuration)
+    {
         var executingAssembly = Assembly.GetExecutingAssembly();
         services.AddMediatR(cfg =>
         {
@@ -87,19 +110,11 @@ public static class DependencyInjectionExtensions
             cfg.AddBehavior(typeof(IPipelineBehavior<,>), typeof(ValidationBehaviorMiddleware<,>));
         });
         services.AddValidatorsFromAssembly(executingAssembly);
-        
-        services.AddHangfire(c => c.SetDataCompatibilityLevel(CompatibilityLevel.Version_180)
-            .UseSimpleAssemblyNameTypeSerializer()
-            .UseRecommendedSerializerSettings()
-            .UseIgnoredAssemblyVersionTypeResolver()
-            .UseSqlServerStorage(configuration.GetConnectionString("DefaultConnection"), new SqlServerStorageOptions { SchemaName =  "dbo" })
-            .UseMediatR());
-        services.AddHangfireServer(options => options.WorkerCount = 2);
 
         return services;
     }
     
-    public static IServiceCollection AddIdentityServices(this IServiceCollection services, IConfiguration configuration)
+    private static IServiceCollection AddIdentityServices(this IServiceCollection services, IConfiguration configuration)
     {
         services.AddDbContext<AppDbContextIdentity>(options => 
             options.UseSqlServer(configuration.GetConnectionString("DefaultConnection"), 
@@ -122,7 +137,7 @@ public static class DependencyInjectionExtensions
         return services;
     }
     
-    public static IServiceCollection AddJwtAuthenticationServices(this IServiceCollection services, IConfiguration configuration)
+    private static IServiceCollection AddJwtAuthenticationServices(this IServiceCollection services, IConfiguration configuration)
     {
         var issuer = configuration["Issuer"];
         var audience = configuration["Audience"];
@@ -177,11 +192,4 @@ public static class DependencyInjectionExtensions
 
         return services;
     }
-    
-    public static IServiceCollection AddDataService(this IServiceCollection services)
-    {
-        services.AutoRegister();
-
-        return services;
-    } 
 }
