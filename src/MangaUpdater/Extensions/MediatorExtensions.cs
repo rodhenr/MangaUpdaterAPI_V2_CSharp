@@ -1,5 +1,4 @@
 using Hangfire;
-using MangaUpdater.Services;
 using MangaUpdater.Services.Hangfire;
 using MediatR;
 
@@ -13,7 +12,7 @@ public static class MediatorExtensions
         return client.Enqueue<MediatorHangfireBridge>(bridge => bridge.Send(request));
     }
     
-    public static string Enqueue(this IMediator mediator,IRequest request)
+    public static string Enqueue(this IMediator mediator, IRequest request)
     {
         var client = new BackgroundJobClient();
         return client.Enqueue<MediatorHangfireBridge>(bridge => bridge.Send(request));

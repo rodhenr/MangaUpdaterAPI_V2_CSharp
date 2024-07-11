@@ -4,9 +4,9 @@ namespace MangaUpdater.Services.Hangfire;
 
 public class MediatorHangfireBridge
 {
-    private readonly IMediator _mediator;
+    private readonly ISender _mediator;
 
-    public MediatorHangfireBridge(IMediator mediator)
+    public MediatorHangfireBridge(ISender mediator)
     {
         _mediator = mediator;
     }

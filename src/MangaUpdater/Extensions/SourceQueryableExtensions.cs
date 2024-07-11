@@ -5,7 +5,7 @@ namespace MangaUpdater.Extensions;
 
 public static class SourceQueryableExtensions
 {
-    public static async Task<Source?> GetById(this DbSet<Source> source, int sourceId, CancellationToken cancellationToken)
+    public static async Task<Source?> GetById(this IQueryable<Source> source, int sourceId, CancellationToken cancellationToken)
     {
         return await source
             .AsNoTracking()
