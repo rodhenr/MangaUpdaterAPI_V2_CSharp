@@ -42,6 +42,9 @@ public static class DependencyInjectionExtensions
     
     public static WebApplication AddHangfireBuilder(this WebApplication builder, IConfiguration configuration)
     {
+        var env = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
+        if (env == "Testing") return builder;
+        
         var hangfireLogin = configuration["HangfireLogin"];
         var hangfirePassword = configuration["HangfirePassword"];
         

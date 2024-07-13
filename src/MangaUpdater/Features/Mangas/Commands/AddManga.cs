@@ -54,9 +54,11 @@ public sealed class AddMangaHandler : IRequestHandler<AddMangaCommand>
 
     private async Task CreateMangaDetails(GetMangaInfoFromMyAnimeListResponse apiResponse, int mangaId, CancellationToken cancellationToken)
     {
+        await CreateMissingGenres(apiResponse, cancellationToken);
+        
         var genreList = apiResponse.Genres.Select(g => new MangaGenre
         {
-            GenreId = (int)g.MalId, 
+            GenreId = g.MalId, 
             MangaId = mangaId 
         });
         
@@ -82,5 +84,25 @@ public sealed class AddMangaHandler : IRequestHandler<AddMangaCommand>
         _context.MangaTitles.AddRange(titleList);
 
         await _context.SaveChangesAsync(cancellationToken);
+    }
+
+    private async Task CreateMissingGenres(GetMangaInfoFromMyAnimeListResponse apiResponse, CancellationToken cancellationToken)
+    {
+        var genreIds = await _context.Genres.Select(x => x.Id).ToListAsync(cancellationToken);
+
+        var genresToCreate = apiResponse.Genres
+            .Where(x => !genreIds.Contains(x.MalId))
+            .Select(x => new Genre
+            {
+                Id = x.MalId,
+                Name = x.Name
+            })
+            .ToList();
+
+        if (genresToCreate.Count > 0)
+        {
+            _context.Genres.AddRange(genresToCreate);
+            await _context.SaveChangesAsync(cancellationToken);
+        }
     }
 }

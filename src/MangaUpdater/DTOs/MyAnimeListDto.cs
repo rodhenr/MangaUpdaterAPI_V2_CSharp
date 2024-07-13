@@ -42,7 +42,7 @@ public record MyAnimeListApiResponse
 public class MalCollection
 {
     [JsonPropertyName("mal_id")] 
-    public required long MalId { get; set; }
+    public required int MalId { get; set; }
 
     [JsonPropertyName("type")] 
     public required string Type { get; set; }

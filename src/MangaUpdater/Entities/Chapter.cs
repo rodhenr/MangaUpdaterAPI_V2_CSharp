@@ -9,6 +9,7 @@ namespace MangaUpdater.Entities;
 public partial class Chapter
 {
     [Key]
+    [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
     public int Id { get; set; }
 
     public int MangaId { get; set; }
