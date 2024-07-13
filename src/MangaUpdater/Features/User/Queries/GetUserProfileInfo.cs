@@ -1,4 +1,3 @@
-using MangaUpdater.Features.Auth.Queries;
 using MangaUpdater.Services;
 using MediatR;
 

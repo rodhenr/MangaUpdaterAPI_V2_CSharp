@@ -11,6 +11,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{78854080
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MangaUpdater.UnitTests", "tests\MangaUpdater.UnitTests\MangaUpdater.UnitTests.csproj", "{41DD9A92-8D43-48B6-854B-DCBC148C405B}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MangaUpdater.IntegrationTests", "tests\MangaUpdater.IntegrationTests\MangaUpdater.IntegrationTests.csproj", "{F7E4DA69-CF56-4BA2-B607-282245ACF7BC}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -25,6 +27,10 @@ Global
 		{41DD9A92-8D43-48B6-854B-DCBC148C405B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{41DD9A92-8D43-48B6-854B-DCBC148C405B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{41DD9A92-8D43-48B6-854B-DCBC148C405B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F7E4DA69-CF56-4BA2-B607-282245ACF7BC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F7E4DA69-CF56-4BA2-B607-282245ACF7BC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F7E4DA69-CF56-4BA2-B607-282245ACF7BC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F7E4DA69-CF56-4BA2-B607-282245ACF7BC}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -32,6 +38,7 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{01643D78-1C55-43CB-A7A3-0729F4E64B01} = {8C52B59C-F8F7-436C-9EA5-86562E55D9C2}
 		{41DD9A92-8D43-48B6-854B-DCBC148C405B} = {78854080-3536-4701-9B13-D4B48C849AB5}
+		{F7E4DA69-CF56-4BA2-B607-282245ACF7BC} = {78854080-3536-4701-9B13-D4B48C849AB5}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {37825D02-898E-45CF-9C77-DBD9E36FC788}

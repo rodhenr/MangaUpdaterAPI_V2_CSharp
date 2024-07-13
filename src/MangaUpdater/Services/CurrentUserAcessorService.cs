@@ -3,7 +3,6 @@ using MangaUpdater.Exceptions;
 
 namespace MangaUpdater.Services;
 
-[RegisterScoped]
 public class CurrentUserAccessor
 {
     private readonly IHttpContextAccessor _httpContextAccessor;

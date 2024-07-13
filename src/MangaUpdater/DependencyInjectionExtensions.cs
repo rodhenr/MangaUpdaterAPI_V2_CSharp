@@ -30,6 +30,7 @@ public static class DependencyInjectionExtensions
         services.AddHttpContextAccessor();
         services.AddTransient<IConfigureOptions<SwaggerGenOptions>, ConfigureSwaggerOptions>();
         services.AddProblemDetails();
+        services.AddScoped<CurrentUserAccessor>();
         
         AddHangfireServices(services, configuration);
         AddMediatrServices(services, configuration);
@@ -68,15 +69,15 @@ public static class DependencyInjectionExtensions
                     })
             }
         });
-
+        
         var monitoringApi = JobStorage.Current.GetMonitoringApi();
         var scheduledJobs = monitoringApi.ScheduledJobs(0, int.MaxValue);
-
+        
         foreach (var job in scheduledJobs)
         {
             BackgroundJob.Delete(job.Key);
         }
-
+        
         BackgroundJob.Enqueue<IHangfireService>(task => task.AddHangfireJobs(null));
 
         return builder;
