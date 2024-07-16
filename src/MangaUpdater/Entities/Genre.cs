@@ -9,7 +9,6 @@ public partial class Genre
     public string Name { get; set; } = null!;
 
     [Key]
-    [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
     public int Id { get; set; }
 
     [InverseProperty("Genre")]

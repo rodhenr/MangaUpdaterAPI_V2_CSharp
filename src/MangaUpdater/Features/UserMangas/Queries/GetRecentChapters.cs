@@ -8,11 +8,10 @@ using Microsoft.EntityFrameworkCore;
 
 namespace MangaUpdater.Features.UserMangas.Queries;
 
-public record GetRecentChaptersQuery([FromQuery] int MangaId, [FromQuery] List<int> SourceList) : IRequest<GetRecentChaptersResponse>;
+public record GetRecentChaptersQuery([FromQuery] int MangaId, [FromQuery] List<int> SourceList) 
+    : IRequest<List<ChapterDto>>;
 
-public record GetRecentChaptersResponse(IEnumerable<ChapterDto> Chapters);
-
-public sealed class GetRecentChaptersHandler : IRequestHandler<GetRecentChaptersQuery, GetRecentChaptersResponse>
+public sealed class GetRecentChaptersHandler : IRequestHandler<GetRecentChaptersQuery, List<ChapterDto>>
 {
     private readonly AppDbContextIdentity _context;
     private readonly CurrentUserAccessor _currentUserAccessor;
@@ -23,7 +22,7 @@ public sealed class GetRecentChaptersHandler : IRequestHandler<GetRecentChapters
         _currentUserAccessor = currentUserAccessor;
     }
 
-    public async Task<GetRecentChaptersResponse> Handle(GetRecentChaptersQuery request, CancellationToken cancellationToken)
+    public async Task<List<ChapterDto>> Handle(GetRecentChaptersQuery request, CancellationToken cancellationToken)
     {
         var userId = _currentUserAccessor.IsLoggedIn ? _currentUserAccessor.UserId : null;
         
@@ -38,9 +37,9 @@ public sealed class GetRecentChaptersHandler : IRequestHandler<GetRecentChapters
 
         if (userId is null)
         {
-            return new GetRecentChaptersResponse(chapterList
+            return chapterList
                 .Select(x => new ChapterDto(x.Id, x.MangaId, x.Source.Name, x.Date, x.Number))
-                .ToList());
+                .ToList();
         }
 
         var userMangas = await _context.UserMangas
@@ -54,6 +53,6 @@ public sealed class GetRecentChaptersHandler : IRequestHandler<GetRecentChapters
                 new UserMangaDto(userManga.MangaId, userChapter.SourceId,userChapter.ChapterId, userChapter.Chapter?.Number))
             .ToList();
 
-        return new GetRecentChaptersResponse(UserMangaChapterInfo.GetUserChaptersState(chapterList, userMangaInfo));
+        return UserMangaChapterInfo.GetUserChaptersState(chapterList, userMangaInfo).ToList();
     }
 }

@@ -44,7 +44,6 @@ public sealed class GetUserMangasHandler : IRequestHandler<GetUserMangasQuery, L
                 x.Manga.MangaTitles.First(y => y.IsMyAnimeListMainTitle).Name,
                 x.Manga.MangaSources.Select(y => y.SourceId).ToList()
             ))
-            .AsNoTracking()
             .ToListAsync(cancellationToken);
 
         return await GetMangaInfo(mangas, cancellationToken);
@@ -57,7 +56,7 @@ public sealed class GetUserMangasHandler : IRequestHandler<GetUserMangasQuery, L
         foreach (var manga in mangasInfo)
         {
             var recentChapters = await _mediator.Send(new GetRecentChaptersQuery(manga.MangaId, manga.SourceIds), cancellationToken);
-            result.Add(new GetUserMangasResponse(manga.MangaId, manga.CoverUrl, manga.Name, recentChapters.Chapters.ToList()));
+            result.Add(new GetUserMangasResponse(manga.MangaId, manga.CoverUrl, manga.Name, recentChapters));
         }
 
         return result;

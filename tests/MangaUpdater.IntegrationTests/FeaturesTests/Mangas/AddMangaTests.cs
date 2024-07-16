@@ -2,6 +2,7 @@ using MangaUpdater.Entities;
 using MangaUpdater.Exceptions;
 using MangaUpdater.Features.Mangas.Commands;
 using MangaUpdater.IntegrationTests.Setup;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
 namespace MangaUpdater.IntegrationTests.FeaturesTests.Mangas;
