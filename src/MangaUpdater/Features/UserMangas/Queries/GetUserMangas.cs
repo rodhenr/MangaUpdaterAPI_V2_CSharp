@@ -7,7 +7,11 @@ using Microsoft.EntityFrameworkCore;
 
 namespace MangaUpdater.Features.UserMangas.Queries;
 
-public record GetUserMangasQuery([FromRoute] string? UserId = null, [FromQuery] int Page = 1, [FromQuery] int Limit = 20) : IRequest<List<GetUserMangasResponse>>;
+public record GetUserMangasQuery(
+    [FromRoute] string? UserId = null, 
+    [FromQuery] int Page = 1, 
+    [FromQuery] int Limit = 20
+) : IRequest<List<GetUserMangasResponse>>;
 
 public record GetUserMangasResponse(int Id, string CoverUrl, string Name, List<ChapterDto> RecentChapters);
 

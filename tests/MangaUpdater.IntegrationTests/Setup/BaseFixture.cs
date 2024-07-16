@@ -16,9 +16,9 @@ public abstract class BaseFixture : IAsyncLifetime
     private Func<Task> _resetDatabase;
     protected readonly AppDbContextIdentity Db;
     protected readonly Fixture Fixture;
-    public ISender Sender { get; private set; }
+    protected ISender Sender { get; private set; }
 
-    public BaseFixture(IntegrationTestWebAppFactory factory)
+    protected BaseFixture(IntegrationTestWebAppFactory factory)
     {
         _resetDatabase = factory.ResetDatabaseAsync;
         Db = factory.DbContext;
@@ -31,36 +31,34 @@ public abstract class BaseFixture : IAsyncLifetime
         Sender = _scope.ServiceProvider.GetRequiredService<ISender>();
     }
 
-    public async Task Insert<T>(T entity) where T : class
+    protected async Task Insert<T>(T entity) where T : class
     {
         await Db.AddAsync(entity);
         await Db.SaveChangesAsync();
     }
-    
-    public async Task InsertRange<T>(IEnumerable<T> entityList) where T : class
+
+    protected async Task InsertRange<T>(IEnumerable<T> entityList) where T : class
     {
         Db.AddRange(entityList);
         await Db.SaveChangesAsync();
     }
 
-    public async Task<AppUser> CreateUser()
+    protected async Task CreateUser(string userId)
     {
         const string validPassword = "1234567!Aa";
         var user = Fixture.Create<AppUser>();
-        user.Id = "someUserId";
+        user.Id = userId;
         
         var userManager = _scope.ServiceProvider.GetRequiredService<UserManager<AppUser>>();
         await userManager.CreateAsync(user, validPassword);
-        
-        return user;
     }
-    
-    public void AddUser()
+
+    protected void AddUserIntoHttpContext(string userId)
     {
         var context = new DefaultHttpContext();
         var claims = new List<Claim>
         {
-            new (ClaimTypes.NameIdentifier, "someUserId") 
+            new (ClaimTypes.NameIdentifier, userId) 
         };
 
         var identity = new ClaimsIdentity(claims, "TestAuthType");

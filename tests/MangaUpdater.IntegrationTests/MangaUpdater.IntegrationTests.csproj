@@ -29,4 +29,8 @@
       <ProjectReference Include="..\..\src\MangaUpdater\MangaUpdater.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Folder Include="FeaturesTests\MangaSources\" />
+    </ItemGroup>
+
 </Project>

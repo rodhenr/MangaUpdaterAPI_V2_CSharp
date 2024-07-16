@@ -3,14 +3,14 @@ using MangaUpdater.Entities;
 using MangaUpdater.Features.UserMangas.Queries;
 using MangaUpdater.IntegrationTests.Setup;
 
-namespace MangaUpdater.IntegrationTests.FeaturesTests.MangaSources;
+namespace MangaUpdater.IntegrationTests.FeaturesTests.UserMangas;
 
 public class GetRecentChaptersTests : BaseFixture, IAsyncLifetime
 {
-    private Manga _existingManga = null!;
-    private Source _existingSource = null!;
-    private List<Chapter> _chapterList = null!;
-    private AppUser _existingUser = null!;
+    private Manga _manga = null!;
+    private Source _source = null!;
+    private List<Chapter> _chapters = null!;
+    private const string UserId = "someUserId";
 
     public GetRecentChaptersTests(IntegrationTestWebAppFactory factory) : base(factory) { }
     
@@ -18,7 +18,7 @@ public class GetRecentChaptersTests : BaseFixture, IAsyncLifetime
     public async Task Should_Return_Three_Last_Chapters_When_User_Is_Null()
     {
         // Arrange
-        var query = new GetRecentChaptersQuery(_existingManga.MyAnimeListId, [_existingSource.Id]);
+        var query = new GetRecentChaptersQuery(_manga.MyAnimeListId, [_source.Id]);
         
         // Act
         var result = await Sender.Send(query);
@@ -36,8 +36,8 @@ public class GetRecentChaptersTests : BaseFixture, IAsyncLifetime
     public async Task Should_Return_Three_Last_Chapters_When_User_Is_Not_Null()
     {
         // Arrange
-        var query = new GetRecentChaptersQuery(_existingManga.MyAnimeListId, [_existingSource.Id]);
-        AddUser();
+        var query = new GetRecentChaptersQuery(_manga.MyAnimeListId, [_source.Id]);
+        AddUserIntoHttpContext(UserId);
         
         // Act
         var result = await Sender.Send(query);
@@ -56,32 +56,29 @@ public class GetRecentChaptersTests : BaseFixture, IAsyncLifetime
     private async Task SeedDb()
     {
         // Manga & Source
-        _existingManga = Fixture.Create<Manga>();
-        _existingSource = Fixture.Create<Source>();
+        _manga = Fixture.Create<Manga>();
+        _source = Fixture.Create<Source>();
         
-        await Insert(_existingManga);
-        await Insert(_existingSource);
+        await Insert(_manga);
+        await Insert(_source);
         
         // Chapters
-        _chapterList = Fixture.CreateMany<Chapter>(5).ToList();
+        _chapters = Fixture.CreateMany<Chapter>(5).ToList();
 
-        for(var i = 0; i < _chapterList.Count; i++)
+        for(var i = 0; i < _chapters.Count; i++)
         {
-            _chapterList[i].MangaId = _existingManga.MyAnimeListId;
-            _chapterList[i].SourceId = _existingSource.Id;
-            _chapterList[i].Number = (i + 1).ToString();
+            _chapters[i].MangaId = _manga.MyAnimeListId;
+            _chapters[i].SourceId = _source.Id;
+            _chapters[i].Number = (i + 1).ToString();
         }
 
-        await InsertRange(_chapterList);
-        
-        // User
-        _existingUser = await CreateUser();
+        await InsertRange(_chapters);
 
         // UserManga
         var userManga = new UserManga
         {
-            MangaId = _existingManga.MyAnimeListId,
-            UserId = _existingUser.Id
+            MangaId = _manga.MyAnimeListId,
+            UserId = UserId
         };
 
         await Insert(userManga);
@@ -89,9 +86,9 @@ public class GetRecentChaptersTests : BaseFixture, IAsyncLifetime
         // UserChapters
         var userChapter = new UserChapter
         {
-            SourceId = _existingSource.Id,
+            SourceId = _source.Id,
             UserMangaId = userManga.Id,
-            ChapterId = _chapterList.OrderBy(x => float.Parse(x.Number)).Last().Id
+            ChapterId = _chapters.OrderBy(x => float.Parse(x.Number)).Last().Id
         };
 
         await Insert(userChapter);
