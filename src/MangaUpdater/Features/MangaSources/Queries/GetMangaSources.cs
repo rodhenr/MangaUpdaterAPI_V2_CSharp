@@ -26,7 +26,6 @@ public sealed class GetMangaSourcesHandler : IRequestHandler<GetMangaSourcesQuer
         var userId = _currentUserAccessor.UserId;
 
         var mangaSources = await _context.MangaSources
-            .AsNoTracking()
             .Where(x => x.MangaId == request.MangaId)
             .Select(x => new { x.SourceId , x.Source.Name })
             .ToListAsync(cancellationToken);

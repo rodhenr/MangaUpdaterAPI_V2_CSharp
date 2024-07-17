@@ -12,8 +12,10 @@ public class BaseTest : BaseFixture, IAsyncLifetime
     public async Task Should_Return_Ok()
     {
         // Arrange
+        //var query = new();
         
         // Act
+        //var result = await Sender.Send(query);
         
         // Assert
     }
