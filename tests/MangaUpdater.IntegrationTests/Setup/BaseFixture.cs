@@ -43,14 +43,23 @@ public abstract class BaseFixture : IAsyncLifetime
         await Db.SaveChangesAsync();
     }
 
-    protected async Task CreateUser(string userId)
+    protected async Task<AppUser> CreateUser(string userId, bool isAdmin = false)
     {
         const string validPassword = "1234567!Aa";
         var user = Fixture.Create<AppUser>();
         user.Id = userId;
+        user.UserName = userId.Replace("Id", "");
         
         var userManager = _scope.ServiceProvider.GetRequiredService<UserManager<AppUser>>();
         await userManager.CreateAsync(user, validPassword);
+
+        if (!isAdmin) return user;
+        
+        var userRole = _scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+        await userRole.CreateAsync(new IdentityRole("Admin")); //Check
+        await userManager.AddToRoleAsync(user, "Admin");
+
+        return user;
     }
 
     protected void AddUserIntoHttpContext(string userId)

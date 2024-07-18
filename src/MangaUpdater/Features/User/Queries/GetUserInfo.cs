@@ -18,7 +18,9 @@ public sealed class GetUserInfoHandler : IRequestHandler<GetUserInfoQuery, GetUs
 
     public async Task<GetUserInfoResponse> Handle(GetUserInfoQuery request, CancellationToken cancellationToken)
     {
-        var user = await _userManager.FindByIdAsync(request.UserId) ?? throw new AuthenticationException("User not found");
+        var user = await _userManager.FindByIdAsync(request.UserId) 
+                   ?? throw new AuthenticationException("User not found");
+        
         var isAdmin = await IsUserAdmin(user);
 
         return new GetUserInfoResponse(user.Avatar, user.UserName!, user.Id, user.Email!, isAdmin);
