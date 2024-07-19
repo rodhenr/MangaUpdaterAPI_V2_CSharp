@@ -42,7 +42,10 @@ public class GetGenresTests : BaseFixture, IAsyncLifetime
 
         // Mangas
         var mangaOne = Fixture.Create<Manga>();
+        mangaOne.MyAnimeListId = 1;
         var mangaTwo = Fixture.Create<Manga>();
+        mangaTwo.MyAnimeListId = 2;
+        
         await InsertRange([mangaOne, mangaTwo]);
 
         // MangaGenres

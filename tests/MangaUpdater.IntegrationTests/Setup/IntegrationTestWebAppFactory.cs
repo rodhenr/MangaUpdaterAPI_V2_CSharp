@@ -73,6 +73,7 @@ public class IntegrationTestWebAppFactory: WebApplicationFactory<Program>, IAsyn
             services.AddDbContext<AppDbContextIdentity>(options =>
             {
                 options.UseSqlServer(_container.GetConnectionString());
+                options.EnableSensitiveDataLogging();
             });
         });
     }

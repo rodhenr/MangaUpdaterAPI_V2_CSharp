@@ -3,7 +3,6 @@ using AutoFixture;
 using MangaUpdater.Entities;
 using MangaUpdater.Features.Chapters.Queries;
 using MangaUpdater.IntegrationTests.Setup;
-using Microsoft.AspNetCore.Identity;
 
 namespace MangaUpdater.IntegrationTests.FeaturesTests.Chapters;
 
@@ -46,25 +45,28 @@ public class GetLastChapterByNumberTests: BaseFixture, IAsyncLifetime
     
     private async Task SeedDb()
     {
-        _mangaWithChapter = Fixture.Create<Manga>();
-        _mangaWithoutChapter = Fixture.Create<Manga>();
+        var mangas = Fixture.CreateMany<Manga>(2).ToList();
         _existingSource = Fixture.Create<Source>();
-        
-        await Insert(_mangaWithChapter);
-        await Insert(_mangaWithoutChapter);
+
+        await InsertRange(mangas);
         await Insert(_existingSource);
         
-        var chapter = Fixture.Create<Chapter>();
-        chapter.MangaId = _mangaWithChapter.MyAnimeListId;
-        chapter.SourceId = _existingSource.Id;
-        chapter.Number = "1";
+        _mangaWithChapter = mangas.First();
+        _mangaWithoutChapter = mangas.Last();
         
-        _lastChapter = Fixture.Create<Chapter>();
-        _lastChapter.MangaId = _mangaWithChapter.MyAnimeListId;
-        _lastChapter.SourceId = _existingSource.Id;
-        _lastChapter.Number = "2";
+        var chapters = Fixture.CreateMany<Chapter>(2).ToList();
+        var chapterOne = chapters.First();
+        var chapterTwo = chapters.Last();
         
-        await Insert(chapter);
-        await Insert(_lastChapter);
+        chapterOne.MangaId = _mangaWithChapter.MyAnimeListId;
+        chapterOne.SourceId = _existingSource.Id;
+        chapterOne.Number = "1";
+        chapterTwo.MangaId = _mangaWithChapter.MyAnimeListId;
+        chapterTwo.SourceId = _existingSource.Id;
+        chapterTwo.Number = "2";
+        
+        await InsertRange(chapters);
+
+        _lastChapter = chapters.Last();
     }
 }

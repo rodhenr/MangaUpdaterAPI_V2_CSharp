@@ -13,7 +13,7 @@ namespace MangaUpdater.IntegrationTests.Setup;
 public abstract class BaseFixture : IAsyncLifetime
 {
     private readonly IServiceScope _scope;
-    private Func<Task> _resetDatabase;
+    private readonly Func<Task> _resetDatabase;
     protected readonly AppDbContextIdentity Db;
     protected readonly Fixture Fixture;
     protected ISender Sender { get; private set; }
@@ -39,7 +39,7 @@ public abstract class BaseFixture : IAsyncLifetime
 
     protected async Task InsertRange<T>(IEnumerable<T> entityList) where T : class
     {
-        Db.AddRange(entityList);
+        await Db.AddRangeAsync(entityList);
         await Db.SaveChangesAsync();
     }
 
@@ -79,5 +79,9 @@ public abstract class BaseFixture : IAsyncLifetime
 
     public Task InitializeAsync() => Task.CompletedTask;
 
-    public Task DisposeAsync() => _resetDatabase();
+    public async Task DisposeAsync()
+    {
+        Db.ChangeTracker.Clear();
+        await _resetDatabase();
+    } 
 }
