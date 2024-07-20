@@ -39,7 +39,7 @@ public sealed class UpdateChaptersHandler : IRequestHandler<UpdateChaptersComman
             case MangaSourcesEnum.AsuraScans: 
                 await _mediator.Send(new UpdateChaptersFromAsuraScansCommand(request.MangaId, source.Id, source.BaseUrl), cancellationToken);
                 break;
-            default: throw new ArgumentOutOfRangeException();
+            default: throw new ArgumentOutOfRangeException(nameof(request.SourceId));
         }
     }
 }

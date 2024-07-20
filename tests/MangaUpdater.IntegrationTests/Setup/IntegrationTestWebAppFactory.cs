@@ -42,7 +42,8 @@ public class IntegrationTestWebAppFactory: WebApplicationFactory<Program>, IAsyn
         _respawner = await Respawner.CreateAsync(_connection, new RespawnerOptions
         {
             DbAdapter = DbAdapter.SqlServer,
-            SchemasToInclude = ["dbo"]
+            SchemasToInclude = ["dbo"],
+            WithReseed = true
         });
     }
 
