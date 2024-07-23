@@ -14,5 +14,4 @@ public static partial class MangaTitleMapper
     {
         return mangaTitles.Select(ToDto);
     }
-    //public static partial IEnumerable<MangaTitleDto> ToDto(this ICollection<MangaTitle> mangaTitles);
 }

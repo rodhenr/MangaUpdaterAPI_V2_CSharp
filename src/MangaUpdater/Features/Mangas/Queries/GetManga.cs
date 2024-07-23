@@ -61,7 +61,7 @@ public sealed class GetMangaHandler : IRequestHandler<GetMangaQuery, GetMangaRes
             chapters, 
             manga.MangaGenres.ToDtos(), 
             manga.MangaSources.ToDtos(), 
-            manga.MangaAuthors.ToDto(), 
+            manga.MangaAuthors.ToDtos(), 
             manga.MangaTitles.ToDtos()
         );
     }
@@ -95,7 +95,7 @@ public sealed class GetMangaHandler : IRequestHandler<GetMangaQuery, GetMangaRes
     {
         if (manga.Chapters.Count == 0) return Enumerable.Empty<ChapterDto>();
 
-        if (!_currentUserAccessor.IsLoggedIn) return manga.Chapters.ToDto();
+        if (!_currentUserAccessor.IsLoggedIn) return manga.Chapters.ToDtos();
 
         var userMangaInfo = manga.UserMangas
             .SelectMany(um => um.UserChapters, (um, uc) => new UserMangaDto(

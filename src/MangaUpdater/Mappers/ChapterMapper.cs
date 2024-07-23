@@ -7,5 +7,10 @@ namespace MangaUpdater.Mappers;
 [Mapper]
 public static partial class ChapterMapper
 {
-    public static partial IEnumerable<ChapterDto> ToDto(this ICollection<Chapter> chapters);
+    private static partial ChapterDto ToDto(this Chapter chapter);
+
+    public static IEnumerable<ChapterDto> ToDtos(this IEnumerable<Chapter> chapters)
+    {
+        return chapters.Select(ToDto);
+    }
 }

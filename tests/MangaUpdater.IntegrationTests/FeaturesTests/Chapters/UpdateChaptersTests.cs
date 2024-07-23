@@ -60,7 +60,7 @@ public class UpdateChaptersTests : BaseFixture, IAsyncLifetime
         var asuraScansSource = new Source
         {
             Name = "AsuraScans",
-            BaseUrl = "https://asuratoon.com/manga/"
+            BaseUrl = "https://asuracomic.net/series/"
         };
         await Insert(mangaDexSource);
         await Insert(asuraScansSource);
@@ -68,7 +68,7 @@ public class UpdateChaptersTests : BaseFixture, IAsyncLifetime
         var mangaSource = Fixture.Create<MangaSource>();
         mangaSource.SourceId = asuraScansSource.Id;
         mangaSource.MangaId = _existingManga.MyAnimeListId;
-        mangaSource.Url = "1908287720-swordmasters-youngest-son";
+        mangaSource.Url = "swordmasters-youngest-son-3599edf0";
         await Insert(mangaSource);
         
         var command = new UpdateChaptersCommand(_existingManga.MyAnimeListId, source);
