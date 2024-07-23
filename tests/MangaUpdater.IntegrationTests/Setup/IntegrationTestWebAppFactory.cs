@@ -26,7 +26,31 @@ public class IntegrationTestWebAppFactory: WebApplicationFactory<Program>, IAsyn
     private Respawner _respawner = null!;
     public AppDbContextIdentity DbContext { get; private set; } = null!;
     
-    public async Task ResetDatabaseAsync() => await _respawner.ResetAsync(_connection);
+    protected override void ConfigureWebHost(IWebHostBuilder builder)
+    {
+        //builder.UseEnvironment("Testing");
+        Environment.SetEnvironmentVariable("ASPNETCORE_ENVIRONMENT", "Testing");
+        
+        builder.ConfigureTestServices(services =>
+        {
+            services.RemoveAll(typeof(IHostedService));
+            services.RemoveAll(typeof(JobStorage));
+            services.RemoveAll(typeof(IBackgroundProcess));
+            services.RemoveAll(typeof(HangfireService));
+            services.RemoveAll(typeof(BackgroundJobServer));
+            services.RemoveAll(typeof(BackgroundJob));
+            services.RemoveAll(typeof(BackgroundJobClient));
+            services.RemoveAll(typeof(IRecurringJobManager));
+            
+            services.RemoveAll(typeof(DbContextOptions<AppDbContextIdentity>));
+            
+            services.AddDbContext<AppDbContextIdentity>(options =>
+            {
+                options.UseSqlServer(_container.GetConnectionString());
+                options.EnableSensitiveDataLogging();
+            });
+        });
+    }
     
     public async Task InitializeAsync() 
     {
@@ -53,29 +77,5 @@ public class IntegrationTestWebAppFactory: WebApplicationFactory<Program>, IAsyn
         await _container.DisposeAsync();
     }
     
-    protected override void ConfigureWebHost(IWebHostBuilder builder)
-    {
-        //builder.UseEnvironment("Testing");
-        Environment.SetEnvironmentVariable("ASPNETCORE_ENVIRONMENT", "Testing");
-        
-        builder.ConfigureTestServices(services =>
-        {
-            services.RemoveAll(typeof(IHostedService));
-            services.RemoveAll(typeof(JobStorage));
-            services.RemoveAll(typeof(IBackgroundProcess));
-            services.RemoveAll(typeof(HangfireService));
-            services.RemoveAll(typeof(BackgroundJobServer));
-            services.RemoveAll(typeof(BackgroundJob));
-            services.RemoveAll(typeof(BackgroundJobClient));
-            services.RemoveAll(typeof(IRecurringJobManager));
-            
-            services.RemoveAll(typeof(DbContextOptions<AppDbContextIdentity>));
-            
-            services.AddDbContext<AppDbContextIdentity>(options =>
-            {
-                options.UseSqlServer(_container.GetConnectionString());
-                options.EnableSensitiveDataLogging();
-            });
-        });
-    }
+    public async Task ResetDatabaseAsync() => await _respawner.ResetAsync(_connection);
 }

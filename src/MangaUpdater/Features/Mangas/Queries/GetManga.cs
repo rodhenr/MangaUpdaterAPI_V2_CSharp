@@ -8,6 +8,7 @@ using MangaUpdater.Services;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using MangaUpdater.Mappers;
 
 namespace MangaUpdater.Features.Mangas.Queries;
 
@@ -18,7 +19,6 @@ public record GetMangaResponse(
     string CoverUrl, 
     string Synopsis, 
     string Type, 
-    int MyAnimeListId, 
     bool IsUserFollowing, 
     IEnumerable<ChapterDto> Chapters, 
     IEnumerable<GenreDto> Genres, 
@@ -47,26 +47,22 @@ public sealed class GetMangaHandler : IRequestHandler<GetMangaQuery, GetMangaRes
         manga.Chapters = manga.Chapters
             .OrderByDescending(ch => float.Parse(ch.Number, CultureInfo.InvariantCulture))
             .ToList();
-
+        
         var isUserFollowing = manga.UserMangas.Count > 0;
+        
         var chapters = MapAndReturnChapters(manga);
-        var genres = manga.MangaGenres.Select(x => new GenreDto(x.Genre.Id, x.Genre.Name));
-        var sources = manga.MangaSources.Select(x => new SourceDto(x.Source.Id, x.Source.Name, $"{x.Source.BaseUrl}{x.Url}"));
-        var authors = manga.MangaAuthors.Select(x => new MangaAuthorDto(x.Id, x.Name));
-        var titles = manga.MangaTitles.Select(x => new MangaTitleDto(x.Id, x.Name, x.IsMyAnimeListMainTitle));
         
         return new GetMangaResponse(
             manga.MyAnimeListId, 
             manga.CoverUrl, 
             manga.Synopsis, 
             manga.Type, 
-            manga.MyAnimeListId, 
             isUserFollowing, 
             chapters, 
-            genres, 
-            sources, 
-            authors, 
-            titles
+            manga.MangaGenres.ToDtos(), 
+            manga.MangaSources.ToDtos(), 
+            manga.MangaAuthors.ToDto(), 
+            manga.MangaTitles.ToDtos()
         );
     }
 
@@ -98,13 +94,8 @@ public sealed class GetMangaHandler : IRequestHandler<GetMangaQuery, GetMangaRes
     private IEnumerable<ChapterDto> MapAndReturnChapters(Manga manga)
     {
         if (manga.Chapters.Count == 0) return Enumerable.Empty<ChapterDto>();
-        
-        if (!_currentUserAccessor.IsLoggedIn) return manga.Chapters.Select(x => new ChapterDto (
-                x.Id, 
-                x.SourceId, 
-                x.Source.Name, 
-                x.Date, 
-                x.Number));
+
+        if (!_currentUserAccessor.IsLoggedIn) return manga.Chapters.ToDto();
 
         var userMangaInfo = manga.UserMangas
             .SelectMany(um => um.UserChapters, (um, uc) => new UserMangaDto(
@@ -112,7 +103,7 @@ public sealed class GetMangaHandler : IRequestHandler<GetMangaQuery, GetMangaRes
                 uc.SourceId, 
                 uc.ChapterId, 
                 uc.Chapter?.Number
-                ))
+            ))
             .ToList();
 
         return UserMangaChapterInfo.GetUserChaptersState(manga.Chapters, userMangaInfo);
