@@ -27,12 +27,10 @@ public record MangaInfo(int MangaId, string CoverUrl, string MangaName);
 public sealed class GetMangasHandler : IRequestHandler<GetMangasQuery, GetMangasResponse>
 {
     private readonly AppDbContextIdentity _context;
-    private readonly IMediator _mediator;
     
-    public GetMangasHandler(AppDbContextIdentity context, IMediator mediator)
+    public GetMangasHandler(AppDbContextIdentity context)
     {
         _context = context;
-        _mediator = mediator;
     }
 
     public async Task<GetMangasResponse> Handle(GetMangasQuery request, CancellationToken cancellationToken)
@@ -46,7 +44,7 @@ public sealed class GetMangasHandler : IRequestHandler<GetMangasQuery, GetMangas
         var mangas = await queryable
             .Skip((page - 1) * pageSize)
             .Take(pageSize)
-            .Select(x => new MangaInfo(x.MyAnimeListId, x.CoverUrl, x.MangaTitles.First().Name))
+            .Select(x => new MangaInfo(x.MyAnimeListId, x.CoverUrl, x.MangaTitles.First(mt => mt.IsMyAnimeListMainTitle).Name))
             .ToListAsync(cancellationToken);
         
         var count = await queryable.CountAsync(cancellationToken);
@@ -73,8 +71,11 @@ public sealed class GetMangasHandler : IRequestHandler<GetMangasQuery, GetMangas
         {
             queryable = queryable.Where(m => m.MangaGenres.Any(b => request.GenreIds.Contains(b.GenreId)));
         }
-        
-        if (!string.IsNullOrWhiteSpace(request.Input)) queryable = queryable.Where(m => m.MangaTitles.Any(mt => mt.Name.Contains(request.Input)));
+
+        if (!string.IsNullOrWhiteSpace(request.Input))
+        {
+            queryable = queryable.Where(m => m.MangaTitles.Any(mt => mt.Name.Contains(request.Input)));
+        }
 
         return queryable;
     }
