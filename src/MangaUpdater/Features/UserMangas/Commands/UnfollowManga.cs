@@ -23,7 +23,7 @@ public sealed class UnfollowMangaHandler : IRequestHandler<UnfollowMangaCommand>
     {
         var userManga = await _context.UserMangas
             .Where(um => um.MangaId == request.MangaId && um.UserId == _currentUserAccessor.UserId)
-            .SingleOrDefaultAsync(cancellationToken);;
+            .SingleOrDefaultAsync(cancellationToken);
 
         if (userManga is null) return;
         
