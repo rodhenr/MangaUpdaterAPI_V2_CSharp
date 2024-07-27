@@ -17,6 +17,7 @@ public abstract class BaseFixture : IAsyncLifetime
     protected readonly AppDbContextIdentity Db;
     protected readonly Fixture Fixture;
     protected ISender Sender { get; private set; }
+    protected const string UserPassword = "1234567!Aa";
 
     protected BaseFixture(IntegrationTestWebAppFactory factory)
     {
@@ -45,13 +46,12 @@ public abstract class BaseFixture : IAsyncLifetime
 
     protected async Task<AppUser> CreateUser(string userId, bool isAdmin = false)
     {
-        const string validPassword = "1234567!Aa";
         var user = Fixture.Create<AppUser>();
         user.Id = userId;
         user.UserName = userId.Replace("Id", "");
         
         var userManager = _scope.ServiceProvider.GetRequiredService<UserManager<AppUser>>();
-        await userManager.CreateAsync(user, validPassword);
+        await userManager.CreateAsync(user, UserPassword);
 
         if (!isAdmin) return user;
         
