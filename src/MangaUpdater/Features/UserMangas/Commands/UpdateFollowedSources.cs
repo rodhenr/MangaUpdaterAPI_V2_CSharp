@@ -33,21 +33,21 @@ public sealed class UpdateFollowedSourcesHandler : IRequestHandler<UpdateFollowe
                 .ToListAsync(cancellationToken);
             
             _context.UserChapters.RemoveRange(userChapters);
-            await _context.SaveChangesAsync(cancellationToken);
-
-            return;
+        }
+        else
+        {
+            var userChaptersToAdd = request.SourceIds
+                .Select(x => new UserChapter
+                {
+                    UserMangaId = userManga.Id, 
+                    ChapterId = null, 
+                    SourceId = x
+                })
+                .ToList();
+        
+            _context.UserChapters.AddRange(userChaptersToAdd);
         }
         
-        var userSources = request.SourceIds
-            .Select(x => new UserChapter
-            {
-                UserMangaId = userManga.Id, 
-                ChapterId = null, 
-                SourceId = x
-            })
-            .ToList();
-        
-        _context.UserChapters.AddRange(userSources);
         await _context.SaveChangesAsync(cancellationToken);
     }
 

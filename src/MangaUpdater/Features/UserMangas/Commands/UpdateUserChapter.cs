@@ -8,14 +8,14 @@ namespace MangaUpdater.Features.UserMangas.Commands;
 
 public record UpdateUserChapterCommand(int MangaId, int SourceId, int ChapterId) : IRequest;
 
-public record UpdateChapterRequest(int ChapterId);
+public record UpdateUserChapterRequest(int ChapterId);
 
-public sealed class UpdateChapterHandler : IRequestHandler<UpdateUserChapterCommand>
+public sealed class UpdateUserChapterHandler : IRequestHandler<UpdateUserChapterCommand>
 {
     private readonly AppDbContextIdentity _context;
     private readonly CurrentUserAccessor _currentUserAccessor;
     
-    public UpdateChapterHandler(AppDbContextIdentity context, CurrentUserAccessor currentUserAccessor)
+    public UpdateUserChapterHandler(AppDbContextIdentity context, CurrentUserAccessor currentUserAccessor)
     {
         _context = context;
         _currentUserAccessor = currentUserAccessor;
@@ -34,6 +34,7 @@ public sealed class UpdateChapterHandler : IRequestHandler<UpdateUserChapterComm
         if (userChapter.ChapterId == request.ChapterId) return;
         
         userChapter.ChapterId = request.ChapterId;
+
         await _context.SaveChangesAsync(cancellationToken);
     }
 }

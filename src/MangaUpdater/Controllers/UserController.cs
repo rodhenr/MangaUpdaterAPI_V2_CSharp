@@ -62,7 +62,7 @@ public class UserController(ISender mediator) : BaseController
     
     [SwaggerOperation("A logged-in user changes its last chapter read from a combination of manga and source")]
     [HttpPatch("manga/{mangaId:int}/source/{sourceId:int}")]
-    public async Task UpdateManga([FromRoute] int mangaId, [FromRoute] int sourceId, [FromBody] UpdateChapterRequest requestBody)
+    public async Task UpdateManga([FromRoute] int mangaId, [FromRoute] int sourceId, [FromBody] UpdateUserChapterRequest requestBody)
     {
         await mediator.Send(new UpdateUserChapterCommand(mangaId, sourceId, requestBody.ChapterId));
     }

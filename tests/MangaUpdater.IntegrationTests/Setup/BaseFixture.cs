@@ -16,8 +16,8 @@ public abstract class BaseFixture : IAsyncLifetime
     private readonly Func<Task> _resetDatabase;
     protected readonly AppDbContextIdentity Db;
     protected readonly Fixture Fixture;
-    protected ISender Sender { get; private set; }
     protected const string UserPassword = "1234567!Aa";
+    protected ISender Sender { get; private set; }
 
     protected BaseFixture(IntegrationTestWebAppFactory factory)
     {
