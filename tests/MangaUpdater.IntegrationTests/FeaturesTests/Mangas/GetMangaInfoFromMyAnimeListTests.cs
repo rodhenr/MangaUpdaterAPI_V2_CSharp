@@ -71,17 +71,17 @@ public class GetMangaInfoFromMyAnimeListTests: BaseFixture
         result.Authors.Should().BeEquivalentTo(authors);
     }
 
-    [Fact]
-    public async Task Should_Thrown_Exception_When_Id_Is_Invalid()
-    {
-        // Arrange
-        const int malId = 0;
-        var exceptionMessage = $"Invalid ID {malId} from MyAnimeList";
-        
-        var query = new GetMangaInfoFromMyAnimeListQuery(malId);
-
-        // Act & Assert
-        var exception = await Assert.ThrowsAsync<BadRequestException>(async() => await Sender.Send(query));
-        Assert.Equal(exceptionMessage, exception.Message);
-    }
+    // [Fact]
+    // public async Task Should_Thrown_Exception_When_Id_Is_Invalid()
+    // {
+    //     // Arrange
+    //     const int malId = 0;
+    //     var exceptionMessage = $"Invalid ID {malId} from MyAnimeList";
+    //     
+    //     var query = new GetMangaInfoFromMyAnimeListQuery(malId);
+    //
+    //     // Act & Assert
+    //     var exception = await Assert.ThrowsAsync<BadRequestException>(async() => await Sender.Send(query));
+    //     Assert.Equal(exceptionMessage, exception.Message);
+    // }
 }

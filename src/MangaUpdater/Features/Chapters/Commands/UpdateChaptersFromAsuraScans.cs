@@ -1,5 +1,6 @@
 ﻿using System.Globalization;
 using System.Text.RegularExpressions;
+using ChronicNetCore;
 using HtmlAgilityPack;
 using MangaUpdater.Database;
 using MangaUpdater.Entities;
@@ -9,7 +10,7 @@ using MangaUpdater.Features.Chapters.Queries;
 using MangaUpdater.Helpers;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
-using InvalidOperationException = System.InvalidOperationException;
+using InvalidOperationException = MangaUpdater.Exceptions.InvalidOperationException;
 
 namespace MangaUpdater.Features.Chapters.Commands;
 
@@ -21,6 +22,7 @@ public sealed partial class GetMangasFromAsuraScansHandler : IRequestHandler<Upd
     private readonly HttpClient _httpClient;
     private readonly IMediator _mediator;
     private readonly List<Chapter> _chapterList = [];
+    private readonly Parser _dateParser = new();
 
     public GetMangasFromAsuraScansHandler(AppDbContextIdentity context, IHttpClientFactory clientFactory,
         IMediator mediator)
@@ -47,8 +49,12 @@ public sealed partial class GetMangasFromAsuraScansHandler : IRequestHandler<Upd
 
         var htmlDoc = new HtmlDocument();
         htmlDoc.LoadHtml(html);
-
-        var chapterNodes = htmlDoc.GetElementbyId("chapterlist").Descendants("li");
+            
+        var chapterNodes = htmlDoc.DocumentNode
+            .SelectNodes("//div/h3/a[contains(., 'Chapter')]/ancestor::div[1]")
+            .Descendants("h3")
+            .Where(h3 => h3.Descendants("a").Any(a => a.InnerText.Contains("Chapter")));
+        
         ProcessApiResult(request, chapterNodes, lastChapterNumber.Number);
 
         _context.Chapters.AddRange(_chapterList.Distinct(new ChapterEqualityComparer()).ToList());
@@ -59,17 +65,21 @@ public sealed partial class GetMangasFromAsuraScansHandler : IRequestHandler<Upd
     {
         foreach (var chapterNode in nodes)
         {
-            var chapterNumberString = chapterNode
-                .SelectSingleNode(".//span[@class='chapternum']").InnerText.Replace("Chapter ", "")
-                .Trim();
-            var chapterDateString = chapterNode
-                .SelectSingleNode(".//span[@class='chapterdate']").InnerText
-                .Trim();
-
+            var chapterNumberString = chapterNode.Descendants("a")
+                .First()
+                .GetAttributeValue("href", "")
+                .Split('/')
+                .LastOrDefault()?
+                .Trim() ?? throw new InvalidOperationException("Chapter number is invalid.");
+            
             var chapterNumber = ExtractNumberFromString(chapterNumberString);
             if (chapterNumber <= lastChapterNumber) break;
 
-            var chapterDate = DateTime.Parse(chapterDateString).AddHours(DateTime.Now.Hour).AddMinutes(DateTime.Now.Minute);
+            var chapterDateString = chapterNode.NextSibling?.InnerText.Trim() 
+                                    ?? throw new InvalidOperationException("Chapter date is invalid.");
+
+            var parsedDate = _dateParser.Parse(chapterDateString).ToTime();
+            var chapterDate = new DateTime(parsedDate.Year, parsedDate.Month, parsedDate.Day, DateTime.Now.Hour, DateTime.Now.Minute, 0);
 
             var chapter = new Chapter
             {
