@@ -23,20 +23,20 @@ public sealed class SearchForMangaInAsuraScansHandler : IRequestHandler<UpdateMa
     
     public async Task Handle(UpdateMangaUrlFromAsuraScansCommand request, CancellationToken cancellationToken)
     {
+        var asuraScansSource = await _context.Sources
+            .Where(x => x.Id == (int)MangaSourcesEnum.AsuraScans)
+            .SingleOrDefaultAsync(cancellationToken) ?? throw new EntityNotFoundException("Source not found.");
+        
         var mangas = await _context.Mangas
             .Where(x => x.MangaSources.Any(y => y.SourceId == (int)MangaSourcesEnum.AsuraScans) 
-                && x.MangaTitles .Any(y => y.IsAsuraMainTitle))
+                && x.MangaTitles.Any(y => y.IsAsuraMainTitle))
             .Select(x => new
             {
                 Title = x.MangaTitles.First(y => y.IsAsuraMainTitle == true), 
                 Source = x.MangaSources.First(y => y.SourceId == (int)MangaSourcesEnum.AsuraScans)
             })
             .ToListAsync(cancellationToken);
-
-        var asuraScansSource = await _context.Sources
-            .Where(x => x.Id == (int)MangaSourcesEnum.AsuraScans)
-            .SingleOrDefaultAsync(cancellationToken) ?? throw new EntityNotFoundException("Source not found");
-
+        
         foreach (var manga in mangas)
         {
             await SearchAndUpdateSourceUrl(asuraScansSource.BaseUrl, manga.Title, manga.Source, cancellationToken);
@@ -46,18 +46,23 @@ public sealed class SearchForMangaInAsuraScansHandler : IRequestHandler<UpdateMa
     private async Task SearchAndUpdateSourceUrl(string baseUrl, MangaTitle title, MangaSource source, CancellationToken cancellationToken)
     {
         var splittedTitle = title.Name.Split(' ');
-        var queryString = string.Join("+", splittedTitle);
+        var queryString = $"{baseUrl.Replace("manga/", "")}?name={string.Join("+", splittedTitle)}";
             
-        var html = await _httpClient.GetStringAsync($"{baseUrl.Replace("manga/", "")}?s={queryString}", cancellationToken);
+        var html = await _httpClient.GetStringAsync(queryString, cancellationToken);
     
         var htmlDoc = new HtmlDocument();
         htmlDoc.LoadHtml(html);
-    
-        var htmlResult = htmlDoc.DocumentNode.SelectNodes("//div[contains(@class, 'bsx')]//a");
-        var newUrl = htmlResult?
-            .Where(x => x.GetAttributeValue("Title", "").StartsWith(title.Name))
-            .Select(x => x.GetAttributeValue("href", ""))
-            .SingleOrDefault(); 
+            
+        var newUrl = htmlDoc.DocumentNode
+            .Descendants("div")
+            .FirstOrDefault(div =>
+                div.Descendants("span").Any(span => span.InnerText.Contains("Chapter")) &&
+                div.Descendants("span").Any(span => span.InnerText.StartsWith(title.Name))
+            )?
+            .Descendants("a")
+            .FirstOrDefault(a => a.GetAttributeValue("href", "").StartsWith("series/"))?
+            .GetAttributeValue("href", "")?
+            .Replace("series/", "");
 
         if (newUrl is null) return;
         
