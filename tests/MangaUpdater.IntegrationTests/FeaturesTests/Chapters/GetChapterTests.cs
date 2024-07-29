@@ -46,7 +46,7 @@ public class GetChapterTests : BaseFixture, IAsyncLifetime
         // Act && Assert
         var exception = await Assert.ThrowsAsync<EntityNotFoundException>(async() => await Sender.Send(query));
         
-        Assert.Equal(exception.Message, expectedExceptionMessage);
+        Assert.Equal(expectedExceptionMessage, exception.Message);
     }
     
     public new async Task InitializeAsync() => await SeedDb();

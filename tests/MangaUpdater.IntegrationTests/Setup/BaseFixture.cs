@@ -49,9 +49,12 @@ public abstract class BaseFixture : IAsyncLifetime
         var user = Fixture.Create<AppUser>();
         user.Id = userId;
         user.UserName = userId.Replace("Id", "");
+        user.Email = "email@example.com";
         
         var userManager = _scope.ServiceProvider.GetRequiredService<UserManager<AppUser>>();
         await userManager.CreateAsync(user, UserPassword);
+        
+        await userManager.SetLockoutEnabledAsync(user, false);
 
         if (!isAdmin) return user;
         
@@ -62,19 +65,33 @@ public abstract class BaseFixture : IAsyncLifetime
         return user;
     }
 
+    protected async Task<bool> CheckIfUserExists(string email)
+    {
+        var userManager = _scope.ServiceProvider.GetRequiredService<UserManager<AppUser>>();
+        var user = await userManager.FindByEmailAsync(email);
+
+        return user is not null;
+    }
+
     protected void AddUserIntoHttpContext(string userId)
     {
-        var context = new DefaultHttpContext();
+        var context = CreateHttpContextAccessor();
         var claims = new List<Claim>
         {
             new (ClaimTypes.NameIdentifier, userId) 
         };
 
         var identity = new ClaimsIdentity(claims, "TestAuthType");
-        context.User = new ClaimsPrincipal(identity);
+        context.HttpContext!.User = new ClaimsPrincipal(identity);
+    }
 
+    protected IHttpContextAccessor CreateHttpContextAccessor()
+    {
+        var context = new DefaultHttpContext();
         var httpContextAccessor = _scope.ServiceProvider.GetRequiredService<IHttpContextAccessor>();
         httpContextAccessor.HttpContext = context;
+
+        return httpContextAccessor;
     }
 
     public Task InitializeAsync() => Task.CompletedTask;

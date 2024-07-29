@@ -25,8 +25,12 @@ public sealed class RefreshTokenHandler : IRequestHandler<RefreshTokenQuery, Ref
 
     public async Task<RefreshTokenResponse> Handle(RefreshTokenQuery request, CancellationToken cancellationToken)
     {
-        var user = await _userManager.FindByIdAsync(_currentUserAccessor.UserId) 
-                   ?? throw new UserNotFoundException("User not found");
+        var user = await _userManager.FindByIdAsync(_currentUserAccessor.UserId);
+
+        if (user is null)
+        {
+            throw new UserNotFoundException("User not found.");
+        }
 
         return await GetRefreshTokenInfo(user, cancellationToken);
     }

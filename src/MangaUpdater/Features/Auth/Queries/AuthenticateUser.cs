@@ -27,9 +27,9 @@ public sealed class AuthenticateUserHandler : IRequestHandler<AuthenticateUserQu
     {
         var user = await _userManager.FindByEmailAsync(request.Email);
 
-        if (user?.Email is null)
+        if (user is null)
         {
-            throw new UserNotFoundException("Invalid user email");
+            throw new UserNotFoundException("User not found.");
         }
 
         var result = await _signInManager.PasswordSignInAsync(user.UserName!, request.Password, false, false);

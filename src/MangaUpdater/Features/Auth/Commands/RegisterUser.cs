@@ -30,7 +30,7 @@ public sealed class RegisterUserHandler : IRequestHandler<RegisterUserCommand>
 
         if (user != null)
         {
-            throw new AuthorizationException("Email already taken");
+            throw new AuthorizationException("Email already taken.");
         }
         
         var appUser = new AppUser
