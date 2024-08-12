@@ -30,7 +30,6 @@ public class IntegrationTestWebAppFactory: WebApplicationFactory<Program>, IAsyn
     
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
-        //builder.UseEnvironment("Testing");
         Environment.SetEnvironmentVariable("ASPNETCORE_ENVIRONMENT", "Testing");
         
         builder.ConfigureTestServices(services =>
@@ -48,7 +47,7 @@ public class IntegrationTestWebAppFactory: WebApplicationFactory<Program>, IAsyn
             
             services.AddDbContext<AppDbContextIdentity>(options =>
             {
-                options.UseSqlServer(_container.GetConnectionString());
+                options.UseNpgsql(_container.GetConnectionString());
                 options.EnableSensitiveDataLogging();
             });
         });

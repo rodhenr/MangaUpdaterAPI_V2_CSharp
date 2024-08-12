@@ -4,6 +4,7 @@ using CommunityToolkit.Diagnostics;
 using FluentValidation;
 using Hangfire;
 using Hangfire.Dashboard.BasicAuthorization;
+using Hangfire.PostgreSql;
 using Hangfire.SqlServer;
 using MangaUpdater.Database;
 using MangaUpdater.Entities;
@@ -97,7 +98,10 @@ public static class DependencyInjectionExtensions
             .UseSimpleAssemblyNameTypeSerializer()
             .UseRecommendedSerializerSettings()
             .UseIgnoredAssemblyVersionTypeResolver()
-            .UseSqlServerStorage(configuration.GetConnectionString("DefaultConnection"), new SqlServerStorageOptions { SchemaName =  "dbo" })
+            .UsePostgreSqlStorage((options) =>
+            {
+                options.UseNpgsqlConnection(configuration.GetConnectionString("DefaultConnection"));
+            })
             .UseSerializerSettings(jsonSettings));
         
         services.AddHangfireServer(options => options.WorkerCount = 2);
@@ -121,7 +125,7 @@ public static class DependencyInjectionExtensions
     private static IServiceCollection AddIdentityServices(this IServiceCollection services, IConfiguration configuration)
     {
         services.AddDbContext<AppDbContextIdentity>(options => 
-            options.UseSqlServer(configuration.GetConnectionString("DefaultConnection"), 
+            options.UseNpgsql(configuration.GetConnectionString("DefaultConnection"), 
                 b => b.MigrationsAssembly(typeof(AppDbContextIdentity).Assembly.FullName)));
 
         services.AddDefaultIdentity<AppUser>()

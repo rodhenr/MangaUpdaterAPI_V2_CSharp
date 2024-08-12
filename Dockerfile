@@ -1,4 +1,3 @@
-# Use the official .NET Core SDK as a parent image
 FROM mcr.microsoft.com/dotnet/sdk:8.0-alpine AS Build
 
 # Initial configuration
@@ -26,5 +25,4 @@ ENV DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=false
 # Expose the port your application will run on
 EXPOSE 8080
 
-ENTRYPOINT ["dotnet", "MangaUpdater.API.dll"]
-
+ENTRYPOINT ["dotnet", "MangaUpdater.dll"]

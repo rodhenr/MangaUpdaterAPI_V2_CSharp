@@ -17,7 +17,6 @@ public class AuthenticateUserTests : BaseFixture, IAsyncLifetime
     {
         // Arrange
         var query = new AuthenticateUserQuery(_user.Email!, UserPassword);
-        //AddUserIntoHttpContext(UserId);
         CreateHttpContextAccessor();
         
         // Act

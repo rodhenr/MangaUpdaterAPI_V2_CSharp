@@ -7,7 +7,7 @@ namespace MangaUpdater.Entities;
 
 public class AppUser : IdentityUser
 {
-    [Column(TypeName = "nvarchar(MAX)")]
+    [Column(TypeName = "varchar")]
     [StringLength(int.MaxValue)]
     [Unicode(false)]
     public required string Avatar { get; set; }

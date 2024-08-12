@@ -1,43 +1,30 @@
 version: "3.8"
 
 services:
-  sqlserver:
-    image: mcr.microsoft.com/mssql/server:2022-latest
+  db:
+    image: postgres:latest
     environment:
-      - ACCEPT_EULA=Y
-      - SA_PASSWORD=Aa123456
-      - MSSQL_PID=Developer
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: "1234567Aa"
+      POSTGRES_DB: MangaUpdater
     ports:
-      - 1433:1433
+      - "5432:5432"
     restart: always
     healthcheck:
-      test:
-        [
-          "CMD-SHELL",
-          "/opt/mssql-tools/bin/sqlcmd -S sqlserver -U sa -P Aa123456 -Q 'SELECT 1' || exit 1"
-        ]
+      test: [ "CMD-SHELL", "pg_isready" ]
       interval: 10s
-      retries: 10
-      start_period: 10s
-      timeout: 3s
-  sqlserver.configurator:
-    image: mcr.microsoft.com/mssql/server:2022-latest
-    volumes:
-      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
-    depends_on:
-      sqlserver:
-        condition: service_healthy
-    command: >
-      bash -c ' /opt/mssql-tools/bin/sqlcmd -S sqlserver -U sa -P Aa123456 -d master -i docker-entrypoint-initdb.d/init.sql; echo "All done!"; '
+      timeout: 5s
+      retries: 5
   migrations:
-    image: migrations
+    container_name: migrations
     build:
       context: .
       dockerfile: migrations.Dockerfile
     depends_on:
-      - sqlserver.configurator
+      db:
+        condition: service_healthy
   mangaupdater:
-    image: mangaupdater
+    container_name: mangaupdater
     build:
       context: .
       dockerfile: Dockerfile
@@ -45,7 +32,7 @@ services:
     ports:
       - "8080:8080"
     environment:
-      - ConnectionStrings__DefaultConnection=Server=sqlserver,1433;Database=MangaUpdater;User ID=sa;Password=Aa123456;TrustServerCertificate=True
+      - ConnectionStrings__DefaultConnection=Server=db:5432; Database=MangaUpdater; User Id=postgres; Password=1234567Aa;
       - Issuer=http://localhost
       - Audience=audiencehere
       - ApiKey=yourapikeyhereyourapikeyhereyourapikeyhereyourapikeyhereyourapikeyhere

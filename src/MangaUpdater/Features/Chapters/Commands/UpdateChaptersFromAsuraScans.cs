@@ -1,6 +1,5 @@
 ﻿using System.Globalization;
 using System.Text.RegularExpressions;
-using ChronicNetCore;
 using HtmlAgilityPack;
 using MangaUpdater.Database;
 using MangaUpdater.Entities;
@@ -22,7 +21,6 @@ public sealed partial class GetMangasFromAsuraScansHandler : IRequestHandler<Upd
     private readonly HttpClient _httpClient;
     private readonly IMediator _mediator;
     private readonly List<Chapter> _chapterList = [];
-    private readonly Parser _dateParser = new();
 
     public GetMangasFromAsuraScansHandler(AppDbContextIdentity context, IHttpClientFactory clientFactory,
         IMediator mediator)
@@ -78,7 +76,7 @@ public sealed partial class GetMangasFromAsuraScansHandler : IRequestHandler<Upd
             var chapterDateString = chapterNode.NextSibling?.InnerText.Trim() 
                                     ?? throw new InvalidOperationException("Chapter date is invalid.");
 
-            var parsedDate = _dateParser.Parse(chapterDateString).ToTime();
+            var parsedDate = DateTime.Parse(chapterDateString); // TODO: Use some library 
             var chapterDate = new DateTime(parsedDate.Year, parsedDate.Month, parsedDate.Day, DateTime.Now.Hour, DateTime.Now.Minute, 0);
 
             var chapter = new Chapter
