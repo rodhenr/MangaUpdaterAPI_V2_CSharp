@@ -2,15 +2,15 @@ FROM mcr.microsoft.com/dotnet/sdk:8.0-alpine AS Build
 
 # Initial configuration
 WORKDIR /app
-COPY . .
-COPY *.csproj .
+COPY src/MangaUpdater/ src/MangaUpdater/
 
 # Install dotnet tools
 ENV PATH $PATH:/root/.dotnet/tools
 RUN dotnet tool install -g dotnet-ef --version 8.0.7
 
 # Create dotnet migration bundle
-RUN dotnet ef migrations bundle -p src/MangaUpdater/MangaUpdater.csproj -o bundle --verbose --self-contained
+WORKDIR /app/src/MangaUpdater
+RUN dotnet ef migrations bundle -o /app/bundle --verbose --self-contained
 
 FROM mcr.microsoft.com/dotnet/aspnet:8.0-alpine AS runtime
 WORKDIR /app

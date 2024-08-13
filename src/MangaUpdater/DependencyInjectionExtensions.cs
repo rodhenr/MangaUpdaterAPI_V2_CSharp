@@ -32,6 +32,7 @@ public static class DependencyInjectionExtensions
         services.AddTransient<IConfigureOptions<SwaggerGenOptions>, ConfigureSwaggerOptions>();
         services.AddProblemDetails();
         services.AddScoped<CurrentUserAccessor>();
+        services.AddScoped<IHangfireService, HangfireService>();
         
         AddHangfireServices(services, configuration);
         AddMediatrServices(services, configuration);

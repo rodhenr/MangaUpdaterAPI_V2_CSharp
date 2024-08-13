@@ -14,7 +14,6 @@ public interface IHangfireService
     void ScheduleNextJob(DateTime dateJobStarted, MangaSourcesEnum? sourceId);
 }
 
-[RegisterScoped]
 public class HangfireService : IHangfireService
 {
     private readonly AppDbContextIdentity _context;

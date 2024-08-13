@@ -20,6 +20,6 @@ public class MangaTitleConfiguration : IEntityTypeConfiguration<MangaTitle>
         builder
             .HasIndex(mt => new { mt.MangaId, mt.IsMyAnimeListMainTitle })
             .IsUnique()
-            .HasFilter("IsMyAnimeListMainTitle = TRUE");
+            .HasFilter("\"IsMyAnimeListMainTitle\" = TRUE");
     }
 }

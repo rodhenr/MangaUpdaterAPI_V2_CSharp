@@ -76,7 +76,7 @@ public sealed partial class GetMangasFromAsuraScansHandler : IRequestHandler<Upd
             var chapterDateString = chapterNode.NextSibling?.InnerText.Trim() 
                                     ?? throw new InvalidOperationException("Chapter date is invalid.");
 
-            var parsedDate = DateTime.Parse(chapterDateString); // TODO: Use some library 
+            var parsedDate = ParseDate(chapterDateString);
             var chapterDate = new DateTime(parsedDate.Year, parsedDate.Month, parsedDate.Day, DateTime.Now.Hour, DateTime.Now.Minute, 0);
 
             var chapter = new Chapter
@@ -84,11 +84,24 @@ public sealed partial class GetMangasFromAsuraScansHandler : IRequestHandler<Upd
                 MangaId = request.MangaId,
                 SourceId = request.SourceId,
                 Number = chapterNumber.ToString(CultureInfo.InvariantCulture),
-                Date = chapterDate
+                Date = DateTime.SpecifyKind(chapterDate, DateTimeKind.Utc)
             };
 
             _chapterList.Add(chapter);
         }
+    }
+    
+    private static DateTime ParseDate(string dateString)
+    {
+        const string format = "MMMM d yyyy";
+        var cleanedDateString = DateParseRegex().Replace(dateString, "$1");
+
+        if (DateTime.TryParseExact(cleanedDateString, format, CultureInfo.InvariantCulture, DateTimeStyles.None, out var parsedDate))
+        {
+            return parsedDate;
+        }
+        
+        throw new FormatException("Invalid date format.");
     }
 
     private static float ExtractNumberFromString(string input)
@@ -109,4 +122,7 @@ public sealed partial class GetMangasFromAsuraScansHandler : IRequestHandler<Upd
 
     [GeneratedRegex(@"(\d+(\.\d+)?)")]
     private static partial Regex MyRegex();
+    
+    [GeneratedRegex(@"(\d+)(st|nd|rd|th)")]
+    private static partial Regex DateParseRegex();
 }

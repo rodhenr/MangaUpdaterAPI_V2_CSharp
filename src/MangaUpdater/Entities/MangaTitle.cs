@@ -7,6 +7,7 @@ public partial class MangaTitle
 {
     public int MangaId { get; set; }
 
+    [Column(TypeName = "varchar(300)")]
     public string Name { get; set; } = null!;
 
     [Key]

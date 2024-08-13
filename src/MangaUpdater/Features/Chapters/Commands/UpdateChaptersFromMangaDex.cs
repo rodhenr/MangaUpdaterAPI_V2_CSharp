@@ -84,7 +84,7 @@ public sealed class GetMangasFromMangaDexHandler : IRequestHandler<UpdateChapter
                 MangaId = request.MangaId,
                 SourceId = request.SourceId,
                 Number = chapter.Attributes.Chapter,
-                Date = DateTime.Parse(chapter.Attributes.CreatedAt)
+                Date = DateTime.SpecifyKind(DateTime.Parse(chapter.Attributes.CreatedAt), DateTimeKind.Utc)
             });
         }
     }
