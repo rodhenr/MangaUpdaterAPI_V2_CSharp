@@ -61,9 +61,11 @@ public class GetLastChapterByNumberTests: BaseFixture, IAsyncLifetime
         chapterOne.MangaId = _mangaWithChapter.MyAnimeListId;
         chapterOne.SourceId = _existingSource.Id;
         chapterOne.Number = "1";
+        chapterOne.Date = DateTime.UtcNow;
         chapterTwo.MangaId = _mangaWithChapter.MyAnimeListId;
         chapterTwo.SourceId = _existingSource.Id;
         chapterTwo.Number = "2";
+        chapterTwo.Date = DateTime.UtcNow;
         
         await InsertRange(chapters);
 

@@ -55,6 +55,7 @@ public class UpdateChaptersFromAsuraScansTests : BaseFixture, IAsyncLifetime
     private async Task SeedDb()
     {
         _existingManga = Fixture.Create<Manga>();
+        
         await Insert(_existingManga);
         
         var mangaDexSource = new Source

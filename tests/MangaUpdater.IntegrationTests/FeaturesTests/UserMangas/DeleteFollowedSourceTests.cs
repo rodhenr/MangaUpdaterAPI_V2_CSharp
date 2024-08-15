@@ -49,6 +49,7 @@ public class DeleteFollowedSourceTests : BaseFixture, IAsyncLifetime
 
         chapter.MangaId = _manga.MyAnimeListId;
         chapter.SourceId = _source.Id;
+        chapter.Date = DateTime.UtcNow;
 
         await Insert(chapter);
 

@@ -36,6 +36,7 @@ public class UpdateUserChapterTests : BaseFixture, IAsyncLifetime
         var newChapter = Fixture.Create<Chapter>();
         newChapter.MangaId = _manga.MyAnimeListId;
         newChapter.SourceId = _source.Id;
+        newChapter.Date = DateTime.UtcNow;
         
         await Insert(newChapter);
         
@@ -55,6 +56,7 @@ public class UpdateUserChapterTests : BaseFixture, IAsyncLifetime
         var newChapter = Fixture.Create<Chapter>();
         newChapter.MangaId = _manga.MyAnimeListId;
         newChapter.SourceId = _source.Id;
+        newChapter.Date = DateTime.UtcNow;
         
         await Insert(newChapter);
         
@@ -98,6 +100,7 @@ public class UpdateUserChapterTests : BaseFixture, IAsyncLifetime
         _lastChapter = Fixture.Create<Chapter>();
         _lastChapter.MangaId = _manga.MyAnimeListId;
         _lastChapter.SourceId = _source.Id;
+        _lastChapter.Date = DateTime.UtcNow;
         
         await Insert(_lastChapter);
         

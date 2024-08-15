@@ -77,7 +77,7 @@ public sealed partial class GetMangasFromAsuraScansHandler : IRequestHandler<Upd
                                     ?? throw new InvalidOperationException("Chapter date is invalid.");
 
             var parsedDate = ParseDate(chapterDateString);
-            var chapterDate = new DateTime(parsedDate.Year, parsedDate.Month, parsedDate.Day, DateTime.Now.Hour, DateTime.Now.Minute, 0);
+            var chapterDate = new DateTime(parsedDate.Year, parsedDate.Month, parsedDate.Day, DateTime.Now.Hour, DateTime.Now.Minute, 0, DateTimeKind.Utc);
 
             var chapter = new Chapter
             {

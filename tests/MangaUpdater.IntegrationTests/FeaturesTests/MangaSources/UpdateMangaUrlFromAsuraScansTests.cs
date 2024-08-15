@@ -30,7 +30,7 @@ public class UpdateMangaUrlFromAsuraScansTests : BaseFixture, IAsyncLifetime
         newMangaSource.MangaId = _manga.MyAnimeListId;
         await Insert(newMangaSource);
         
-        const string url = "https://asuracomic.net/series/swordmasters-youngest-son-a5ead657";
+        const string url = "https://asuracomic.net/series/swordmasters-youngest-son-6f7238c3";
         var command = new UpdateMangaUrlFromAsuraScansCommand();
         
         // Act

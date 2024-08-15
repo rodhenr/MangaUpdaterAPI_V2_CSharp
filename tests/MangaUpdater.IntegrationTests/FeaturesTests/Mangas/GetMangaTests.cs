@@ -4,6 +4,7 @@ using MangaUpdater.Entities;
 using MangaUpdater.Features.Mangas.Queries;
 using MangaUpdater.IntegrationTests.Setup;
 using MangaUpdater.Mappers;
+using Microsoft.EntityFrameworkCore;
 
 namespace MangaUpdater.IntegrationTests.FeaturesTests.Mangas;
 
@@ -91,14 +92,7 @@ public class GetMangaTests : BaseFixture, IAsyncLifetime
         await InsertRange(_mangaTitles);
         
         // Genre && MangaGenre
-        var genres = Fixture.CreateMany<Genre>(numberOfRepetitions).ToList();
-        
-        for (var i = 0; i < numberOfRepetitions; i++)
-        {
-            genres[i].Id = i + 1;
-        }
-        
-        await InsertRange(genres);
+        var genres = await Db.Genres.ToListAsync();
        
         _mangaGenres = Fixture.CreateMany<MangaGenre>(numberOfRepetitions).ToList();
         
@@ -138,6 +132,7 @@ public class GetMangaTests : BaseFixture, IAsyncLifetime
             _chapters[i].MangaId = _manga.MyAnimeListId;
             _chapters[i].SourceId = _source.Id;
             _chapters[i].Number = i.ToString();
+            _chapters[i].Date = DateTime.SpecifyKind(_chapters[i].Date, DateTimeKind.Utc);
         }
         await InsertRange(_chapters);
 

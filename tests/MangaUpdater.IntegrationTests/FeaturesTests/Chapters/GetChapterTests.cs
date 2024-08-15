@@ -28,8 +28,12 @@ public class GetChapterTests : BaseFixture, IAsyncLifetime
         Assert.Equal(_existingChapter.Id, result.Id);
         Assert.Equal(_existingManga.MyAnimeListId, result.MangaId);
         Assert.Equal(_existingSource.Id, result.SourceId);
-        Assert.Equal(_existingChapter.Date, result.Date);
         Assert.Equal(_existingChapter.Number, result.Number);
+        Assert.Equal(_existingChapter.Date.Year, result.Date.Year);
+        Assert.Equal(_existingChapter.Date.Month, result.Date.Month);
+        Assert.Equal(_existingChapter.Date.Day, result.Date.Day);
+        Assert.Equal(_existingChapter.Date.Hour, result.Date.Hour);
+        Assert.Equal(_existingChapter.Date.Minute, result.Date.Minute);
     }
     
     [Fact]
@@ -62,6 +66,7 @@ public class GetChapterTests : BaseFixture, IAsyncLifetime
         _existingChapter = Fixture.Create<Chapter>();
         _existingChapter.MangaId = _existingManga.MyAnimeListId;
         _existingChapter.SourceId = _existingSource.Id;
+        _existingChapter.Date = DateTime.UtcNow;
         
         await Insert(_existingChapter);
     }

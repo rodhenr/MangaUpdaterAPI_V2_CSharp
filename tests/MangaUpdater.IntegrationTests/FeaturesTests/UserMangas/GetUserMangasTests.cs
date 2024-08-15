@@ -69,6 +69,7 @@ public class GetUserMangasTests : BaseFixture, IAsyncLifetime
             chapters[i].MangaId = mangas[mangaIndex].MyAnimeListId;
             chapters[i].SourceId = source.Id;
             chapters[i].Number = (i + 1).ToString();
+            chapters[i].Date = DateTime.SpecifyKind(chapters[i].Date, DateTimeKind.Utc);
         }
 
         await InsertRange(chapters);

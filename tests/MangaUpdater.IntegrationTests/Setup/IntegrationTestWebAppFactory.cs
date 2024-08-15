@@ -2,11 +2,8 @@ using System.Data.Common;
 using Hangfire;
 using Hangfire.Server;
 using MangaUpdater.Database;
-using MangaUpdater.Entities;
 using MangaUpdater.Services.Hangfire;
-using MediatR;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.EntityFrameworkCore;
@@ -14,7 +11,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
 using Respawn;
-using Testcontainers.MsSql;
+using Testcontainers.PostgreSql;
 
 namespace MangaUpdater.IntegrationTests.Setup;
 
@@ -23,7 +20,7 @@ public class SharedTestCollection : ICollectionFixture<IntegrationTestWebAppFact
 
 public class IntegrationTestWebAppFactory: WebApplicationFactory<Program>, IAsyncLifetime
 {
-    private readonly MsSqlContainer _container = new MsSqlBuilder().Build();
+    private readonly PostgreSqlContainer _container = new PostgreSqlBuilder().Build();
     private DbConnection _connection = null!;
     private Respawner _respawner = null!;
     public AppDbContextIdentity DbContext { get; private set; } = null!;
@@ -47,7 +44,7 @@ public class IntegrationTestWebAppFactory: WebApplicationFactory<Program>, IAsyn
             
             services.AddDbContext<AppDbContextIdentity>(options =>
             {
-                options.UseNpgsql(_container.GetConnectionString());
+                options.UseNpgsql(_container.GetConnectionString() + ";Include Error Detail=True");
                 options.EnableSensitiveDataLogging();
             });
         });
@@ -66,8 +63,8 @@ public class IntegrationTestWebAppFactory: WebApplicationFactory<Program>, IAsyn
 
         _respawner = await Respawner.CreateAsync(_connection, new RespawnerOptions
         {
-            DbAdapter = DbAdapter.SqlServer,
-            SchemasToInclude = ["dbo"],
+            DbAdapter = DbAdapter.Postgres,
+            SchemasToInclude = ["public"],
             WithReseed = true
         });
     }

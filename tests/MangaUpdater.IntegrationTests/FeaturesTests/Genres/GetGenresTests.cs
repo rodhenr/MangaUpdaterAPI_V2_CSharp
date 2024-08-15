@@ -3,12 +3,13 @@ using MangaUpdater.IntegrationTests.Setup;
 using AutoFixture;
 using MangaUpdater.Entities;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 
 namespace MangaUpdater.IntegrationTests.FeaturesTests.Genres;
 
 public class GetGenresTests : BaseFixture, IAsyncLifetime
 {
-    private List<Genre> _genreList = [];
+    private List<int> _genreIdsList = [1, 2];
     
     public GetGenresTests(IntegrationTestWebAppFactory factory) : base(factory) { }
     
@@ -22,24 +23,13 @@ public class GetGenresTests : BaseFixture, IAsyncLifetime
         var result = await Sender.Send(query);
         
         // Assert
-        Assert.Equal(_genreList.Count, result.Count);
+        Assert.Equal(_genreIdsList.Count, result.Count);
     }
     
     public new async Task InitializeAsync() => await SeedDb();
         
     private async Task SeedDb()
     {
-        // Genres
-        var genreOne = Fixture.Create<Genre>();
-        genreOne.Id = 1;
-        var genreTwo = Fixture.Create<Genre>();
-        genreTwo.Id = 2;
-        var genreThree = Fixture.Create<Genre>();
-        genreThree.Id = 3;
-
-        _genreList = [genreOne, genreTwo, genreThree];
-        await InsertRange(_genreList);
-
         // Mangas
         var mangaOne = Fixture.Create<Manga>();
         mangaOne.MyAnimeListId = 1;
@@ -49,25 +39,22 @@ public class GetGenresTests : BaseFixture, IAsyncLifetime
         await InsertRange([mangaOne, mangaTwo]);
 
         // MangaGenres
-        var mangaOneGenres = _genreList
-            .Select(x => new MangaGenre
+        var mangaOneGenres = _genreIdsList
+            .Select(id => new MangaGenre
             {
                 MangaId = mangaOne.MyAnimeListId,
-                GenreId = x.Id
+                GenreId = id
             }).ToList();
         
-        var mangaTwoGenreOne = new MangaGenre
-        {
-            MangaId = mangaTwo.MyAnimeListId,
-            GenreId = genreOne.Id
-        };
+        await InsertRange(mangaOneGenres);
         
-        var mangaTwoGenreTwo = new MangaGenre
-        {
-            MangaId = mangaTwo.MyAnimeListId,
-            GenreId = genreTwo.Id
-        };
+        var mangaTwoGenres = _genreIdsList
+            .Select(id => new MangaGenre
+            {
+                MangaId = mangaTwo.MyAnimeListId,
+                GenreId = id
+            }).ToList();
 
-        await InsertRange([..mangaOneGenres, mangaTwoGenreOne, mangaTwoGenreTwo]);
+        await InsertRange(mangaTwoGenres);
     }
 }

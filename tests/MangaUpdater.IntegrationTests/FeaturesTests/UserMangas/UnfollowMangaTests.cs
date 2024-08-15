@@ -88,6 +88,7 @@ public class UnfollowMangaTests : BaseFixture, IAsyncLifetime
 
         _chapter.MangaId = _manga.MyAnimeListId;
         _chapter.SourceId = _source.Id;
+        _chapter.Date = DateTime.UtcNow;
 
         await Insert(_chapter);
     }
